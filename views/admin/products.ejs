@@ -34,11 +34,11 @@
               </tr>
             </thead>
             <tbody>
-                <% for(let i = 0; i < data.length; i++) {    %>
+                <% for(let i = data.length-1;i>=0; i--) {    %>
                     <tr>
                         <td><%= data[i].productName %></td>
                         <td><%= data[i].brand %></td>
-                        <td><%= data[i].category %></td>
+                        <td><%= data[i].categoryname %></td>
                         <td>₹<%= data[i].salePrice %></td>
                         <td>
                             <% if (locals.data[i].productOffer) { %>

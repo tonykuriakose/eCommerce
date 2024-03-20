@@ -13,18 +13,36 @@ const getCategoryInfo = async (req, res) => {
 
 const addCategory = async (req, res) => {
   console.log(req.body);
-  const { name, description } = req.body
+  const { name, description } = req.body;
 
-  const newCategory = new Category({
-    name: name,
-    description: description,
-  });
- const reslt = await newCategory.save();
-res.redirect("/admin/allCategory")
+  try {
+    // Check if a category with the same name already exists
+    const existingCategory = await Category.findOne({ name });
 
- console.log(reslt,"rslt");
+    if (existingCategory) {
+      // If a category with the same name exists, return an error
+      return res.status(400).json({ error: 'Category with this name already exists' });
+    }
 
+    // If no category with the same name exists, create a new category
+    const newCategory = new Category({
+      name: name,
+      description: description,
+    });
+
+    // Save the new category
+    const result = await newCategory.save();
+    console.log(result, "result");
+
+    // Redirect to the page showing all categories
+    res.redirect("/admin/allCategory");
+  } catch (error) {
+    // Handle any errors that occur during the process
+    console.error("Error adding category:", error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };
+
 
 
 const getAllCategories = async (req, res) => {
