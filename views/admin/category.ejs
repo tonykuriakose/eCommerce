@@ -89,7 +89,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <% for(let i=0; i < cat.length; i++) { %>
+                                <% for(let i=cat.length-1; i >= 0; i--) { %>
                                     <tr>
                                         <td>
                                         </td>
@@ -171,10 +171,10 @@
                 console.log(response);
                 if (response.status === true) {
                     location.reload()
-                    // Swal.fire('Offer added', 'The offer has been removed.', 'success');
+                    Swal.fire('Offer added', 'The offer has been removed.', 'success');
 
                 } else {
-                    // alert("failed")
+                    alert("failed")
                 }
             }
         })
@@ -204,12 +204,12 @@
                         success: (response) => {
                         console.log(response);
                         if (response.status === true) {
-                            // Swal.fire('Removed!', 'The offer has been removed.', 'success');
+                            Swal.fire('Removed!', 'The offer has been removed.', 'success');
                             location.reload()
                         } else if (response.status === false) {
                             Swal.fire('failed');
                         } else {
-                            // alert("failed")
+                            alert("failed")
                         }
                     }
                     });

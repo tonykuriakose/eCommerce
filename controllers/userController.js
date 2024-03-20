@@ -15,10 +15,9 @@ const pageNotFound = async (req, res) => {
 };
 //User Login
 const getLoginPage = async (req, res) => {
-  console.log("is login calling");
   try {
     if (!req.session.user) {
-      console.log("is login rendering");
+      console.log("get login page");
       res.render("login");
     } else {
       res.redirect("/");

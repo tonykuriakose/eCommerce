@@ -30,6 +30,11 @@ app.use(
   })
 );
 
+app.use((req,res,next)=>{
+  res.set('Cache-Control','no-store');
+  next()
+})
+
 app.use("/", userrouter);
 app.use("/admin", adminrouter);
 app.use("/admin/*" , (req,res)=>{
@@ -38,6 +43,6 @@ app.use("/admin/*" , (req,res)=>{
 app.use("/*", function (req, res) {
   res.redirect("/pageNotFound");
 });
-app.listen(3005, () => {
+app.listen(process.env.PORT, () => {
   console.log("Server Running");
 });

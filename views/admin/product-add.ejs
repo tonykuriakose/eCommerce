@@ -4,7 +4,12 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
 
 </head>
+<style>
+    .error-message{
 
+        color : red
+
+    }
 </style>
     <section class="content-main">
         <div class="row">
@@ -103,13 +108,13 @@
                                 <div class="border row">
                                     <div id="addedImagesContainer" class="thumbnails-container"></div>
                                 </div>
-                                <!-- <div class="card-body">
+                                <div class="card-body">
                                     <div class="input-upload">
                                         <input class="form-control border" name="images" id="imageInput" type="file"
                                             multiple>
                                             <div id="images-error" class="error-message"></div>
                                     </div>
-                                </div> -->
+                                </div>
                                 <div class="row">
 
 
@@ -171,9 +176,17 @@
                             
                                                         </div>
                             </div>
+                                                 <div>   
+
+                                                    <button class="btn btn-md rounded font-sm hover-up" type="button" onclick="uploadAllImages()">Upload All Images</button>
+                                                </div>
+                                                <br><br>
+
+
                             <div>
                                 <button class="btn btn-md rounded font-sm hover-up"  type="button" onclick="validateAndSubmit()">Publish</button>
                             </div>
+                            
                         </form>
                     </div>
                 </div>
@@ -260,7 +273,7 @@ function viewImage1(event) {
                         fileList.items.add(imgFile);
                         input.files = fileList.files
                     });
-                    // cropperContainer.style.display = 'none';
+                    cropperContainer.style.display = 'none';
                 });
             };
             reader.readAsDataURL(input.files[0]);
@@ -335,6 +348,12 @@ function viewImage1(event) {
                 addedImagesContainer.appendChild(thumbnail);
             }
         }
+
+        function uploadAllImages() {
+    // Submit the form
+    document.forms[0].submit();
+}
+
 
         function validateForm() {
             console.log("validate form");
