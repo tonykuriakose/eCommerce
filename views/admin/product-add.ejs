@@ -1,8 +1,6 @@
 <%- include("../partials/adminHeader") %>
-
 <head>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.css">
-
 </head>
 <style>
     .error-message{
@@ -10,6 +8,16 @@
         color : red
 
     }
+    .thumbnails-container {
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .thumbnail {
+            margin-right: 10px;
+        
+        }
+
 </style>
     <section class="content-main">
         <div class="row">
@@ -105,47 +113,19 @@
                                 <div class="card-header">
                                     <h4>Choose images</h4>
                                 </div>
-                                <div class="border row">
-                                    <div id="addedImagesContainer" class="thumbnails-container"></div>
-                                </div>
-                                <div class="card-body">
-                                    <div class="input-upload">
-                                        <input class="form-control border" name="images" id="imageInput" type="file"
-                                            multiple>
-                                            <div id="images-error" class="error-message"></div>
+                                <div class="row">
+                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
+                                        <img src="assets/imgs/theme/upload.svg" alt="" id="imgView2">
+                                        <input class="form-control" type="file" name="images" id="input2"
+                                            accept="image/png, image/jpeg, image/jpg"
+                                            onchange="viewImage2(event),viewImage(event, 2)">
+                                    </div>
+                                    <div class="image-cropper d-flex align-items-center justify-content-center" style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
+                                        <img src="" id="croppedImg2" alt="">
+                                        <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
                                     </div>
                                 </div>
-                                <div class="row">
-
-
-                                    <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView1">
-                                                                    <input class="form-control" type="file" name="images" id="input1"
-                                                                        accept="image/png, image/jpeg, image/jpg"
-                                                                        onchange="viewImage1(event), viewImage(event, 1)">
-                                                                        <div id="images-error" class="error-message"></div>
-                                                                </div>
-                                                                <div class="image-cropper d-flex align-items-center"
-                                                                    style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                                                    <img src="" id="croppedImg1" alt="">
-                                                                    <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="row">
-                                                                <div class="card-body align-items-center" style="margin-bottom: 20px;">
-                                                                    <img src="assets/imgs/theme/upload.svg" alt="" id="imgView2">
-                                                                    <input class="form-control" type="file" name="images" id="input2"
-                                                                        accept="image/png, image/jpeg, image/jpg"
-                                                                        onchange="viewImage2(event),viewImage(event, 2)">
-                                                                </div>
-                                                                <div class="image-cropper d-flex align-items-center"
-                                                                    style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
-                                                                    <img src="" id="croppedImg2" alt="">
-                                                                    <button type="button" id="saveButton2" class="btn-sm btn-primary">Save</button>
-                                                                </div>
-                                                            </div>
-                                                            
+                                
                                                             <div class="row">
                                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                                                     <img src="assets/imgs/theme/upload.svg" alt="" id="imgView3">
@@ -153,7 +133,7 @@
                                                                         accept="image/png, image/jpeg, image/jpg"
                                                                         onchange="viewImage3(event),viewImage(event, 3)">
                                                                 </div>
-                                                                <div class="image-cropper d-flex align-items-center"
+                                                                <div class="image-cropper d-flex align-items-center justify-content-center"
                                                                     style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
                                                                     <img src="" id="croppedImg3" alt="">
                                                                     <button type="button" id="saveButton3" class="btn-sm btn-primary">Save</button>
@@ -167,7 +147,7 @@
                                                                         accept="image/png, image/jpeg, image/jpg"
                                                                         onchange="viewImage4(event),viewImage(event, 4)">
                                                                 </div>
-                                                                <div class="image-cropper d-flex align-items-center"
+                                                                <div class="image-cropper d-flex align-items-center justify-content-center"
                                                                     style="display:none; width: 300px; height: 200px; margin-bottom: 20px;">
                                                                     <img src="" id="croppedImg4" alt="">
                                                                     <button type="button" id="saveButton4" class="btn-sm btn-primary">Save</button>
@@ -176,46 +156,23 @@
                             
                                                         </div>
                             </div>
-                                                 <div>   
+                                                 <div class>   
 
-                                                    <button class="btn btn-md rounded font-sm hover-up" type="button" onclick="uploadAllImages()">Upload All Images</button>
+                                                    <button class="btn btn-md rounded font-sm hover-up " type="button" onclick="uploadAllImages()">Publish</button>
                                                 </div>
                                                 <br><br>
-
-
-                            <div>
-                                <button class="btn btn-md rounded font-sm hover-up"  type="button" onclick="validateAndSubmit()">Publish</button>
-                            </div>
-                            
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-    <!-- Add an empty container div for displaying image thumbnails -->
-    <style>
-        .thumbnails-container {
-            display: flex;
-            overflow-x: auto;
-        }
-
-        .thumbnail {
-            margin-right: 10px;
-            /* Adjust margin as needed for spacing between thumbnails */
-        }
-    </style>
-
 <script src="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.min.js"></script>
-
     <script>
-        
         function validateAndSubmit() {
 
 if (validateForm()) {
-    // If validation passes, submit the form
-    document.forms[0].submit(); // Assuming this is the first (and only) form on your page
+    document.forms[0].submit();
 }
 }     
 function viewImage1(event) {
@@ -236,36 +193,29 @@ function viewImage1(event) {
         function viewImage(event, index) {
             let input = event.target;
             let reader = new FileReader();
-
             reader.onload = function () {
                 let dataURL = reader.result;
                 let image = document.getElementById('imgView' + index);
                 image.src = dataURL;
-
-                // Initialize Cropper.js on the image
                 let cropper = new Cropper(image, {
-                    aspectRatio: 1, // Square aspect ratio
+                    aspectRatio: 1,
                     viewMode: 1,
                     guides: true,
                     background: false,
                     autoCropArea: 1,
                     zoomable: true
                 });
-                // Show the image cropper container
                 let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
                 cropperContainer.style.display = 'block';
-
                 // Update the cropped image when the "Save" button is clicked
                 let saveButton = document.querySelector('#saveButton' + index);
                 saveButton.addEventListener('click', async function () {
                     let croppedCanvas = cropper.getCroppedCanvas();
                     let croppedImage = document.getElementById("croppedImg" + index);
                     croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
-
-                    // Generate a unique name for the cropped image file based on the current timestamp
+                    // Generate a unique name
                     let timestamp = new Date().getTime();
                     let fileName = `cropped-img-${timestamp}-${index}.png`;
-
                     await croppedCanvas.toBlob(blob => {
                         let input = document.getElementById('input' + index);
                         let imgFile = new File([blob], fileName, blob)

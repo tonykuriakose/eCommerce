@@ -23,5 +23,5 @@ Router.post("/verifyPassOtp", userProfileController.verifyForgotPassOtp);
 Router.get("/resetPassword", userProfileController.getResetPassPage);
 Router.post("/changePassword", userProfileController.postNewPassword);
 //Products based routes
-Router.get("/productDetails", productController.productDetails)
+Router.get("/productDetails", isLogged,productController.productDetails)
 module.exports = Router
