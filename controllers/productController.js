@@ -199,15 +199,17 @@ const getAllProducts = async (req, res) => {
     const search = req.query.search || "";
     const page = req.query.page || 1;
     const limit = 4;
+
     const productData = await Product.find({
       $or: [
         { productName: { $regex: new RegExp(".*" + search + ".*", "i") } },
         { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
       ],
     })
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();
+    .limit(limit * 1)
+    .skip((page - 1) * limit)
+    .populate('category') // Populate the category field with the category name
+    .exec();
 
     const count = await Product.find({
       $or: [
@@ -215,11 +217,9 @@ const getAllProducts = async (req, res) => {
         { brand: { $regex: new RegExp(".*" + search + ".*", "i") } },
       ],
     }).countDocuments();
-
+    
     const category = await Category.find({ isListed: true });
     const brand = await Brand.find({ isBlocked: false });
-    // console.log(category,"category");
-    // console.log(brand,"brand");
 
     if (category && brand) {
       res.render("products", {
@@ -236,6 +236,7 @@ const getAllProducts = async (req, res) => {
     res.redirect("/pageerror");
   }
 };
+
 
 const getBlockProduct = async (req, res) => {
   try {
