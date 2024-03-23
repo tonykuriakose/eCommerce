@@ -224,6 +224,7 @@ function viewImage1(event) {
                         input.files = fileList.files
                     });
                     cropperContainer.style.display = 'none';
+                    cropper.destroy();
                 });
             };
             reader.readAsDataURL(input.files[0]);
