@@ -11,33 +11,38 @@ const Banner = require("../models/bannerSchema")
 const { v4: uuidv4 } = require("uuid");
 
 const pageNotFound = async (req, res) => {
-    res.render("page-404"); 
-};
-//User Login
-const getLoginPage = async (req, res) => {
   try {
-    if (!req.session.user) {
-      console.log("get login page");
-      res.render("login");
-    } else {
-      res.redirect("/");
-    }
+      res.render("page-404");
   } catch (error) {
-    res.redirect("/pageNotFound");
+      res.redirect("/pageNotFound");
   }
 };
-const   userLogin = async (req, res) => {
+
+// User Login Page
+const getLoginPage = async (req, res) => {
+  try {
+      if (!req.session.user) {
+          res.render("login");
+      } else {
+          res.redirect("/");
+      }
+  } catch (error) {
+      res.redirect("/pageNotFound");
+  }
+};
+
+// User Login
+const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const findUser = await User.findOne({ isAdmin: "0", email: email });
-
-    console.log("working");
-
+    
     if (findUser) {
       const isUserNotBlocked = findUser.isBlocked === false;
 
       if (isUserNotBlocked) {
         const passwordMatch = await bcrypt.compare(password, findUser.password);
+        
         if (passwordMatch) {
           req.session.user = findUser._id;
           console.log("Logged in");
@@ -55,10 +60,12 @@ const   userLogin = async (req, res) => {
       res.render("login", { message: "User is not found" });
     }
   } catch (error) {
+    console.error("Error in userLogin:", error);
     res.redirect("/pageNotFound");
     res.render("login", { message: "Login failed" });
   }
 };
+
 
 const getSignupPage = async (req, res) => {
   try {

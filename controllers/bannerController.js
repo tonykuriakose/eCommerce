@@ -11,8 +11,6 @@ const bannerManagement = async (req, res) => {
     }
 }
 
-
-
 const getAddBannerPage = async (req, res) => {
     try {
         res.render("addBanner")

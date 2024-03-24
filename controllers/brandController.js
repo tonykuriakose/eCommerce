@@ -22,7 +22,6 @@ const addBrand = async (req, res)=>{
                 brandName : brand,
                 brandImage : image
             })
-
             await newBrand.save()
             res.redirect("/admin/brands")
         }
@@ -53,8 +52,6 @@ const blockBrand = async (req, res)=>{
          res.redirect("/pageerror");;
     }
 }
-
-
 
 const unBlockBrand = async (req, res)=>{
     try {

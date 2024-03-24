@@ -22,7 +22,6 @@ const getCategoryInfo = async (req, res) => {
       res.redirect("/pageerror");
   }
 };
-
 // add new category
 const addCategory = async (req, res) => {
   console.log(req.body);

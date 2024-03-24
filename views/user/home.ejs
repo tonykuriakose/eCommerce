@@ -1,9 +1,7 @@
 <%- include("../partials/header") %>
 <head>
     <link rel="stylesheet" href="https://unpkg.com/swiper/swiper-bundle.min.css" />
-
 </head>
-
 <style>
     .home-slider {
         overflow: hidden;
@@ -23,9 +21,7 @@
         box-sizing: border-box; 
     }
 </style>
-
     <main class="main">
-    
 <section class="home-slider position-relative pt-70 pb-50">
     <div class="swiper-container">
         <div class="swiper-wrapper">
@@ -147,7 +143,6 @@
             </div>
         </section>
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
-
         <script>
             var swiper = new Swiper('.swiper-container', {
                 slidesPerView: 1,
@@ -161,8 +156,8 @@
                     clickable: true,
                 },
                 autoplay: {
-                    delay: 3000, // Time in milliseconds between slide changes
-                    disableOnInteraction: false, // Allow user interaction (such as clicks) to disable autoplay
+                    delay: 2000,
+                    disableOnInteraction: false, 
                 },
             });
         </script>

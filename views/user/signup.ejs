@@ -66,7 +66,6 @@
 </div>
 <%- include("../partials/footer") %>
 <script>
-     // Password strength indicator
   $("#typePasswordX").on("input", function () {
     var password = $(this).val();
     var strength = calculatePasswordStrength(password);
@@ -86,17 +85,13 @@
     var indicator = $("#password-strength .strength-indicator");
     indicator.removeClass("weak medium strong").addClass(strength);
   }
-    //   Check if the alert element exists
       const alertElement = document.getElementById('alertMessage');
-
-// If the alert element exists, hide it after 3 seconds
 if (alertElement) {
     setTimeout(function () {
         alertElement.style.display = 'none';
     }, 5000);
 }
     function validateForm() {
-        // Trim the values before submitting the form
         var nameInput = document.getElementsByName("name")[0];
         var emailInput = document.getElementsByName("email")[0];
         var phoneInput = document.getElementsByName("phone")[0];
@@ -107,6 +102,6 @@ if (alertElement) {
         phoneInput.value = phoneInput.value.trim();
         passwordInput.value = passwordInput.value.trim();
         cPasswordInput.value = cPasswordInput.value.trim();
-        return true; // Allow the form to be submitted
+        return true;
     }
 </script>
