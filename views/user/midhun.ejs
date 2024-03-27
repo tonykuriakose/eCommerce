@@ -1,0 +1,147 @@
+<%-include("../partials/header.ejs")%>
+<head>
+    <link rel='stylesheet' href='/static/css/user_otpvalidation.css' type="text/css" />
+</head>
+<div id="screen-size"></div>
+<section class="view">
+    <div class="container input-box col-8 col-md-6 col-lg-12">
+        <div class="form-box">
+            <header class="my-4 fs-4 title text-center">Enter OTP</header>
+            <form action="/otpverify" method="post">
+                <div class="d-flex">
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp" required>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp2" required>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp3" required>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp4" required>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp5" required>
+                    </div>
+                    <div class="input-field">
+                        <input type="text" class="input" id="otp" name="otp6" required>
+                    </div>
+                </div>
+                <div class="input-field">
+                    <button type="submit" class="btn" id="submit">Verify otp</button>
+                </div>
+            </form>
+            <div class="signin mb-2">
+                <span id="resendOtp"><a href="#" onclick="sendotp()">Resend OTP</a></span>
+                <span id="otpView"></span>
+                <% if(message){ %>
+                    <div class="alert alert-dismissible fade show alert-<%=type%>" role="alert" id="myAlert" style="padding: 5px; font-size: 14px;">
+                        <strong> <%= message %> </strong>
+                    </div>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    //attach input event listener
+    const otpInputs = document.querySelectorAll('.input');
+    otpInputs.forEach((input, index) => {
+        input.addEventListener('input', (event) => {
+        if (event.target.value.length === 1 && index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+        }
+    });
+    //prevent pasting
+    input.addEventListener('paste', (event) => {
+        event.preventDefault();
+        const clipboardData = event.clipboardData || window.clipboardData;
+        const pastedText = clipboardData.getData('text');
+        const pastedChars = pastedText.split('');
+        pastedChars.forEach((char, i) => {
+            if (index + i < otpInputs.length && otpInputs[index + i].value.length === 0) {
+                otpInputs[index + i].value = char;
+                if (index + i < otpInputs.length - 1) {
+                    otpInputs[index + i + 1].focus();
+                }
+            }
+        });
+    });
+    //Arrow key navigation
+    input.addEventListener('keydown', (event) => {
+        if (event.key === 'ArrowRight' && index < otpInputs.length - 1) {
+            otpInputs[index + 1].focus();
+        } else if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            if (index > 0) {
+                otpInputs[index - 1].focus();
+                otpInputs[index - 1].setSelectionRange(otpInputs[index - 1].value.length, otpInputs[index - 1].value.length); // Set cursor position to end of value
+            }
+        } else if (event.key.length === 1 && otpInputs[index].value.length > 0) {
+            event.preventDefault();
+        }
+    });
+});
+//alert opacity
+var alertElement = document.getElementById('myAlert');
+function hideAlert() {
+    alertElement.style.transition = "opacity 1s";
+    alertElement.style.opacity = "0";
+    setTimeout(function () {
+        alertElement.style.display = "none";
+    }, 1000);
+}
+setTimeout(hideAlert, 3000);
+
+//display OTP timer
+let timerRunning = true;
+function startTimer() {
+    const resendOtpSpan = document.getElementById('resendOtp');
+    const otpViewSpan = document.getElementById('otpView');
+    const verifyOtpBtn = document.getElementById('submit');
+    resendOtpSpan.style.display = 'none';
+    otpViewSpan.innerHTML = 'Timer: 00:30'; 
+    let secondsLeft = 30; 
+    const countdown = setInterval(() => {
+        secondsLeft--; 
+        const minutes = Math.floor(secondsLeft / 60);
+        const seconds = secondsLeft % 60;
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        if (secondsLeft <= 0) {
+            clearInterval(countdown); 
+            resendOtpSpan.style.display = 'inline';
+            otpViewSpan.innerHTML = '';
+            timerRunning = false;
+            verifyOtpBtn.disabled = true;
+        } else {
+            otpViewSpan.innerHTML = 'Timer: ' + formattedMinutes + ':' + formattedSeconds;
+        }
+    }, 1000); 
+}
+startTimer();
+//Fetch resend otp
+function sendotp(){
+    const verifyOtpBtn = document.getElementById('submit')
+    verifyOtpBtn.disabled = false
+    if (!timerRunning) {
+        startTimer();
+    }
+    fetch('/resend-otp', {
+        method: 'POST',
+    })
+    .then(response => {
+        if (response.ok) {
+            console.log('OTP resent successfully');
+        } else {
+            console.error('Failed to resend OTP');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+</script>
+<%-include("../partials/footer.ejs")%>

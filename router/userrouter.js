@@ -14,6 +14,7 @@ Router.post("/login", userController.userLogin);
 Router.get("/signup", userController.getSignupPage);
 Router.post("/signup", userController.signupUser);
 Router.post("/verify-otp", userController.verifyOtp);
+Router.post('/resend-otp', userController.resendOtp);
 
 // Home page
 Router.get("/", userController.getHomePage);
@@ -26,6 +27,7 @@ Router.post("/forgotEmailValid", userProfileController.forgotEmailValid);
 Router.post("/verifyPassOtp", userProfileController.verifyForgotPassOtp);
 Router.get("/resetPassword", userProfileController.getResetPassPage);
 Router.post("/changePassword", userProfileController.postNewPassword);
+
 
 // Products Routes
 Router.get("/productDetails", isLogged, productController.productDetails);
