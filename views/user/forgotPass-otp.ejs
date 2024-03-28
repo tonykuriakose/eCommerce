@@ -1,4 +1,10 @@
-<!-- verify-email.ejs or verify-email.pug -->
+<style>
+  .otp-timer {
+    display: inline-block;
+    margin-left: 10px;
+    font-size: 14px;
+  }
+</style>
 <%- include("../partials/header") %>
 <div class="container col-4 login_wrap widget-taber-content p-30 background-white border-radius-5 mt-30">
     <div class="padding_eight_all bg-white">
@@ -10,6 +16,8 @@
                 <label for="otp">Enter OTP:</label>
                 <input type="text" id="otp" name="otp" class="form-control" required>
             </div>
+
+            
             <button type="submit" class="btn btn-primary">Verify OTP</button>
             <div class="text-muted text-center pt-25">
                 <a href="/resend-otp">Resend OTP</a>

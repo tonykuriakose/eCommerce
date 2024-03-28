@@ -6,9 +6,9 @@ const Product = require("../models/productSchema");
 const Category = require("../models/categorySchema");
 const Banner = require("../models/bannerSchema");
 const { v4: uuidv4 } = require("uuid");
-const dotenv = require("dotenv");
-dotenv.config();
+const env = require("dotenv").config();
 
+//OTP Generation
 function generateOtp() {
   const digits = "1234567890";
   let otp = "";
@@ -17,7 +17,7 @@ function generateOtp() {
   }
   return otp;
 }
-
+//bcrypt password
 async function securePassword(password) {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -27,7 +27,7 @@ async function securePassword(password) {
     throw new Error("Error generating password hash");
   }
 }
-
+//send verification email
 async function sendVerificationEmail(email, otp) {
   try {
     const transporter = nodemailer.createTransport({
@@ -55,7 +55,7 @@ async function sendVerificationEmail(email, otp) {
     throw new Error("Error sending email");
   }
 }
-
+//Error management
 const pageNotFound = async (req, res) => {
   try {
       res.render("page-404");
@@ -82,31 +82,23 @@ const userLogin = async (req, res) => {
   try {
     const { email, password } = req.body;
     const findUser = await User.findOne({ isAdmin: "0", email: email });
-    
     if (findUser) {
       const isUserNotBlocked = findUser.isBlocked === false;
-
       if (isUserNotBlocked) {
         const passwordMatch = await bcrypt.compare(password, findUser.password);
-        
         if (passwordMatch) {
           req.session.user = findUser._id;
-          console.log("Logged in");
           res.redirect("/");
         } else {
-          console.log("Password is not matching");
           res.render("login", { message: "Password is not matching" });
         }
       } else {
-        console.log("User is blocked by admin");
         res.render("login", { message: "User is blocked by admin" });
       }
     } else {
-      console.log("User is not found");
       res.render("login", { message: "User is not found" });
     }
   } catch (error) {
-    console.error("Error in userLogin:", error);
     res.redirect("/pageNotFound");
     res.render("login", { message: "Login failed" });
   }
@@ -127,7 +119,6 @@ const getSignupPage = async (req, res) => {
 const signupUser = async (req, res) => {
   try {
     const { email } = req.body;
-
     const findUser = await User.findOne({ email });
     if (req.body.password === req.body.cPassword) {
       if (!findUser) {
@@ -143,13 +134,11 @@ const signupUser = async (req, res) => {
           res.json("email-error");
         }
       } else {
-        console.log("User already Exist");
         res.render("signup", {
           message: "User with this email already exists",
         });
       }
     } else {
-      console.log("the confirm pass is not matching");
       res.render("signup", { message: "The confirm pass is not matching" });
     }
   } catch (error) {
@@ -174,7 +163,6 @@ const verifyOtp = async (req, res) => {
           const passwordHash = await securePassword(user.password)
           const referalCode = uuidv4()
           console.log("the referralCode  hain =>" + referalCode);
-
           const saveUserData = new User({
               name: user.name,
               email: user.email,
@@ -182,13 +170,10 @@ const verifyOtp = async (req, res) => {
               password: passwordHash,
               referalCode : referalCode
           })
-
           await saveUserData.save()
-
           req.session.user = saveUserData._id
           res.redirect("/login")
       } else {
-          console.log("otp not matching");
           return res.render("verify-otp", {
             message: "Invalid OTP. Please try again.",
           });
@@ -204,7 +189,6 @@ const getHomePage = async (req, res) => {
     const today = new Date().toISOString();
     const user = req.session.user;
     const userData = await User.findOne({ _id: user });
-    console.log(userData, "userdata");
     const findBanner = await Banner.find({
       startDate: { $lt: new Date(today) },
       endDate: { $gt: new Date(today) }
@@ -213,7 +197,6 @@ const getHomePage = async (req, res) => {
     const productData = await Product.find({ isBlocked: false })
       .sort({ id: -1 })
       .limit(4);
-
     if (user) {
       res.render("home", {
         user: userData,
@@ -225,12 +208,10 @@ const getHomePage = async (req, res) => {
       res.render("home", { data: brandData, products: productData, banner: findBanner || [] });
     }
   } catch (error) {
-    console.error(error);
     res.redirect("/pageNotFound");
   }
 };
-
-    
+   
     const getShopPage = async (req, res) => {
       try {
         const user = req.session.id;
@@ -243,11 +224,9 @@ const getHomePage = async (req, res) => {
           { _id: 1, name: 1 }
         );
         const categoryIds = categoriesWithIds.map(category => category._id.toString());
-    
         const newProductArrayCategoryListed = products.filter((singleProduct) => {
           return categoryIds.includes(singleProduct.category.toString());
         });
-    
         res.render("shop", {
           user: user,
           product: newProductArrayCategoryListed,
@@ -267,7 +246,6 @@ const getHomePage = async (req, res) => {
           if (err) {
             console.log(err.message);
           }
-          console.log("Logged out");
           res.redirect("/login");
         });
       } catch (error) {
@@ -284,15 +262,11 @@ const getHomePage = async (req, res) => {
         if (emailSent) {
           console.log('otp:', otp);
           console.log('Email sent:');
-          
-
           res.status(200).json({ success: true });
         } else {
-          console.log('Failed to resend OTP');
           res.status(500).json({ success: false, message: 'Failed to resend OTP' });
         }
       } catch (error) {
-        console.error('Error resending OTP:', error);
         res.status(500).json({ success: false, message: 'Internal server error' });
       }
     };

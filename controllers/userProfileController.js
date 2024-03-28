@@ -1,12 +1,9 @@
 const User = require("../models/userSchema");
 const Product = require("../models/productSchema");
-const address = require("../models/addressSchema");
-const order = require("../models/orderSchema");
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcryptjs");
-const env = require("dotenv");
+const env = require("dotenv").config();
 const session = require("express-session");
-env.config();
 
 const getUserProfile = async (req, res) => {
   console.log("pinku");
@@ -17,7 +14,6 @@ const getUserProfile = async (req, res) => {
     const userData = await User.findById({ _id: userId });
     console.log(userData);
     const addressData = await address.findOne({ userId: userId });
-    // console.log(addressData);
     const orderData = await order
       .find({ userId: userId })
       .sort({ createdOn: -1 });

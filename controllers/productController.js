@@ -19,10 +19,7 @@ const getProductAddPage = async (req, res) => {
 
 const addProducts = async (req, res) => {
   try {
-    console.log("working");
-
     const products = req.body;
-    console.log(products);
     const productExists = await Product.findOne({
       productName: products.productName,
     });

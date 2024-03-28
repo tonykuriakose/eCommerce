@@ -1,5 +1,4 @@
 const User = require("../models/userSchema");
-
 // Middleware to check if user is logged in
 const isLogged = (req, res, next) => {
     console.log("Middleware calling");
@@ -38,7 +37,28 @@ const isAdmin = (req, res, next) => {
         });
 };
 
+// middleware/cacheControl.js
+const cacheControl = () => {
+    return (req, res, next) => {
+      res.set('Cache-Control', 'no-store');
+      next();
+    };
+  };
+  
+  // middleware/errorHandler.js
+
+const errorHandler = (err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).render('error');
+  };
+  
+  module.exports = { errorHandler };
+  
+  
+
 module.exports = {
     isLogged,
-    isAdmin
+    isAdmin,
+    cacheControl,
+    errorHandler,
 };

@@ -5,15 +5,29 @@ const dotenv = require("dotenv");
 const db = require('./database/connection');
 const userrouter = require("./router/userrouter");
 const adminrouter = require("./router/adminrouter");
+const { errorHandler } = require("./middlewares/auth");
+const { cacheControl } = require("./middlewares/auth");
+
 dotenv.config();
 db();
+
 const app = express();
 
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 72 * 60 * 60 * 5000,
+    httpOnly: true,
+  },
+}));
+app.use(cacheControl());
 
-// Set view engine and static folder
+// View engine and static folder
 app.set("view engine", "ejs");
 app.set("views", [
   path.join(__dirname, "views/user"),
@@ -21,36 +35,15 @@ app.set("views", [
 ]);
 app.use(express.static(path.join(__dirname, "public")));
 
-// Session middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    maxAge: 72 * 60 * 60 * 1000,
-    httpOnly: true,
-  },
-}));
-
-// Set Cache-Control header to prevent caching
-app.use((req, res, next) => {
-  res.set('Cache-Control', 'no-store');
-  next();
-});
-
 // Routes
 app.use("/", userrouter);
 app.use("/admin", adminrouter);
 
-// Handle routes not found
-app.use("/admin/*", (req, res) => {
-  res.render('error');
-});
-app.use("/*", (req, res) => {
-  res.redirect("/pageNotFound");
-});
+// Error handling
+app.use(errorHandler);
 
 // Start server
-app.listen(process.env.PORT, () => {
-  console.log("Server Running");
+const PORT = process.env.PORT;
+app.listen(PORT, () => {
+  console.log("Server running");
 });
