@@ -1,0 +1,29 @@
+{
+  "name": "ecommerce",
+  "version": "1.0.0",
+  "description": "fashion products",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon app"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonykuriakose/eCommerce.git"
+  },
+  "keywords": [
+    "node-express-mongodb-ejs"
+  ],
+  "author": "Tony Kuriakose",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tonykuriakose/eCommerce/issues"
+  },
+  "homepage": "https://github.com/tonykuriakose/eCommerce#readme",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "ejs": "^3.1.9",
+    "express": "^4.19.2",
+    "mongoose": "^8.3.0"
+  }
+}
