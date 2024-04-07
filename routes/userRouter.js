@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userLogin = require("../middlewares/userAuth");
 const userController = require("../controllers/user/userController");
+const userAuth = require("../middlewares/userAuth");
 
 // Error Management
 router.get("/pageNotFound", userController.pageNotFound);
