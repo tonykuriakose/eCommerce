@@ -5,6 +5,7 @@ const customerController = require("../controllers/admin/customerController");
 const categoryController = require("../controllers/admin/categoryController");
 const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
+const bannerController = require("../controllers/admin/bannerController");
 const adminAuth = require("../middlewares/adminAuth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -61,6 +62,17 @@ router.post("/createCoupon", adminAuth, adminController.createCoupon);
 router.get("/editCoupon",adminAuth,adminController.editCoupon);
 router.get("/deleteCoupon",adminAuth,adminController.deleteCoupon);
 router.post("/updatecoupon",adminAuth,adminController.updateCoupon);
+
+// Banner Management
+router.get("/banner", adminAuth, bannerController.bannerManagement);
+router.get("/addBanner", adminAuth, bannerController.getAddBannerPage);
+router.post("/addBanner",adminAuth,upload.single("images"),bannerController.postAddBanner);
+router.get("/editBanner", adminAuth, bannerController.getEditBannerPage);
+router.post("/editBanner",adminAuth,upload.single("images"),bannerController.postEditBanner);
+router.get("/deleteBanner", adminAuth, bannerController.deleteBanner);
+router.post("/deletebannerImage", adminAuth, bannerController.deletebannerImage);
+
+
 
 
 
