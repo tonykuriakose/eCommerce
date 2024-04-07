@@ -6,6 +6,7 @@ const categoryController = require("../controllers/admin/categoryController");
 const brandController = require("../controllers/admin/brandController");
 const productController = require("../controllers/admin/productController");
 const bannerController = require("../controllers/admin/bannerController");
+const orderController = require("../controllers/admin/orderController");
 const adminAuth = require("../middlewares/adminAuth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -71,6 +72,11 @@ router.get("/editBanner", adminAuth, bannerController.getEditBannerPage);
 router.post("/editBanner",adminAuth,upload.single("images"),bannerController.postEditBanner);
 router.get("/deleteBanner", adminAuth, bannerController.deleteBanner);
 router.post("/deletebannerImage", adminAuth, bannerController.deletebannerImage);
+
+// Order Management
+router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
+router.get("/orderDetailsAdmin", adminAuth, orderController.getOrderDetailsPageAdmin)
+router.get("/changeStatus", adminAuth, orderController.changeOrderStatus)
 
 
 
