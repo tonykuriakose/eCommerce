@@ -3,6 +3,7 @@ const router = express.Router();
 const adminController = require("../controllers/admin/adminController");
 const customerController = require("../controllers/admin/customerController");
 const categoryController = require("../controllers/admin/categoryController");
+const brandController = require("../controllers/admin/brandController");
 const adminAuth = require("../middlewares/adminAuth");
 const multer = require("multer");
 const storage = require("../helpers/multer");
@@ -33,6 +34,14 @@ router.get("/editCategory", adminAuth, categoryController.getEditCategory);
 router.post("/editCategory/:id", adminAuth, categoryController.editCategory);
 router.post("/addCategoryOffer", adminAuth, categoryController.addCategoryOffer);
 router.post("/removeCategoryOffer",adminAuth,categoryController.removerCategoryOffer);
+
+// Brand Management
+router.get("/brands", adminAuth, brandController.getBrandPage);
+router.post( "/addBrand",adminAuth,upload.single("image"),brandController.addBrand);
+router.get("/allBrands", adminAuth, brandController.getAllBrands);
+router.get("/blockBrand", adminAuth, brandController.blockBrand);
+router.get("/unBlockBrand", adminAuth, brandController.unBlockBrand);
+router.get("/deletebrand", adminAuth, brandController.deletebrand);
 
 
 
