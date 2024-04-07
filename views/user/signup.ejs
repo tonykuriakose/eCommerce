@@ -1,0 +1,105 @@
+<%-include("../../views/partials/user/header")%>
+<style>
+    #password-strength {
+      margin-top: 10px;
+    }
+    .strength-indicator {
+      display: inline-block;
+      width: 50px;
+      height: 10px;
+      margin-left: 5px;
+    }
+    .weak {
+      background-color: #ff6666;
+    }
+    .medium {
+      background-color: #ffd966;
+    }
+    .strong {
+      background-color: #66ff66;
+    }
+  </style>
+<div class="container col-4 login_wrap widget-taber-content p-30 background-white border-radius-5 mb-4">
+    <div class="padding_eight_all bg-white">
+        <div class="heading_s1">
+            <h3 class="mb-30">Create an Account</h3>
+        </div>
+
+        <form id="signForm" method="post" action="/signup" >
+            <div class="form-group">
+                <input type="text" required="" id="typeNameX" name="name" placeholder="Enter Name">
+                <a style="color: red;" id="error1" href=""></a>
+            </div>
+            <div class="form-group">
+                <input type="text" required="" id="typeEmailX" name="email" placeholder="Enter Email">
+                <a style="color: red;" href="" id="error2"></a>
+            </div>
+            
+            <div class="form-group">
+                <input type="text" required="" id="typeMobileX" name="phone" placeholder="Enter Phone">
+                <a style="color: red;" href="" id="error3"></a>
+            </div>
+            <div class="form-group">
+                <input required="" type="password" id="typePasswordX" name="password" placeholder="Enter Password">
+                <a style="color: red;" href="" id="error4"></a>
+                <div id="password-strength">
+                    <div class="strength-indicator"></div>
+                </div>
+            </div>
+            <div class="form-group">
+                <input required="" type="password" name="cPassword" placeholder="Confirm password">
+            </div>          
+            <% if (locals.message && message.length> 0) { %>
+                <div id="alertMessage" class="alert alert-danger text-center">
+                    <%= message %>
+                </div>
+                <% } %>
+            <div class="form-group">
+                <button type="submit" class="btn btn-fill-out btn-block hover-up mt-25 " name="login">Submit &amp; Register</button>
+            </div>
+        </form>
+        <div class="text-muted text-center pt-25 mb-4">Already have an account? <a href="/login">Login now</a></div>
+    </div>
+</div>
+<%-include("../../views/partials/user/footer")%>
+<script>
+  $("#typePasswordX").on("input", function () {
+    var password = $(this).val();
+    var strength = calculatePasswordStrength(password);
+    updatePasswordStrengthIndicator(strength);
+  });
+  function calculatePasswordStrength(password) {
+    var length = password.length;
+    if (length < 5) {
+      return "weak";
+    } else if (length < 9) {
+      return "medium";
+    } else {
+      return "strong";
+    }
+  }
+  function updatePasswordStrengthIndicator(strength) {
+    var indicator = $("#password-strength .strength-indicator");
+    indicator.removeClass("weak medium strong").addClass(strength);
+  }
+      const alertElement = document.getElementById('alertMessage');
+if (alertElement) {
+    setTimeout(function () {
+        alertElement.style.display = 'none';
+    }, 5000);
+}
+    function validateForm() {
+        var nameInput = document.getElementsByName("name")[0];
+        var emailInput = document.getElementsByName("email")[0];
+        var phoneInput = document.getElementsByName("phone")[0];
+        var passwordInput = document.getElementsByName("password")[0];
+        var cPasswordInput = document.getElementsByName("cPassword")[0];
+        nameInput.value = nameInput.value.trim();
+        emailInput.value = emailInput.value.trim();
+        phoneInput.value = phoneInput.value.trim();
+        passwordInput.value = passwordInput.value.trim();
+        cPasswordInput.value = cPasswordInput.value.trim();
+        return true;
+    }
+</script>
+

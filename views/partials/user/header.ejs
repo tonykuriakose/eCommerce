@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>TrendSetter</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <link rel="shortcut icon" type="image/x-icon" href="./user/imgs/theme/favicon.svg">
+    <link rel="stylesheet" href="./user/css/maind134.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha384-Zz4oxO9/XiLF/mqj8c6Uk1CWPC5bGSIKD8u0lqgP9xZ5Ir6qB0MdoQgznY8ZsJJe" crossorigin="anonymous">
+    <script src="https://kit.fontawesome.com/16d4885483.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+</head>
+<body>
+
+            <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+                <div class="container">
+                    <div class="header-wrap">
+                        <div class="logo logo-width-1">
+                            <a href="/"><img src="/user/imgs/theme/first-project-logo.jpg"  alt="logo"></a>
+                        </div>
+                        <div class="header-right ">
+                            <div class="search-style-2 pl-80">
+                            </div>
+                            <div class="header-action-right">
+                                <div class="header-action-2">
+                                    <div class="header-action-icon-2">
+                                    </div>
+                                    <div class="header-action-icon-2">
+                                        <a class="mini-cart-icon" href="/cart">
+                                            <!-- <i id="cart_count"></i> -->
+                                            <img alt="Evara" src="./user/imgs/theme/icons/icon-cart.png">
+                                        </a>
+                                        <% if (locals.user) { %>
+                                            <li class="dropdown nav-item">
+                                              <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false">
+                                                <%= locals.user.name %>
+                                              </a>
+                                              <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownAccount">
+                                                <a class="dropdown-item" href="/userprofile"><i class="material-icons md-perm_identity"></i> Profile</a>
+                                                <div class="dropdown-divider"></div>
+                                                <a class="dropdown-item text-danger" href="/logout"><i class="material-icons md-exit_to_app"></i> Logout</a>
+                                              </div>
+                                            </li>
+                                          <% } else { %>
+                                            <div class="single-mobile-header-info ml-25 pr-5">
+                                              <a href="/login">Sign Up</a>
+                                            </div>
+                                          <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
