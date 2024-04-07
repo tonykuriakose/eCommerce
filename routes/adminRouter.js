@@ -10,7 +10,6 @@ const multer = require("multer");
 const storage = require("../helpers/multer");
 const upload = multer({ storage: storage });
 
-
 // Error Management
 router.get("/pageerror", adminController.pageNotFound1);
 
@@ -55,6 +54,13 @@ router.get("/blockProduct", adminAuth, productController.getBlockProduct);
 router.get("/unBlockProduct", adminAuth, productController.getUnblockProduct);
 router.post("/addProductOffer", adminAuth, productController.addProductOffer);
 router.post("/removeProductOffer",adminAuth,productController.removeProductOffer);
+
+// Coupon Management
+router.get("/coupon", adminAuth, adminController.loadCoupon);
+router.post("/createCoupon", adminAuth, adminController.createCoupon);
+router.get("/editCoupon",adminAuth,adminController.editCoupon);
+router.get("/deleteCoupon",adminAuth,adminController.deleteCoupon);
+router.post("/updatecoupon",adminAuth,adminController.updateCoupon);
 
 
 

@@ -135,10 +135,133 @@ const getLogout = async (req, res) => {
   }
 };
 
+// Coupon Management
+const loadCoupon = async (req, res) => {
+  try {
+      const findCoupons = await Coupon.find({})
+      res.render("coupon", { coupons: findCoupons })
+  } catch (error) {
+       res.redirect("/pageerror");;
+  }
+}
+
+const createCoupon = async (req, res) => {
+  try {
+
+      const data = {
+          couponName: req.body.couponName,
+          startDate: new Date(req.body.startDate + 'T00:00:00'),
+          endDate: new Date(req.body.endDate + 'T00:00:00'),
+          offerPrice: parseInt(req.body.offerPrice),
+          minimumPrice: parseInt(req.body.minimumPrice)
+      };
+
+      const newCoupon = new Coupon({
+          name: data.couponName,
+          createdOn: data.startDate,
+          expireOn: data.endDate,
+          offerPrice: data.offerPrice,
+          minimumPrice: data.minimumPrice
+      })
+
+      await newCoupon.save()
+          .then(data => console.log(data))
+
+      res.redirect("/admin/coupon")
+
+      console.log(data);
+
+  } catch (error) {
+       res.redirect("/pageerror");;
+  }
+}
+
+
+const editCoupon=async(req,res)=>{
+  console.log("coupon wrking");
+  try {
+    console.log(req.query,"======>");
+    const id = req.query.id;
+    console.log(id,"iddddddd");
+    
+    const findCoupon = await Coupon.findOne({ _id: id });
+console.log(findCoupon,"findCoupon");
+    res.render("edit-coupon",{
+      findCoupon:findCoupon
+    })
+  } catch (error) {
+     res.redirect("/pageerror");;
+  }
+
+}
+const deleteCoupon=async(req,res)=>{
+  console.log("deleteworking");
+  try {
+    const id =req.query.id
+    console.log(id,"idddd");
+   var pink= await Coupon.deleteOne({_id : id})
+   
+    res.redirect("/admin/coupon")
+    
+  } catch (error) {
+     res.redirect("/pageerror");
+  }
+
+}
+const updateCoupon = async (req, res) => {
+  console.log("update working");
+  try {
+    const couponId = req.body.couponId;
+    console.log(req.body,"req  body");   
+
+    const oid = new mongoose.Types.ObjectId(couponId);
+    console.log(oid, "oid");
+    // Attempt to find the coupon
+    const selectedCoupon = await Coupon.findOne({ _id: oid });
+     console.log(selectedCoupon,"oko");
+    if (selectedCoupon) {
+      console.log(selectedCoupon, "coupon found");
+      const startDate = new Date(req.body.startDate);
+      const endDate = new Date(req.body.endDate);
+      console.log(req.body.minimumPrice,"mininprice");
+      const updatedCoupon = await Coupon.updateOne(
+        { _id: oid },
+        {
+          $set: {
+              name: req.body.couponName,
+              createdOn: startDate,
+              expireOn: endDate,
+              offerPrice: parseInt(req.body.offerPrice),
+              minimumPrice: parseInt(req.body.minimumPrice)
+          }
+      },
+      { new: true } 
+      );
+
+      if (updatedCoupon !== null) { 
+        console.log(updatedCoupon, "coupon updated successfully");
+        res.send("Coupon updated successfully");
+      } else {
+        console.log("Coupon update failed");
+        res.status(500).send("Coupon update failed");
+      }
+    } 
+  } catch (error) {
+    res.redirect("/pageerror");
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 module.exports = {
   getDashboard,
   getLoginPage,
   verifyLogin,
   getLogout,
   pageNotFound1,
+  loadCoupon,
+  createCoupon,
+  editCoupon,
+  deleteCoupon,
+  updateCoupon,
+
 }
