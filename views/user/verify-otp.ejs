@@ -6,6 +6,7 @@
     font-size: 14px;
   }
 </style>
+
 <div class="container col-4 login_wrap widget-taber-content p-30 background-white border-radius-5 mt-30">
   <div class="padding_eight_all bg-white">
     <div class="heading_s1">
@@ -52,6 +53,7 @@
       }
     }, 1000);
   }
+
   // resend OTP
   function resendOTP() {
     $.ajax({
@@ -59,7 +61,7 @@
       url: '/resend-otp',
       success: function (response) {
         if (response.success) {
-          startOTPTimer(60);
+          alert('Resend OTP successful'); // Display success message
         } else {
           alert('Failed to resend OTP. Please try again.');
         }
@@ -69,6 +71,9 @@
       }
     });
   }
+
   startOTPTimer(60);
+</script>
+
 </script>
 <%-include("../../views/partials/user/footer")%>

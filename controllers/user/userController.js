@@ -7,9 +7,16 @@ const nodemailer = require("nodemailer");
 const env = require('dotenv').config();
 const bcrypt = require("bcrypt");
 
+// Error management
+const pageNotFound = async (req, res) => {
+  try {
+    res.render("page-404");
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
 
-
-//OTP Generation
+// OTP Generation
 function generateOtp() {
   const digits = "1234567890";
   let otp = "";
@@ -18,7 +25,7 @@ function generateOtp() {
   }
   return otp;
 }
-//bcrypt password
+// Bcrypt password
 async function securePassword(password) {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -28,7 +35,7 @@ async function securePassword(password) {
     throw new Error("Error generating password hash");
   }
 }
-//send verification email
+// Send verification email
 async function sendVerificationEmail(email, otp) {
   try {
     const transporter = nodemailer.createTransport({
@@ -56,18 +63,8 @@ async function sendVerificationEmail(email, otp) {
     throw new Error("Error sending email");
   }
 }
-//Error management
-const pageNotFound = async (req, res) => {
-  try {
-    res.render("page-404");
-  } catch (error) {
-    res.redirect("/pageNotFound");
-  }
-};
 
-
-
-
+// Signup Management
 const loadSignup = async (req, res) => {
   try {
     if (!req.session.user) {
@@ -110,7 +107,6 @@ const signup = async (req, res) => {
   }
 };
 
-// render the OTP verification page
 const getOtpPage = async (req, res) => {
   try {
     res.render("verify-otp");
@@ -118,7 +114,7 @@ const getOtpPage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
-// Verify otp
+
 const verifyOtp = async (req, res) => {
   try {
     const { otp } = req.body;
@@ -143,18 +139,17 @@ const verifyOtp = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
-// Resend OTP
+
 const resendOtp = async (req, res) => {
   try {
     const otp = generateOtp();
-    console.log(otp);
     req.session.userOtp = otp;
     const email = req.session.userData.email;
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {
-      console.log("otp:", otp);
+      console.log("resend otp:", otp);
       console.log("Email sent:");
-      res.status(200).json({ success: true });
+      res.status(200).json({ success: true, message: "Resend OTP successful" });
     } else {
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
     }
@@ -163,7 +158,90 @@ const resendOtp = async (req, res) => {
   }
 };
 
+// Login Management
+const loadLogin = async (req, res) => {
+  try {
+    if (!req.session.user) {
+      res.render("login");
+    } else {
+      res.redirect("/");
+    }
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
 
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const findUser = await User.findOne({ isAdmin: "0", email: email });
+    if (findUser) {
+      const isUserNotBlocked = findUser.isBlocked === false;
+      if (isUserNotBlocked) {
+        const passwordMatch = await bcrypt.compare(password, findUser.password);
+        if (passwordMatch) {
+          req.session.user = findUser._id;
+          res.redirect("/");
+        } else {
+          res.render("login", { message: "Password is not matching" });
+        }
+      } else {
+        res.render("login", { message: "User is blocked by admin" });
+      }
+    } else {
+      res.render("login", { message: "User is not found" });
+    }
+  } catch (error) {
+    res.redirect("/pageNotFound");
+    res.render("login", { message: "Login failed" });
+  }
+};
+
+const logout = async (req, res) => {
+  try {
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err.message);
+      }
+      res.redirect("/login");
+    });
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+
+//Home page
+const loadHomepage = async (req, res) => {
+  try {
+    const today = new Date().toISOString();
+    const user = req.session.user;
+    const userData = await User.findOne({ _id: user });
+    const findBanner = await Banner.find({
+      startDate: { $lt: new Date(today) },
+      endDate: { $gt: new Date(today) },
+    });
+    const brandData = await Brand.find({ isBlocked: false });
+    const productData = await Product.find({ isBlocked: false })
+      .sort({ id: -1 })
+      .limit(4);
+    if (user) {
+      res.render("home", {
+        user: userData,
+        data: brandData,
+        products: productData,
+        banner: findBanner || [],
+      });
+    } else {
+      res.render("home", {
+        data: brandData,
+        products: productData,
+        banner: findBanner || [],
+      });
+    }
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
 
 
 module.exports = {
@@ -174,5 +252,9 @@ module.exports = {
   verifyOtp,
   securePassword,
   resendOtp,
+  loadLogin,
+  login,
+  logout,
+  loadHomepage,
 };
 
