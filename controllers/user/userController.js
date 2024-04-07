@@ -243,6 +243,35 @@ const loadHomepage = async (req, res) => {
   }
 };
 
+const loadShoppingpage = async (req, res) => {
+  try {
+    const user = req.session.id;
+    const products = await Product.find({ isBlocked: false });
+    const count = await Product.find({ isBlocked: false }).count();
+    const brands = await Brand.find({ isBlocked: false });
+    const categories = await Category.find({ isListed: true });
+    const categoriesWithIds = await Category.find(
+      { isListed: true },
+      { _id: 1, name: 1 }
+    );
+    const categoryIds = categoriesWithIds.map((category) =>
+      category._id.toString()
+    );
+    const newProductArrayCategoryListed = products.filter((singleProduct) => {
+      return categoryIds.includes(singleProduct.category.toString());
+    });
+    res.render("shop", {
+      user: user,
+      product: newProductArrayCategoryListed,
+      category: categoriesWithIds,
+      brand: brands,
+      count: count,
+    });
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+
 
 module.exports = {
   pageNotFound,
@@ -256,5 +285,6 @@ module.exports = {
   login,
   logout,
   loadHomepage,
+  loadShoppingpage,
 };
 

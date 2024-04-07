@@ -19,6 +19,7 @@ router.get("/logout", userController.logout);
 
 // Home page & Shopping page
 router.get("/", userController.loadHomepage);
+router.get("/shop", userController.loadShoppingpage);
 
 
 
