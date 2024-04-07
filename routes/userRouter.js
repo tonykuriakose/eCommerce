@@ -4,6 +4,7 @@ const userLogin = require("../middlewares/userAuth");
 const userController = require("../controllers/user/userController");
 const userProfileController= require("../controllers/user/userProfileController");
 const productController = require("../controllers/user/productController");
+const cartController = require("../controllers/user/cartController");
 
 
 const userAuth = require("../middlewares/userAuth");
@@ -37,5 +38,11 @@ router.get("/deleteAddress",userProfileController.getDeleteAddress);
 
 // Products Routes
 router.get("/productDetails", userLogin, productController.productDetails);
+
+// Cart Management
+router.get("/cart", userLogin, cartController.getCartPage)
+router.post("/addToCart",userLogin, cartController.addToCart)
+router.post("/changeQuantity", userLogin,cartController.changeQuantity)
+router.get("/deleteItem", userLogin, cartController.deleteProduct)
 
 module.exports = router;
