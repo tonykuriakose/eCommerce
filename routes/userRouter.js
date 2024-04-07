@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const userLogin = require("../middlewares/userAuth");
 const userController = require("../controllers/user/userController");
+const userProfileController= require("../controllers/user/userProfileController");
 const userAuth = require("../middlewares/userAuth");
 
 // Error Management
@@ -22,6 +23,13 @@ router.get("/logout", userController.logout);
 router.get("/", userController.loadHomepage);
 router.get("/shop", userController.loadShoppingpage);
 
-
+// User profile management
+router.get("/userprofile",userProfileController.getUserProfile)
+router.post("/editUserDetails",userProfileController.editUserDetails)
+router.get("/addAddress",userProfileController.getAddressAddPage)
+router.post("/addAddress",userProfileController.postAddress)
+router.get("/editAddress",userProfileController.getEditAddress)
+router.post("/editAddress",userProfileController.postEditAddress)
+router.get("/deleteAddress",userProfileController.getDeleteAddress)
 
 module.exports = router;
