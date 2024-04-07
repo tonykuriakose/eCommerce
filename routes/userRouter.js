@@ -5,6 +5,7 @@ const userController = require("../controllers/user/userController");
 const userProfileController= require("../controllers/user/userProfileController");
 const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
+const orderController = require("../controllers/user/orderController");
 
 
 const userAuth = require("../middlewares/userAuth");
@@ -44,5 +45,16 @@ router.get("/cart", userLogin, cartController.getCartPage)
 router.post("/addToCart",userLogin, cartController.addToCart)
 router.post("/changeQuantity", userLogin,cartController.changeQuantity)
 router.get("/deleteItem", userLogin, cartController.deleteProduct)
+
+// Order Management
+router.get("/checkout", userLogin,orderController.getCheckoutPage)
+router.post("/orderPlaced", userLogin,orderController.orderPlaced)
+router.get("/orderDetails", userLogin,orderController.getOrderDetailsPage)
+router.get("/cancelOrder",userLogin,orderController.cancelorder)
+router.get("/returnrequestOrder",userLogin,orderController.returnorder)
+router.post("/verifyPayment", userLogin, orderController.verify)
+router.post("/singleProductId",userLogin,orderController.changeSingleProductStatus)
+router.post('/paymentConfirm',userLogin,orderController.paymentConfirm)
+
 
 module.exports = router;
