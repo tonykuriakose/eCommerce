@@ -1,6 +1,10 @@
 const User = require("../../models/userSchema");
-const bcrypt = require("bcryptjs");
 const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const Order = require("../../models/orderSchema");
+const Coupon = require("../../models/couponSchema.js")
+const Category = require("../../models/categorySchema");
+const Product = require("../../models/productSchema");
 
 //Admin Error Page
 const pageNotFound1 = async (req, res) => {
