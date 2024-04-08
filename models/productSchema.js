@@ -20,47 +20,46 @@ const productSchema = new Schema({
         required: true,
     },
     category: {
-        type: Schema.Types.ObjectId, // Change type to ObjectId
-        ref: 'Category', // Reference to the 'Category' model
+        type: Schema.Types.ObjectId, 
+        ref: 'Category', 
         required: true,
     },
     regularPrice: {
         type: Number,
         required: true,
     },
-    salePrice: {
-        
+    salePrice: {       
         type: Number,
         required: true,
     },
-    createdOn: {
-        type: String,
-        required: true,
+    productOffer: {
+        type: Number,
+        default: 0,
     },
     quantity: {
         type: Number,
-        required: true,
-    },
-    isBlocked: {
-        type: Boolean,
-        default: false,
-    },
-    productImage: {
-        type: Array,
         required: true,
     },
     color: {
         type: String,
         required: true,
     },
+    productImage: {
+        type: Array,
+        required: true,
+    },
+    isBlocked: {
+        type: Boolean,
+        default: false,
+    },
     status: {
         type: String,
         required: false,
     },
-    productOffer: {
-        type: Number,
-        default: 0,
-    },
+    createdOn: {
+        type: String,
+        required: true,
+    }, 
 });
 
 const Product = mongoose.model("Product", productSchema);

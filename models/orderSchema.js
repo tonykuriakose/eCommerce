@@ -20,8 +20,8 @@ const orderSchema = new Schema({
         required: true
     },
     userId: {
-        type: Schema.Types.ObjectId, // Change type to ObjectId
-        ref: 'User', // Reference to the 'User' model
+        type: Schema.Types.ObjectId, 
+        ref: 'User', 
         required: true
     },
     status: {

@@ -19,9 +19,6 @@ const userSchema = Mongoose.Schema({
         type : String,
         required : true,
     },
-    createdOn : {
-        type : String
-    },
     isBlocked : {
         type : Boolean,
         default : false
@@ -39,6 +36,9 @@ const userSchema = Mongoose.Schema({
     },
     history : {
         type : Array
+    },
+    createdOn : {
+        type : String
     }
 })
 
