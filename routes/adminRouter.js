@@ -78,8 +78,4 @@ router.get("/orderList", adminAuth, orderController.getOrderListPageAdmin)
 router.get("/orderDetailsAdmin", adminAuth, orderController.getOrderDetailsPageAdmin)
 router.get("/changeStatus", adminAuth, orderController.changeOrderStatus)
 
-
-
-
-
 module.exports = router;

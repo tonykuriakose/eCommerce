@@ -1,13 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const userLogin = require("../middlewares/userAuth");
 const userController = require("../controllers/user/userController");
 const userProfileController= require("../controllers/user/userProfileController");
 const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
 const orderController = require("../controllers/user/orderController");
-
-
 const userAuth = require("../middlewares/userAuth");
 
 // Error Management
@@ -23,10 +20,21 @@ router.post('/resend-otp', userController.resendOtp);
 router.get("/login", userController.loadLogin);
 router.post("/login", userController.login);
 router.get("/logout", userController.logout);
+router.get("/forgotPassword", userProfileController.getForgotPassPage);
+router.post("/forgotEmailValid", userProfileController.forgotEmailValid);
+router.post("/verifyPassOtp", userProfileController.verifyForgotPassOtp);
+router.get("/resetPassword", userProfileController.getResetPassPage);
+router.post("/changePassword", userProfileController.postNewPassword);
+
 
 // Home page & Shopping page
 router.get("/", userController.loadHomepage);
 router.get("/shop", userController.loadShoppingpage);
+router.post("/search", userController.searchProducts)
+router.get("/filter", userController.filterProduct)
+router.get("/filterPrice", userController.filterByPrice)
+router.post("/sortProducts", userController.getSortProducts)
+
 
 // User profile management
 router.get("/userprofile",userProfileController.getUserProfile);
@@ -38,23 +46,23 @@ router.post("/editAddress",userProfileController.postEditAddress);
 router.get("/deleteAddress",userProfileController.getDeleteAddress);
 
 // Products Routes
-router.get("/productDetails", userLogin, productController.productDetails);
+router.get("/productDetails", userAuth, productController.productDetails);
 
 // Cart Management
-router.get("/cart", userLogin, cartController.getCartPage)
-router.post("/addToCart",userLogin, cartController.addToCart)
-router.post("/changeQuantity", userLogin,cartController.changeQuantity)
-router.get("/deleteItem", userLogin, cartController.deleteProduct)
+router.get("/cart", userAuth, cartController.getCartPage)
+router.post("/addToCart",userAuth, cartController.addToCart)
+router.post("/changeQuantity", userAuth,cartController.changeQuantity)
+router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 // Order Management
-router.get("/checkout", userLogin,orderController.getCheckoutPage)
-router.post("/orderPlaced", userLogin,orderController.orderPlaced)
-router.get("/orderDetails", userLogin,orderController.getOrderDetailsPage)
-router.get("/cancelOrder",userLogin,orderController.cancelorder)
-router.get("/returnrequestOrder",userLogin,orderController.returnorder)
-router.post("/verifyPayment", userLogin, orderController.verify)
-router.post("/singleProductId",userLogin,orderController.changeSingleProductStatus)
-router.post('/paymentConfirm',userLogin,orderController.paymentConfirm)
+router.get("/checkout", userAuth,orderController.getCheckoutPage)
+router.post("/orderPlaced", userAuth,orderController.orderPlaced)
+router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage)
+router.get("/cancelOrder",userAuth,orderController.cancelorder)
+router.get("/returnrequestOrder",userAuth,orderController.returnorder)
+router.post("/verifyPayment", userAuth, orderController.verify)
+router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus)
+router.post('/paymentConfirm',userAuth,orderController.paymentConfirm)
 
 
 module.exports = router;

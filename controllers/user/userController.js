@@ -272,6 +272,157 @@ const loadShoppingpage = async (req, res) => {
   }
 };
 
+// Search $ Filter Management
+const searchProducts = async (req, res) => {
+  try {
+    const user = req.session.user;
+    let search = req.body.query;
+    const brands = await Brand.find({});
+    const categories = await Category.find({ isListed: true });
+    const count = await Product.find({ isBlocked: false }).count();
+    const searchResult = await Product.find({
+      $or: [
+        {
+          productName: { $regex: ".*" + search + ".*", $options: "i" },
+        },
+      ],
+      isBlocked: false,
+    }).lean();
+
+    let itemsPerPage = 6;
+    let currentPage = parseInt(req.query.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let totalPages = Math.ceil(searchResult.length / 6);
+    const currentProduct = searchResult.slice(startIndex, endIndex);
+
+    res.render("shop", {
+      user: user,
+      product: currentProduct,
+      category: categories,
+      brand: brands,
+      totalPages,
+      currentPage,
+      count: count,
+    });
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+// Filter products
+const filterProduct = async (req, res) => {
+  try {
+    const user = req.session.user;
+    const category = req.query.category;
+    const brand = req.query.brand;
+    const brands = await Brand.find({});
+    const findCategory = category
+      ? await Category.findOne({ _id: category })
+      : null;
+    const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
+    const query = {
+      isBlocked: false,
+    };
+
+    if (findCategory) {
+      query.category = findCategory._id;
+    }
+
+    if (findBrand) {
+      query.brand = findBrand.brandName;
+    }
+    const findProducts = await Product.find(query);
+    const categories = await Category.find({ isListed: true });
+
+    let itemsPerPage = 6;
+    let currentPage = parseInt(req.query.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let totalPages = Math.ceil(findProducts.length / 6);
+    const currentProduct = findProducts.slice(startIndex, endIndex);
+    res.render("shop", {
+      user: user,
+      product: currentProduct,
+      category: categories,
+      brand: brands,
+      totalPages,
+      currentPage,
+      selectedCategory: category || null,
+      selectedBrand: brand || null,
+    });
+  } catch (error) {
+    console.log(error);
+    res.redirect("/pageNotFound");
+    res.status(500).send("Internal Server Error");
+  }
+};
+// Filter by price
+const filterByPrice = async (req, res) => {
+  try {
+    const user = req.session.user;
+    const brands = await Brand.find({});
+    const categories = await Category.find({ isListed: true });
+    const findProducts = await Product.find({
+      $and: [
+        { salePrice: { $gt: req.query.gt } },
+        { salePrice: { $lt: req.query.lt } },
+        { isBlocked: false },
+      ],
+    });
+
+    let itemsPerPage = 6;
+    let currentPage = parseInt(req.query.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let totalPages = Math.ceil(findProducts.length / 6);
+    const currentProduct = findProducts.slice(startIndex, endIndex);
+    res.render("shop", {
+      user: user,
+      product: currentProduct,
+      category: categories,
+      brand: brands,
+      totalPages,
+      currentPage,
+    });
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+
+// Sort products
+const getSortProducts = async (req, res) => {
+  console.log("Herrer", req.body);
+  try {
+    let option = req.body.option;
+    let itemsPerPage = 6;
+    let currentPage = parseInt(req.body.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let data;
+
+    if (option == "highToLow") {
+      data = await Product.find({ isBlocked: false }).sort({ salePrice: -1 });
+    } else if (option == "lowToHigh") {
+      data = await Product.find({ isBlocked: false }).sort({ salePrice: 1 });
+    } else if (option == "releaseDate") {
+      data = await Product.find({ isBlocked: false }).sort({ createdOn: 1 });
+    }
+
+    res.json({
+      status: true,
+      data: {
+        currentProduct: data,
+        count: data.length,
+        totalPages: Math.ceil(data.length / itemsPerPage),
+        currentPage,
+      },
+    });
+  } catch (error) {
+    res.redirect("/pageNotFound");
+    res.json({ status: false, error: error.message });
+  }
+};
+
 
 module.exports = {
   pageNotFound,
@@ -286,5 +437,9 @@ module.exports = {
   logout,
   loadHomepage,
   loadShoppingpage,
+  searchProducts,
+  filterByPrice,
+  filterProduct,
+  getSortProducts,
 };
 

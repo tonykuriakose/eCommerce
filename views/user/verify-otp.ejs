@@ -36,44 +36,66 @@
 </div>
 <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-  // OTP timer
-  let otpTimerInterval;
-  function startOTPTimer(durationInSeconds) {
-    let timer = durationInSeconds;
-    const timerElement = document.getElementById('otpTimer');
-    const countdown = setInterval(function () {
-      const minutes = Math.floor(timer / 60);
-      const seconds = timer % 60;
+// OTP timer
+let otpTimerInterval;
+let timer = 60; // Set initial timer value
+let timerStarted = false; // Track if timer has started
 
-      timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+function startOTPTimer() {
+  const timerElement = document.getElementById('otpTimer');
+  otpTimerInterval = setInterval(function () {
+    const minutes = Math.floor(timer / 60);
+    const seconds = timer % 60;
 
-      if (--timer < 0) {
-        clearInterval(countdown);
-        timerElement.textContent = 'OTP Expired';
-      }
-    }, 1000);
+    timerElement.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+
+    if (--timer < 0) {
+      clearInterval(otpTimerInterval);
+      timerElement.textContent = 'OTP Expired';
+      timerElement.style.color = 'red'; // Change text color to red when expired
+    }
+  }, 1000);
+}
+
+// OTP timer initialization
+function initializeOTPTimer() {
+  if (!timerStarted) {
+    startOTPTimer();
+    timerStarted = true;
   }
+}
 
-  // resend OTP
-  function resendOTP() {
-    $.ajax({
-      type: 'POST',
-      url: '/resend-otp',
-      success: function (response) {
-        if (response.success) {
-          alert('Resend OTP successful'); // Display success message
-        } else {
-          alert('Failed to resend OTP. Please try again.');
-        }
-      },
-      error: function () {
-        alert('Error occurred while resending OTP. Please try again.');
+initializeOTPTimer(); // Call this once to start the timer
+
+// resend OTP
+function resendOTP() {
+  clearInterval(otpTimerInterval); // Clear previous interval
+  timer = 60; // Reset timer to initial value
+  startOTPTimer(); // Start timer again
+  $.ajax({
+    type: 'POST',
+    url: '/resend-otp',
+    success: function (response) {
+      if (response.success) {
+        alert('Resend OTP successful'); // Display success message
+      } else {
+        alert('Failed to resend OTP. Please try again.');
       }
-    });
-  }
+    },
+    error: function () {
+      alert('Error occurred while resending OTP. Please try again.');
+    }
+  });
+}
 
-  startOTPTimer(60);
-</script>
+// Verify OTP function
+function validateOTPForm() {
+  const otpInput = document.getElementById('otp').value;
+  if (otpInput !== req.session.userOtp) {
+    return false; // Prevent form submission
+  }
+  return true; // Allow form submission if OTP is correct
+}
 
 </script>
 <%-include("../../views/partials/user/footer")%>
