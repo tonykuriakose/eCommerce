@@ -1,14 +1,8 @@
 <%- include("../../views/partials/admin/header") %>
-<script>
-  function confirmDelete() {
-    return confirm("Are you sure you want to delete this brand?");
-  }
-</script>
 <section class="content-main">
     <div class="content-header">
         <div>
             <h2 class="content-title card-title">Brands </h2>
-            <p>Add, edit or delete a category</p>
         </div>
     </div>
     <div class="card">
@@ -18,12 +12,12 @@
                     <form method="post" action="/admin/addBrand" enctype="multipart/form-data">
                         <div class="mb-4">
                             <label for="product_name" class="form-label">Brand Name</label>
-                            <input type="text" name="name" placeholder="Type here" class="form-control" />                      
+                            <input type="text" name ="name" placeholder="Type here" class="form-control" />                      
                           </div>
                           <label for="product_name" class="form-label">Brand Image</label>
                             <div class="input-upload">
                               
-                                <img src="assets/imgs/theme/upload.svg" alt="">
+                                <img src="admin-assets/imgs/theme/upload.svg" alt="">
                                 <input class="form-control border" name="image" type="file">
                             </div>
                         <div class="d-grid">
@@ -84,4 +78,9 @@
         </div> 
     </div> 
 </section> 
+<script>
+    function confirmDelete() {
+    return confirm("Are you sure you want to delete this brand?");
+  }
+</script>
 <%- include("../../views/partials/admin/footer") %>

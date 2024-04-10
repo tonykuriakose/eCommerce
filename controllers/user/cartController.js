@@ -5,17 +5,10 @@ const mongodb = require("mongodb");
 const getCartPage = async (req, res) => {
   try {
     const id = req.session.user;
-    console.log(id);
-    console.log("cart is working");
     const user = await User.findOne({ _id: id });
-    console.log(user, "user");
     const productIds = user.cart.map((item) => item.productId);
-    console.log(productIds, "productid");
     const products = await Product.find({ _id: { $in: productIds } });
-    console.log(user.cart[0].quantity);
-
     const oid = new mongodb.ObjectId(id);
-    console.log(oid, "oid");
     let data = await User.aggregate([
       { $match: { _id: oid } },
       { $unwind: "$cart" },
@@ -34,30 +27,17 @@ const getCartPage = async (req, res) => {
         },
       },
     ]);
-
-    console.log("Data  =>>", data);
-
     let quantity = 0;
-
     for (const i of user.cart) {
       quantity += i.quantity;
     }
-    // console.log(user.cart.length,'this is cart lenght')
-    // console.log(products)
     let grandTotal = 0;
     for (let i = 0; i < data.length; i++) {
-      console.log("sale prices ==>", data[i].productDetails[0].salePrice);
-      console.log("Quantity ==>", data[i].quantity);
       if (products[i]) {
         grandTotal += data[i].productDetails[0].salePrice * data[i].quantity;
       }
-      console.log(grandTotal, "grand total ");
       req.session.grandTotal = grandTotal;
     }
-    // console.log(grandTotal)
-
-    console.log(grandTotal);
-
     res.render("cart", {
       user,
       quantity,
@@ -68,6 +48,7 @@ const getCartPage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
 
 const addToCart = async (req, res) => {
   console.log("add to cart working");
