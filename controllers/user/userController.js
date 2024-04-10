@@ -221,9 +221,18 @@ const loadHomepage = async (req, res) => {
       endDate: { $gt: new Date(today) },
     });
     const brandData = await Brand.find({ isBlocked: false });
-    const productData = await Product.find({ isBlocked: false })
-      .sort({ id: -1 })
-      .limit(4);
+    
+    // Fetching categories that are listed
+    const categories = await Category.find({ isListed: true });
+    
+    // Fetching products that belong to listed categories and are not blocked
+    const productData = await Product.find({ 
+      isBlocked: false,
+      category: { $in: categories.map(category => category._id) } // Filtering products by categories
+    })
+    .sort({ createdOn: -1 })
+    .limit(4);
+
     if (user) {
       res.render("home", {
         user: userData,
@@ -242,6 +251,7 @@ const loadHomepage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
 
 const loadShoppingpage = async (req, res) => {
   try {
