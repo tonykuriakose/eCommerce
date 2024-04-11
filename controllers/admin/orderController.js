@@ -5,10 +5,10 @@ const Order = require("../../models/orderSchema");
 const mongodb = require("mongodb");
 const mongoose = require('mongoose')
 const razorpay = require("razorpay");
-const env = require("dotenv");
+const env = require("dotenv").config();
 const crypto = require("crypto");
-const Coupon=require("../../models/couponSchema")
-env.config();
+const Coupon=require("../../models/couponSchema");
+const { v4: uuidv4 } = require('uuid');
 
 
 const getOrderListPageAdmin = async (req, res) => {
@@ -20,11 +20,18 @@ const getOrderListPageAdmin = async (req, res) => {
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(orders.length / 3);
     const currentOrder = orders.slice(startIndex, endIndex);
+
+    // Generate random unique order IDs
+    currentOrder.forEach(order => {
+      order.orderId = uuidv4();
+    });
+
     res.render("order-list", { orders: currentOrder, totalPages, currentPage });
   } catch (error) {
     res.redirect("/pageerror");
   }
 };
+
 
 
 const changeOrderStatus = async (req, res) => {

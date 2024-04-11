@@ -45,7 +45,7 @@
                     <tbody>
                         <% for (let i = 0; i < orders.length; i++) { %> 
                             <tr>
-                            <td><%= orders[i]._id %></td>
+                            <td><%= orders[i].orderId %></td>
                             <td><b><%= orders[i].address[0].name %></b></td>
                             <td><%= orders[i].address[0].phone %></td>
                             <td><%= orders[i].totalPrice.toLocaleString() %></td>
