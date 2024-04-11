@@ -31,26 +31,7 @@
                     <p>Details for Order ID: <%=orders._id%></p>
                 </div>
             </div>
-            <div class="card mt-60">
-                <header class="card-header">
-                    <div class="row align-items-center">
-                        <!-- <div class="col-lg-4 col-md-4 ms-auto text-md-end">
-                          <% if (orders.status !== "Canceled") { %>
-                            <select id="actionDropdown" class="form-select form-select-sm d-inline-block mb-lg-0 mb-15 mw-100" onchange="handleDropdownChange(this)">
-                                <option value="status">Status</option>
-                                <option value="cancel" <% if (orders.status === "Canceled") { %>disabled<% } else if (orders.status === "Delivered") { %>disabled<% } %> >Cancel</option>
-                                <% if (orders.status === "Delivered") { %>
-                                    <option value="returnrequest" href="/returnrequestOrder">Return Request</option>
-                                <% } %>
-                            </select>                   
-                        <% } else { %>
-                            <h4 class="text-danger">Cancelled</h4>
-                        <% } %>
-                        </div>    -->
-                    </div>
-                </header>
-                    </div>
-                </div>
+           
                 <div class="card-body">
                     <div class="row mb-50 mt-20 order-info-wrap background-info">
                         <div class="col-md-4">
@@ -101,7 +82,7 @@
                                                                 Paid Amount: <%=orders.totalPrice%>
                                                                 <br>
                                                                 <%
-    <!-- // Assuming totalGrant and orders.totalPrice are variables available in your server-side code -->
+  
     var Discount = totalGrant - orders.totalPrice;
 %>
                                                                 Discount:<%=Discount%>
@@ -173,7 +154,7 @@
                                                     <% if (orders.product[i].productStatus === "Cancel") { %>
                                                       <i>Cancelled</i>  
                                                   <% } else if (orders.status === "Confirmed"||orders.status === "Shipped") { %>
-                                                      <button id="cancelButton" onclick="singleProductStatus('<%= orders.product[i]._id %>','<%= orders._id %>','Cancel') "style="background-color: red; color: #ffffff; border: none; border-radius: 4px;">Cancel</button>
+                                                      <button id="cancelButton" onclick="confirmCancelOrder('<%= orders.product[i]._id %>','<%= orders._id %>','Cancel') "style="background-color: red; color: #ffffff; border: none; border-radius: 4px;">Cancel</button>
                                                   <% }else if (orders.status === "Failed"||orders.status === "Delivered") { %>
                                                   <h6>Can't cancel </h6>
                                                 <% } %>
@@ -194,7 +175,6 @@
             </div> 
         </section> 
     </main>
-
     <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="assets/js/vendors/select2.min.js"></script>
@@ -204,7 +184,6 @@
     <script src="https://cdn.jsdelivr.net/npm/easyinvoice/dist/easyinvoice.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <script>
-
     function tracking() {
       Swal.fire({
         title: '<strong><u>ORDER DETAILS</u></strong>',
@@ -236,9 +215,7 @@
   </div>
 <script>
     alert(x);
-    function singleProductStatus(singleProductId,orderId,status){
-      console.log(singleProductId,"singleProductId");
-      console.log(orderId,"orderid");    
+    function singleProductStatus(singleProductId,orderId,status){  
       $.ajax({
                 url: '/singleProductId',
                 method: 'POST',
@@ -260,15 +237,52 @@
             })  
 
     }
-</script>
-  <script>
+
     function handleDropdownChange(selectElement) {
         var selectedValue = selectElement.value;
         if(selectedValue == "cancel"){
-            window.location.href = `http://localhost:3001/cancelOrder?orderId=${orderId.value}`;
+            window.location.href = `http://localhost:3000/cancelOrder?orderId=${orderId.value}`;
         }else if (selectedValue == "returnrequest"){
-            window.location.href = `http://localhost:3001/returnrequestOrder?orderId=${orderId.value}`;
+            window.location.href = `http://localhost:3000/returnrequestOrder?orderId=${orderId.value}`;
         }
     }
+
+
+    function confirmCancelOrder(singleProductId, orderId) {
+        Swal.fire({
+            title: 'Confirm Cancel Order',
+            text: 'Are you sure you want to cancel this order?',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, cancel it!',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                cancelOrder(singleProductId, orderId);
+            }
+        });
+    }
+
+    function cancelOrder(singleProductId, orderId) {
+        $.ajax({
+            url: '/singleProductId',
+            method: 'POST',
+            data: {
+                orderId: orderId,
+                singleProductId: singleProductId,
+                status: 'Cancel'
+            },
+            success: (response) => {
+                if (response.result.modifiedCount === 1) {
+                    window.location.reload();
+                }
+            },
+            error: (error) => {
+                alert(error);
+            }
+        });
+    }
+
 </script>
 <%- include("../../views/partials/user/footer") %>
