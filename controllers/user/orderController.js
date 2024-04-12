@@ -5,23 +5,21 @@ const Order = require("../../models/orderSchema");
 const mongodb = require("mongodb");
 const mongoose = require('mongoose')
 const razorpay = require("razorpay");
-const env = require("dotenv");
+const env = require("dotenv").config();
 const crypto = require("crypto");
 const Coupon=require("../../models/couponSchema")
-env.config();
-
 let instance = new razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
+
 const getCheckoutPage = async (req, res) => {
   try {
-    console.log("query", req.query);
-
     const user = req.query.userId;
     const findUser = await User.findOne({ _id: user });
     const addressData = await Address.findOne({ userId: user });
     const oid = new mongodb.ObjectId(user);
+    console.log(oid);
     const data = await User.aggregate([
       { $match: { _id: oid } },
       { $unwind: "$cart" },
@@ -65,29 +63,21 @@ const getCheckoutPage = async (req, res) => {
       {
         $group: {
           _id: null,
-          totalQuantity: { $sum: "$quantity" }, // Sum of quantities from the Cart collection
+          totalQuantity: { $sum: "$quantity" },
           totalPrice: {
             $sum: { $multiply: ["$quantity", "$productDetails.salePrice"] },
-          }, // Sum of (quantity * price) from the joined collections
+          }, 
         },
       },
     ]);
-
-    console.log("Data  =>>", data);
-    // console.log("Data  =>>" , data[0].productDetails[0])
     const gTotal = req.session.grandTotal;
-    console.log(grandTotal, "grand tog");
-    // console.log(grandTotal);
-    const today = new Date().toISOString(); // Get today's date in ISO format
-    // console.log(data[1].productDetails[0].productImage[0],"daATA");
+    const today = new Date().toISOString();
     const findCoupons = await Coupon.find({
       isList: true,
       createdOn: { $lt: new Date(today) },
       expireOn: { $gt: new Date(today) },
       minimumPrice: { $lt: grandTotal[0].totalPrice},
   });
-
-  console.log(findCoupons, 'this is coupon ');
 
     if (findUser.cart.length > 0) {
       res.render("checkoutcart", {
@@ -106,13 +96,23 @@ const getCheckoutPage = async (req, res) => {
   }
 };
 
+const deleteProduct = async (req, res) => {
+  try {
+    const id = req.query.id;
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+    const cartIndex = user.cart.findIndex((item) => item.productId == id);
+    user.cart.splice(cartIndex, 1);
+    await user.save();
+    res.redirect("/checkout");
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+
 const orderPlaced = async (req, res) => {
   try {
-    console.log("req.body===>", req.body);
-    console.log("from cart");
-
     const { totalPrice, addressId, payment } = req.body;
-    // console.log(totalPrice, addressId, payment);
     const userId = req.session.user;
     const findUser = await User.findOne({ _id: userId });
     const productIds = findUser.cart.map((item) => item.productId);
@@ -125,10 +125,7 @@ const orderPlaced = async (req, res) => {
       const desiredAddress = findAddress.address.find(
         (item) => item._id.toString() === addressId.toString()
       );
-      // console.log(desiredAddress);
-
       const findProducts = await Product.find({ _id: { $in: productIds } });
-
       const cartItemQuantities = findUser.cart.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
@@ -145,8 +142,6 @@ const orderPlaced = async (req, res) => {
           (cartItem) => cartItem.productId.toString() === item._id.toString()
         ).quantity,
       }));
-
- console.log(orderedProducts,"orderedProducts");
  let newOrder
  if(payment=="razorpay"){
    newOrder = new Order({
@@ -171,11 +166,7 @@ const orderPlaced = async (req, res) => {
  }
   
       let orderDone = await newOrder.save();
-
       await User.updateOne({ _id: userId }, { $set: { cart: [] } });
-
-      // console.log('thsi is new order',newOrder);
-
       for (let i = 0; i < orderedProducts.length; i++) {
         const product = await Product.findOne({ _id: orderedProducts[i]._id });
 
@@ -457,6 +448,7 @@ const verify = (req, res) => {
 
 module.exports = {
   getCheckoutPage,
+  deleteProduct,
   cancelorder,
   orderPlaced,
   getOrderDetailsPage,

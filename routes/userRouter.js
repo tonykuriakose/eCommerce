@@ -56,6 +56,7 @@ router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 // Order Management
 router.get("/checkout", userAuth,orderController.getCheckoutPage)
+router.get("/deleteItem", userAuth, orderController.deleteProduct)
 router.post("/orderPlaced", userAuth,orderController.orderPlaced)
 router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage)
 router.get("/cancelOrder",userAuth,orderController.cancelorder)
