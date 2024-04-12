@@ -195,7 +195,8 @@ function validateAndSubmit() {
 if (validateForm()) {
     document.forms[0].submit();
 }
-}       
+}    
+
 function viewImage1(event) {
             document.getElementById('imgView1').src = URL.createObjectURL(event.target.files[0])
         }
@@ -229,18 +230,15 @@ function viewImage(event, index) {
                     zoomable: true
                 });
 
-// Show the image cropper container
 let cropperContainer = document.querySelector('#croppedImg' + index).parentNode;
 cropperContainer.style.display = 'block';
 
-// Update the cropped image when the "Save" button is clicked
 let saveButton = document.querySelector('#saveButton' + index);
 saveButton.addEventListener('click', async function () {
 let croppedCanvas = cropper.getCroppedCanvas();
 let croppedImage = document.getElementById("croppedImg" + index);
 croppedImage.src = croppedCanvas.toDataURL('image/jpeg', 1.0);
 
-// Generate a unique name for the cropped image file based on the current timestamp
 let timestamp = new Date().getTime();
 let fileName = `cropped-img-${timestamp}-${index}.png`;
 
@@ -258,62 +256,35 @@ cropper.destroy();
 reader.readAsDataURL(input.files[0]);
 }
 
-    // Array to store selected images
     const selectedImages = [];
-
-        // Function to handle file input change
         document.getElementById("input1").addEventListener("change", handleFileSelect);
 
         function handleFileSelect(event) {
-            // Target the container for displaying thumbnails
             const addedImagesContainer = document.getElementById("addedImagesContainer");
-
-            // Clear previous content
             addedImagesContainer.innerHTML = "";
-
             const files = event.target.files;
-
             for (let i = 0; i < files.length; i++) {
                 const file = files[i];
-
-                // Add the file to the selected images array
                 selectedImages.push(file);
-
-                // Create thumbnail element
                 const thumbnail = document.createElement("div");
                 thumbnail.classList.add("thumbnail");
-
-                // Create image element
                 const img = document.createElement("img");
                 img.src = URL.createObjectURL(file);
                 img.alt = "thumbnail";
-
-                // Set a fixed width for the image
-                img.style.width = "50px"; // Adjust the width as needed
+                img.style.width = "50px"; 
                 img.style.height = "auto";
-
-                // Create remove icon
                 const removeIcon = document.createElement("span");
                 removeIcon.classList.add("remove-icon");
-                removeIcon.innerHTML = "&times;"; // Multiplication symbol as a cross
-
-                // Event listener to remove the image on icon click
+                removeIcon.innerHTML = "&times;"; 
                 removeIcon.addEventListener("click", function () {
-                    // Remove the file from the selected images array
                     const index = selectedImages.indexOf(file);
                     if (index !== -1) {
                         selectedImages.splice(index, 1);
                     }
-
-                    // Remove the thumbnail from the container
                     thumbnail.remove();
                 });
-
-                // Append elements to thumbnail
                 thumbnail.appendChild(img);
                 thumbnail.appendChild(removeIcon);
-
-                // Append thumbnail to the container
                 addedImagesContainer.appendChild(thumbnail);
             }
         }
@@ -330,16 +301,6 @@ reader.readAsDataURL(input.files[0]);
             const category = document.getElementsByName('category')[0].value;
             const images = document.getElementById('input1')
             const quantity=document.getElementsByName('quantity')
-
-
-            console.log(images,"imag");
-            console.log("description",typeof description);
-            console.log(brand,"brand");
-            console.log(price,"price");
-            console.log(color,"color");
-            console.log(category,"category");
-            // console.log(images.files.length,"imagcdrfvtg");
-            console.log(saleprice,"saleprice");
             let isValid = true
             if (name.trim() === "") {
     displayErrorMessage('productName-error', 'Please enter a product name.');
@@ -350,7 +311,6 @@ reader.readAsDataURL(input.files[0]);
 }
             
 if (description.trim() === "") {
-    console.log("magesheee adangh");
     displayErrorMessage('description-error', 'Please enter a product description.');
     isValid = false;
 } else if (!/^[a-zA-Z\s]+$/.test(description.trim())) {
@@ -386,14 +346,10 @@ if (description.trim() === "") {
                 isValid = false;
             }
 
-
             if (images.files.length === 0) {
-                // console.log("working pannale");
                 displayErrorMessage("images-error",'Please select an image.');
                 isValid = false;
             }
-           
-         console.log(isValid,"isValid");
            
             // displayErrorMessage '';
             return isValid;
