@@ -150,29 +150,28 @@
     <script>
         function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity) {
             
-            // alert(productPrice)
-            // alert(cartQuantity)
-            // alert(i)
-
+          
             // const abc = document.getElementById("totalabc").value
             // console.log(abc, "hi");
-            console.log(productId, cartQuantity, count, productPrice, i, productQuantity);
+            
             const cartProductQuantityElement = document.querySelector(`#cartProductQuantity${i}`)
-            // alert('quantity')
-            // alert(cartProductQuantityElement.value,'quantity')
             const subtotalElement = document.querySelector(`#subTotal${i}`);
-            // alert(subtotalElement.innerHTML,"subelm")
             const totalElements = document.getElementById('total').innerHTML;
             // alert(parseInt(subtotalElement.innerHTML)+ parseInt(productPrice))
             let currentQuantity = parseInt(cartProductQuantityElement.value)
             
-            const currentSubTotal = parseInt(subtotalElement.innerHTML)
-            // alert(currentSubTotal+"sub")
-
-            // alert(currentTotal+"total")
-
+            const currentSubTotal = parseInt(subtotalElement.innerHTML);           
+            if (currentQuantity + count > 3) {
+            Swal.fire({
+                title: 'Limit Exceeded!',
+                text: 'You can only add up to 3 items to your cart.',
+                icon: 'error',
+                timer: 5000
+            });
+            return;
+        }
+            
             const newQuantity = currentQuantity + count
-            // alert(newQuantity)
 
             if (count === -1 && newQuantity < 1) {
                 return; 
@@ -182,8 +181,6 @@
                 return
             }
             if (count == 1 && newQuantity > productQuantity) {
-
-
                 Swal.fire({
                     title: 'STOCK!',
                     text: 'Product is out of stock.',
@@ -195,13 +192,10 @@
 
             const newSubtotal = newQuantity * productPrice
             if (count == 1) {
-                // alert('1')
                 document.getElementById(`subTotal${i}`).innerHTML = parseInt(subtotalElement.innerHTML) + parseInt(productPrice)
             } else {
-                // alert('else')
                 document.getElementById(`subTotal${i}`).innerHTML = parseInt(subtotalElement.innerHTML) - parseInt(productPrice)
             }
-            // alert('in starting '+newTotal)
             $.ajax({
                 url: '/changeQuantity',
                 method: 'POST',
