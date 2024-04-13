@@ -1,6 +1,7 @@
 const Brand = require("../../models/brandSchema");
 const Product = require("../../models/productSchema");
 
+// Brand Management
 const getBrandPage = async (req, res) => {
   try {
     const brandData = await Brand.find({});

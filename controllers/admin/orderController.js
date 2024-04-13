@@ -20,8 +20,6 @@ const getOrderListPageAdmin = async (req, res) => {
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(orders.length / 3);
     const currentOrder = orders.slice(startIndex, endIndex);
-
-    // Generate random unique order IDs
     currentOrder.forEach(order => {
       order.orderId = uuidv4();
     });
@@ -33,22 +31,16 @@ const getOrderListPageAdmin = async (req, res) => {
 };
 
 
-
 const changeOrderStatus = async (req, res) => {
   try {
-    console.log(req.query);
     const orderId = req.query.orderId;
-    console.log(orderId);
     const userId = req.query.userId;
       await Order.updateOne({ _id: orderId }, { status: req.query.status }).then(
         (data) => console.log(data)
       );
       const findOrder = await Order.findOne({ _id: orderId });
-      console.log(findOrder,"changed order");
       if (findOrder.status.trim() === "Returned"&&(findOrder.payment === "razorpay"||findOrder.payment === "wallet"||findOrder.payment === "cod")) {
-          console.log("It's a return");
           const findUser = await User.findOne({ _id:userId});
-          console.log(findUser,"findUser1111111");
           if (findUser && findUser.wallet !== undefined) {
             findUser.wallet += findOrder.totalPrice;
             await findUser.save();

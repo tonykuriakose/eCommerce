@@ -7,16 +7,12 @@ const getCategoryInfo = async (req, res) => {
       const page = parseInt(req.query.page) || 1;
       const limit = 2;
       const skip = (page - 1) * limit;
-      
-      // Fetch categories sorted by createdAt field in descending order
       const categoryData = await Category.find({})
-          .sort({ createdAt: -1 }) // Sort by createdAt field in descending order
+          .sort({ createdAt: -1 })
           .skip(skip)
           .limit(limit);
-
       const totalCategories = await Category.countDocuments();
       const totalPages = Math.ceil(totalCategories / limit);
-      
       res.render("category", { 
           cat: categoryData,
           currentPage: page,
@@ -27,7 +23,6 @@ const getCategoryInfo = async (req, res) => {
       res.redirect("/pageerror");
   }
 };
-
 
 // add new category
 const addCategory = async (req, res) => {
@@ -130,7 +125,6 @@ const addCategoryOffer = async (req, res) => {
       const productData = await Product.find({ category: findCategory._id });
       const hasProductOffer = productData.some(product => product.productOffer > percentage);
       if (hasProductOffer) {
-          console.log("Products within this category already have product offers. Category offer not added.");
           return res.json({ status: false, message: "Products within this category already have product offers." });
       }
       await Category.updateOne(
@@ -159,9 +153,7 @@ const removerCategoryOffer = async (req, res)=>{
       const categoryId = req.body.categoryId
       const findCategory = await Category.findOne({_id : categoryId})
       console.log(findCategory);
-
       const percentage = findCategory.categoryOffer
-      // console.log(percentage);
       const productData = await Product.find({category : findCategory._id})
 
       if(productData.length > 0){

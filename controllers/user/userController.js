@@ -134,11 +134,11 @@ const verifyOtp = async (req, res) => {
       res.status(400).json({ success: false, message: "Invalid OTP. Please try again." });
     }
   } catch (error) {
-    res.status(500).json({ success: false, message: "An error occurred." }); // Send error response
+    res.status(500).json({ success: false, message: "An error occurred." });
   }
 };
 
-
+// Resend OTP
 const resendOtp = async (req, res) => {
   try {
     const otp = generateOtp();
@@ -147,7 +147,6 @@ const resendOtp = async (req, res) => {
     const emailSent = await sendVerificationEmail(email, otp);
     if (emailSent) {
       console.log("resend otp:", otp);
-      console.log("Email sent:");
       res.status(200).json({ success: true, message: "Resend OTP successful" });
     } else {
       res.status(500).json({ success: false, message: "Failed to resend OTP" });
@@ -220,14 +219,10 @@ const loadHomepage = async (req, res) => {
       endDate: { $gt: new Date(today) },
     });
     const brandData = await Brand.find({ isBlocked: false });
-    
-    // Fetching categories that are listed
     const categories = await Category.find({ isListed: true });
-    
-    // Fetching products that belong to listed categories and are not blocked
     const productData = await Product.find({ 
       isBlocked: false,
-      category: { $in: categories.map(category => category._id) } // Filtering products by categories
+      category: { $in: categories.map(category => category._id) }
     })
     .sort({ createdOn: -1 })
     .limit(4);
@@ -318,6 +313,7 @@ const searchProducts = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
 // Filter products
 const filterProduct = async (req, res) => {
   try {
@@ -365,6 +361,7 @@ const filterProduct = async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 };
+
 // Filter by price
 const filterByPrice = async (req, res) => {
   try {

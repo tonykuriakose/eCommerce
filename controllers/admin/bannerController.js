@@ -2,6 +2,7 @@ const Banner = require("../../models/bannerSchema");
 const path = require("path");
 const fs = require("fs");
 
+// Banner Management
 const bannerManagement = async (req, res) => {
   try {
     const findBanner = await Banner.find({});
@@ -23,7 +24,6 @@ const postAddBanner = async (req, res) => {
   try {
     const data = req.body;
     const image = req.file;
-    // console.log("Image >>>>>>size:", image.size);
     const newBanner = new Banner({
       image: image.filename,
       title: data.title,
@@ -44,7 +44,6 @@ const getEditBannerPage = async (req, res) => {
   try {
     const id = req.query.id;
     const findBanner = await Banner.findOne({ _id: id });
-    console.log(findBanner);
     res.render("editBanner", { data: findBanner });
   } catch (error) {
     res.redirect("/pageerror");
@@ -53,7 +52,7 @@ const getEditBannerPage = async (req, res) => {
 
 const postEditBanner = async (req, res) => {
   try {
-    // const image = req.file.filename
+    const image = req.file.filename
     const data = req.body;
     const id = req.query.id;
 
@@ -107,7 +106,6 @@ const deleteBanner = async (req, res) => {
 const deletebannerImage = async (req, res) => {
   const imageName = req.body.imageNameTOserver;
   const bannerid = req.body.bannerid;
-  console.log(imageName, "imageName", bannerid, "bannerid");
   try {
     const banner = await Banner.findByIdAndUpdate(bannerid, {
       $unset: { image: 1 },

@@ -80,7 +80,6 @@ const getEditProduct = async (req, res) => {
   try {
     const id = req.query.id;
     const findProduct = await Product.findOne({ _id: id });
-   console.log(findProduct,"find product");
     const category = await Category.find({});
     const findBrand = await Brand.find({});
     res.render("edit-product", {
