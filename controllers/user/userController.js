@@ -129,16 +129,15 @@ const verifyOtp = async (req, res) => {
       });
       await saveUserData.save();
       req.session.user = saveUserData._id;
-      res.redirect("/login");
+      res.json({ success: true, redirectUrl: "/login" });
     } else {
-      return res.render("verify-otp", {
-        message: "Invalid OTP. Please try again.",
-      });
+      res.status(400).json({ success: false, message: "Invalid OTP. Please try again." });
     }
   } catch (error) {
-    res.redirect("/pageNotFound");
+    res.status(500).json({ success: false, message: "An error occurred." }); // Send error response
   }
 };
+
 
 const resendOtp = async (req, res) => {
   try {
