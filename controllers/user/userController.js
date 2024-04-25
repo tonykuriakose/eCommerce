@@ -138,7 +138,6 @@ const verifyOtp = async (req, res) => {
   }
 };
 
-// Resend OTP
 const resendOtp = async (req, res) => {
   try {
     const otp = generateOtp();
@@ -208,7 +207,7 @@ const logout = async (req, res) => {
   }
 };
 
-//Home page
+//Home page management
 const loadHomepage = async (req, res) => {
   try {
     const today = new Date().toISOString();
@@ -224,7 +223,7 @@ const loadHomepage = async (req, res) => {
       isBlocked: false,
       category: { $in: categories.map(category => category._id) }
     })
-    .sort({ createdOn: -1 })
+    .sort({ createdOn: 1 })
     .limit(4);
 
     if (user) {
@@ -397,7 +396,6 @@ const filterByPrice = async (req, res) => {
 
 // Sort products
 const getSortProducts = async (req, res) => {
-  console.log("Herrer", req.body);
   try {
     let option = req.body.option;
     let itemsPerPage = 6;

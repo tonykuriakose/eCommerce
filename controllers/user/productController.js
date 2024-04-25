@@ -18,14 +18,8 @@ const productDetails = async (req, res) => {
     if (findCategory.categoryOffer || product.productOffer) {
       totalOffer = findCategory.categoryOffer + product.productOffer;
     }
-
     const categories = await Category.find({});
-
-    console.log(categories, "fullcategories");
-    console.log(product, "product");
     let quantity = product.quantity;
-    console.log(quantity, "quantity");
-
     res.render("productdetail", {
       user: userData,
       product: product,

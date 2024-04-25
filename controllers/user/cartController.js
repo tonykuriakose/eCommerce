@@ -51,25 +51,18 @@ const getCartPage = async (req, res) => {
 
 
 const addToCart = async (req, res) => {
-  console.log("add to cart working");
   try {
     const id = req.body.productId;
-
-    console.log(id, "product id");
     const userId = req.session.user;
     const findUser = await User.findById(userId);
-    // console.log(findUser);
     const product = await Product.findById({ _id: id }).lean();
-    console.log(product, "product");
     if (!product) {
       return res.json({ status: "Product not found" });
     }
     
         if (product.quantity > 0) {
             const cartIndex = findUser.cart.findIndex((item) => item.productId == id);
-            console.log(cartIndex, "cartIndex");
             if (cartIndex == -1) {
-              // console.log("this");
               let quantity = 1;
               await User.findByIdAndUpdate(userId, {
                 $addToSet: {
@@ -82,9 +75,7 @@ const addToCart = async (req, res) => {
                 res.json({ status: true, cartLength: findUser.cart.length,user:userId })
               );
             } else {
-              // console.log("hi");
               const productInCart = findUser.cart[cartIndex];
-              console.log(productInCart, "product");
               if (productInCart.quantity <= product.quantity) {
                 const newQuantity = parseInt(productInCart.quantity) + 1;
                 await User.updateOne(
@@ -93,15 +84,13 @@ const addToCart = async (req, res) => {
                 );
                 res.json({ status: true, cartLength: findUser.cart.length,user:userId });
               } else {
-                res.json({ status: "Out okk of stock" });
+                res.json({ status: "Out of of stock" });
               }
-              // console.log(productInCart, "product", newQuantity);
+              console.log(productInCart, "product", newQuantity);
             }
           } else {
             res.json({ status: "Out of stock" });
           }
-
-    
    
   } catch (error) {
     res.redirect("/pageNotFound");

@@ -4,7 +4,10 @@ const Product = require("../../models/productSchema");
 // Brand Management
 const getBrandPage = async (req, res) => {
   try {
-    const brandData = await Brand.find({});
+    const page = req.body.page || 1;
+    const limit = 3;
+    const skip = (page-1)*limit;
+    const brandData = await Brand.find({}).sort().skip().limit();
     res.render("brands", { data: brandData });
   } catch (error) {
     res.redirect("/pageerror");

@@ -4,23 +4,24 @@ const Product=require("../../models/productSchema")
 // category Page
 const getCategoryInfo = async (req, res) => {
   try {
-      const page = parseInt(req.query.page) || 1;
-      const limit = 2;
-      const skip = (page - 1) * limit;
-      const categoryData = await Category.find({})
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit);
-      const totalCategories = await Category.countDocuments();
-      const totalPages = Math.ceil(totalCategories / limit);
-      res.render("category", { 
-          cat: categoryData,
-          currentPage: page,
-          totalPages: totalPages,
-          totalCategories: totalCategories
-      });
+    const page = parseInt(req.query.page) || 1;
+    const limit = 2;
+    const skip = (page - 1) * limit;
+    const categoryData = await Category.find({})
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+    const totalCategories = await Category.countDocuments();
+    const totalPages = Math.ceil(totalCategories / limit);
+    const reversedCategoryData = categoryData.reverse();
+    res.render("category", {
+      cat: reversedCategoryData,
+      currentPage: page,
+      totalPages: totalPages,
+      totalCategories: totalCategories
+    });
   } catch (error) {
-      res.redirect("/pageerror");
+    res.redirect("/pageerror");
   }
 };
 
@@ -45,16 +46,6 @@ const addCategory = async (req, res) => {
   }
 };
 
-//get all categories
-const getAllCategories = async (req, res) => {
-  try {
-    const page = req.query.page;
-    const categoryData = await Category.find({});
-    res.render("category", { cat: categoryData });
-  } catch (error) {
-     res.redirect("/pageerror");
-  }
-};
 
 //category list
 const getListCategory = async (req, res) => {
@@ -176,7 +167,6 @@ const removerCategoryOffer = async (req, res)=>{
 module.exports = {
   getCategoryInfo,
   addCategory,
-  getAllCategories,
   getListCategory,
   getUnlistCategory,
   editCategory,

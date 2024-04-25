@@ -67,6 +67,7 @@
     color: red;
   }
 </style>
+
 <section class="content-main">
   <div class="content-header">
     <div>
@@ -151,37 +152,32 @@
                 </tr>
               </thead>
               <tbody>
-                <% for(let i=cat.length-1; i >= 0; i--) { %>
+                <% cat.reverse().forEach((category, index) => { %>
                 <tr>
                   <td></td>
-                  <td class="text-start"><%= cat[i].name %></td>
-                  <td class="text-start"><%= cat[i].description %></td>
+                  <td class="text-start"><%= category.name %></td>
+                  <td class="text-start"><%= category.description %></td>
                   <td>
-                    <% if (locals.cat[i].categoryOffer) { %> <%=
-                    cat[i].categoryOffer %>% <% }else{ %> 0% <% } %>
+                    <% if (category.categoryOffer) { %>
+                    <%= category.categoryOffer %>% 
+                    <% } else { %>
+                    0%
+                    <% } %>
                   </td>
                   <td class="text-start">
-                    <% if (locals.cat[i].categoryOffer===0) { %>
-                    <button
-                      class="btn btn-info"
-                      onclick="addOffer('<%= cat[i]._id %>')"
-                      style="width: 100px"
-                    >
+                    <% if (category.categoryOffer === 0) { %>
+                    <button class="btn btn-info" onclick="addOffer('<%= category._id %>')" style="width: 100px">
                       <a href="#" class="text-white">Add Offer</a>
                     </button>
-                    <% }else{ %>
-                    <button
-                      class="btn btn-info"
-                      onclick="removeOffer('<%= cat[i]._id %>')"
-                      style="width: 100px"
-                    >
+                    <% } else { %>
+                    <button class="btn btn-info" onclick="removeOffer('<%= category._id %>')" style="width: 100px">
                       <a href="#" class="text-white">Remove</a>
                     </button>
                     <% } %>
                   </td>
-
+              
                   <td class="text-start">
-                    <% if (cat[i].isListed === true) { %>
+                    <% if (category.isListed === true) { %>
                     <span
                       class="badge rounded-pill alert-success"
                       style="width: 60px"
@@ -196,10 +192,10 @@
                     <% } %>
                   </td>
                   <td class="text-start">
-                    <% if (cat[i].isListed === true) { %>
+                    <% if (category.isListed === true) { %>
                     <button class="btn btn-danger" style="width: 70px">
                       <a
-                        href="/admin/listCategory?id=<%= cat[i]._id %>"
+                        href="/admin/listCategory?id=<%= category._id %>"
                         class="text-white"
                         >Unlist</a
                       >
@@ -207,7 +203,7 @@
                     <% } else { %>
                     <button class="btn btn-success" style="width: 70px">
                       <a
-                        href="/admin/unListCategory?id=<%= cat[i]._id %>"
+                        href="/admin/unListCategory?id=<%= category._id %>"
                         class="text-white"
                         >List</a
                       >
@@ -217,15 +213,16 @@
                   <td class="text-start">
                     <button class="btn btn-info">
                       <a
-                        href="/admin/editCategory?id=<%= cat[i]._id %>"
+                        href="/admin/editCategory?id=<%= category._id %>"
                         class="text-white"
                         >Edit</a
                       >
                     </button>
                   </td>
                 </tr>
-                <% } %>
+                <% }) %>
               </tbody>
+              
             </table>
           </div>
         </div>

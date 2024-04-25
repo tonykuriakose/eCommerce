@@ -35,6 +35,15 @@ router.get("/filter", userController.filterProduct)
 router.get("/filterPrice", userController.filterByPrice)
 router.post("/sortProducts", userController.getSortProducts)
 
+// Products Routes
+router.get("/productDetails", userAuth, productController.productDetails);
+
+// Cart Management
+router.get("/cart", userAuth, cartController.getCartPage)
+router.post("/addToCart",userAuth, cartController.addToCart)
+router.post("/changeQuantity", userAuth,cartController.changeQuantity)
+router.get("/deleteItem", userAuth, cartController.deleteProduct)
+
 
 // User profile management
 router.get("/userprofile",userProfileController.getUserProfile);
@@ -45,14 +54,6 @@ router.get("/editAddress",userProfileController.getEditAddress);
 router.post("/editAddress",userProfileController.postEditAddress);
 router.get("/deleteAddress",userProfileController.getDeleteAddress);
 
-// Products Routes
-router.get("/productDetails", userAuth, productController.productDetails);
-
-// Cart Management
-router.get("/cart", userAuth, cartController.getCartPage)
-router.post("/addToCart",userAuth, cartController.addToCart)
-router.post("/changeQuantity", userAuth,cartController.changeQuantity)
-router.get("/deleteItem", userAuth, cartController.deleteProduct)
 
 // Order Management
 router.get("/checkout", userAuth,orderController.getCheckoutPage)
