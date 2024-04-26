@@ -36,7 +36,11 @@ const addBrand = async (req, res) => {
       await newBrand.save();
       res.redirect("/admin/brands");
     }
-  } catch (error) {
+    else{
+      
+    }
+  } 
+  catch (error) {
     res.redirect("/pageerror");
   }
 };
