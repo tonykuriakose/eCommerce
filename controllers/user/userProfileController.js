@@ -154,6 +154,121 @@ const getUserProfile = async (req, res) => {
   }
 };
 
+const getChangePassword = async (req, res) => {
+  try {
+    res.render("change-password");
+  } catch (error) {
+     res.redirect("/pageNotFound");
+  }
+};
+
+const changePasswordValid = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const findUser = await User.findOne({ email: email });
+
+    if (findUser) {
+      const otp = generateOtp();
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: {
+          user: process.env.NODEMAILER_EMAIL,
+          pass: process.env.NODEMAILER_PASSWORD,
+        },
+      });
+      const info = await transporter.sendMail({
+        from: process.env.NODEMAILER_EMAIL,
+        to: email,
+        subject: "Verify Your Account ✔",
+        text: `Your OTP is ${otp}`,
+        html: `<b>  <h4 >Your OTP  ${otp}</h4>    <br>  <a href="">Click here</a></b>`,
+      });
+      if (info) {
+        req.session.userOtp = otp;
+        req.session.userData = req.body;
+        req.session.email = email;
+        res.render("forgotPass-otp");
+        console.log("Email sented", info.messageId);
+        console.log(otp, "otp");
+      } else {
+        res.json("email-error");
+      }
+    } else {
+      res.render("forgot-password", {
+        message: "User with this email already exists",
+      });
+    }
+  } catch (error) {
+     res.redirect("/pageNotFound");
+  }
+};
+
+const getChangeEmail = async (req,res)=>{
+  try {
+
+    res.render("change-email")
+    
+  } catch (error) {
+    res.redirect("/pageNotFound")
+    
+  }
+
+
+
+}
+
+const changeEmailValid = async (req,res)=>{
+
+  try {
+    const { email } = req.body;
+
+    const findUser = await User.findOne({ email: email });
+
+    if (findUser) {
+      const otp = generateOtp();
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        port: 587,
+        secure: false,
+        requireTLS: true,
+        auth: {
+          user: process.env.NODEMAILER_EMAIL,
+          pass: process.env.NODEMAILER_PASSWORD,
+        },
+      });
+      const info = await transporter.sendMail({
+        from: process.env.NODEMAILER_EMAIL,
+        to: email,
+        subject: "Verify Your Account ✔",
+        text: `Your OTP is ${otp}`,
+        html: `<b>  <h4 >Your OTP  ${otp}</h4>    <br>  <a href="">Click here</a></b>`,
+      });
+      if (info) {
+        req.session.userOtp = otp;
+        req.session.userData = req.body;
+        req.session.email = email;
+        res.render("forgotPass-otp");
+        console.log("Email sented", info.messageId);
+        console.log(otp, "otp");
+      } else {
+        res.json("email-error");
+      }
+    } else {
+      res.render("change-email", {
+        message: "User with this email already exists",
+      });
+    }
+  } catch (error) {
+     res.redirect("/pageNotFound");
+  }
+};
+
+
+
 const editUserDetails = async (req, res) => {
   try {
     const userId = req.query.id;
@@ -335,6 +450,10 @@ const getDeleteAddress = async (req, res) => {
 
 module.exports = {
   getUserProfile,
+  getChangePassword,
+  changePasswordValid,
+  getChangeEmail,
+  changeEmailValid,
   editUserDetails,
   getAddressAddPage,
   postAddress,

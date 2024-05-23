@@ -112,29 +112,27 @@
                   role="tabpanel"
                   aria-labelledby="dashboard-tab"
                 >
-                  <div class="card card-green">
-                    <div class="card-header">
-                      <h5 class="mb-0 text-center">User Profile</h5>
-                    </div>
-                    <div class="card-body text-center">
-                      
-                      <div class="card-body text-center">
-                        <h5 class="card-title"><%= user.name %></h5>
-                        <p class="card-text">
-                          <strong>Email:</strong>
-                          <%= user.email %>
-                        </p>
-                        <p class="card-text">
-                          <strong>Phone:</strong>
-                          <%= user.phone %>
-                        </p>
-                        <p class="card-text">
-                          <strong>Account Id:</strong>
-                          <%= user._id %>
-                        </p>
-                      </div>
-                    </div>
+
+                <div class="card card-green">
+                  <div class="card-header">
+                    <h5 class="mb-0 text-center">User Profile</h5>
                   </div>
+                  <div class="card-body text-center">
+                    <h5 class="card-title"><%= user.name %></h5>
+                    <a href="/changeName" class="btn btn-sm btn-success mb-2">Edit</a>
+                    <p class="card-text">
+                      <strong>Email:</strong> <%= user.email %>
+                      <a href="/changeEmail" class="btn btn-sm btn-success ml-2">Edit</a>
+                    </p>
+                    <p class="card-text">
+                      <strong>Phone:</strong> <%= user.phone %>
+                      <a href="/changePhone" class="btn btn-sm btn-success ml-2">Edit</a>
+                    </p>
+                    <a href="/changePassword" class="btn btn-sm btn-success">Change Password</a>
+                  </div>
+                </div>
+                
+
                 </div>
 
                 <div

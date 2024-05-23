@@ -1,16 +1,15 @@
 const express = require("express");
-const db = require('./database/connection');
+const env = require("dotenv").config();
 const path = require("path");
 const session = require("express-session");
+const db = require('./database/connection');
 const userRouter = require("./routes/userRouter");
 const adminRouter = require("./routes/adminRouter");
 const app = express();
-const env = require("dotenv").config();
-db()
+db();
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
-
 app.use(session({
     secret:process.env.SESSION_SECRET,
     resave:false,
