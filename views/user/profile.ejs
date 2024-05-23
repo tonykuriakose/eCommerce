@@ -37,6 +37,18 @@
                   <li class="nav-item">
                     <a
                       class="nav-link"
+                      id="account-detail-tab"
+                      data-bs-toggle="tab"
+                      href="#account-detail"
+                      role="tab"
+                      aria-controls="account-detail"
+                      aria-selected="true"
+                      ><i class="fi-rs-sign-out mr-10"></i>User Details</a
+                    >
+                  </li>
+                  <li class="nav-item">
+                    <a
+                      class="nav-link"
                       id="address-tab"
                       data-bs-toggle="tab"
                       href="#address"
@@ -84,18 +96,7 @@
                       History</a
                     >
                   </li>
-                  <li class="nav-item">
-                    <a
-                      class="nav-link"
-                      id="account-detail-tab"
-                      data-bs-toggle="tab"
-                      href="#account-detail"
-                      role="tab"
-                      aria-controls="account-detail"
-                      aria-selected="true"
-                      ><i class="fi-rs-sign-out mr-10"></i>Account details</a
-                    >
-                  </li>
+                  
                   <li class="nav-item">
                     <a class="nav-link" href="/logout"
                       ><i class="fi-rs-sign-out mr-10"></i>Logout</a
@@ -119,15 +120,17 @@
                   </div>
                   <div class="card-body text-center">
                     <h5 class="card-title"><%= user.name %></h5>
-                    <a href="/changeName" class="btn btn-sm btn-success mb-2">Edit</a>
-                    <p class="card-text">
-                      <strong>Email:</strong> <%= user.email %>
-                      <a href="/changeEmail" class="btn btn-sm btn-success ml-2">Edit</a>
-                    </p>
                     <p class="card-text">
                       <strong>Phone:</strong> <%= user.phone %>
-                      <a href="/changePhone" class="btn btn-sm btn-success ml-2">Edit</a>
+                     
                     </p>
+                   
+                    <p class="card-text">
+                      <strong>Email:</strong> <%= user.email %>
+                      
+                    </p>
+                    <a href="/changeEmail" class="btn btn-sm btn-success ml-2">Change Email</a>
+                   
                     <a href="/changePassword" class="btn btn-sm btn-success">Change Password</a>
                   </div>
                 </div>
