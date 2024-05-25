@@ -207,7 +207,6 @@ const logout = async (req, res) => {
   }
 };
 
-//Home page management
 const loadHomepage = async (req, res) => {
   try {
     const today = new Date().toISOString();
@@ -219,12 +218,20 @@ const loadHomepage = async (req, res) => {
     });
     const brandData = await Brand.find({ isBlocked: false });
     const categories = await Category.find({ isListed: true });
-    const productData = await Product.find({ 
+    
+    // Fetch products that are not blocked and have non-zero quantity
+    let productData = await Product.find({ 
       isBlocked: false,
-      category: { $in: categories.map(category => category._id) }
-    })
-    .sort({ createdOn: 1 })
-    .limit(4);
+      category: { $in: categories.map(category => category._id) },
+      quantity: { $gt: 0 }  // Filter to exclude out-of-stock items
+    });
+
+    // Sort products by creation date in descending order
+    productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+    
+    // Limit the number of products to 4
+    productData = productData.slice(0, 4);
+    console.log(productData);
 
     if (user) {
       res.render("home", {
@@ -246,26 +253,30 @@ const loadHomepage = async (req, res) => {
 };
 
 
+
 const loadShoppingpage = async (req, res) => {
   try {
-    const user = req.session.id;
-    const products = await Product.find({ isBlocked: false });
-    const count = await Product.find({ isBlocked: false }).count();
-    const brands = await Brand.find({ isBlocked: false });
+    const user = req.session.user;
     const categories = await Category.find({ isListed: true });
-    const categoriesWithIds = await Category.find(
-      { isListed: true },
-      { _id: 1, name: 1 }
-    );
-    const categoryIds = categoriesWithIds.map((category) =>
-      category._id.toString()
-    );
-    const newProductArrayCategoryListed = products.filter((singleProduct) => {
-      return categoryIds.includes(singleProduct.category.toString());
+    const categoryIds = categories.map((category) => category._id.toString());
+
+    // Fetch products that are not blocked, have non-zero quantity, and belong to listed categories
+    let products = await Product.find({
+      isBlocked: false,
+      category: { $in: categoryIds },
+      quantity: { $gt: 0 } // Filter to exclude out-of-stock items
     });
+
+    // Sort products by creation date in descending order
+    products.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
+
+    const count = products.length;
+    const brands = await Brand.find({ isBlocked: false });
+    const categoriesWithIds = categories.map(category => ({ _id: category._id, name: category.name }));
+
     res.render("shop", {
       user: user,
-      product: newProductArrayCategoryListed,
+      product: products,
       category: categoriesWithIds,
       brand: brands,
       count: count,
@@ -274,6 +285,7 @@ const loadShoppingpage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
 
 // Search $ Filter Management
 const searchProducts = async (req, res) => {
