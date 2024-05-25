@@ -50,7 +50,9 @@ router.get("/userprofile",userProfileController.getUserProfile);
 router.get("/changePassword",userProfileController.getChangePassword);
 router.post("/changePasswordValid", userProfileController.changePasswordValid);
 router.get("/changeEmail",userProfileController.getChangeEmail);
-router.post("/changeEmailValid",userProfileController.changeEmailValid);
+router.post("/changeEmail",userProfileController.changeEmailValid);
+router.post('/verifyEmailOtp',userProfileController.verifyEmailOtp);
+router.post('/updateEmail',userProfileController.updateEmail);
 
 router.post("/editUserDetails",userProfileController.editUserDetails);
 router.get("/addAddress",userProfileController.getAddressAddPage);

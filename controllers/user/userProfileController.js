@@ -251,7 +251,7 @@ const changeEmailValid = async (req,res)=>{
         req.session.userOtp = otp;
         req.session.userData = req.body;
         req.session.email = email;
-        res.render("forgotPass-otp");
+        res.render("changeEmail-otp");
         console.log("Email sented", info.messageId);
         console.log(otp, "otp");
       } else {
@@ -266,6 +266,32 @@ const changeEmailValid = async (req,res)=>{
      res.redirect("/pageNotFound");
   }
 };
+
+const verifyEmailOtp = async (req, res) => {
+  try {
+    const enteredOtp = req.body.otp;
+    if (enteredOtp === req.session.userOtp) {
+      res.render("new-email");
+    } else {
+      res.render("changeEmail-otp", { message: "Otp not matching" });
+    }
+  } catch (error) {
+     res.redirect("/pageNotFound");
+  }
+};
+
+const updateEmail = async (req, res) => {
+  try {
+    const newEmail = req.body.newEmail;
+    const userId = req.session.user;
+    await User.findByIdAndUpdate(userId, { email: newEmail });
+    res.redirect("/userProfile");
+  } catch (error) {
+    console.error(error);
+    res.redirect("/pageNotFound");
+  }
+};
+
 
 
 
@@ -454,6 +480,8 @@ module.exports = {
   changePasswordValid,
   getChangeEmail,
   changeEmailValid,
+  verifyEmailOtp,
+  updateEmail,
   editUserDetails,
   getAddressAddPage,
   postAddress,
