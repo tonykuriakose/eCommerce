@@ -349,9 +349,9 @@
                     },
                     success: function (response) {
                         console.log(response);
-                        // let orderId = response.order._id
-                        // console.log("response from ajax");
-                        // console.log(response,"razorpay response");
+                        let orderId = response.order._id
+                        console.log("response from ajax");
+                        console.log(response,"razorpay response");
                         if (response.method === "cod") {
                         Swal.fire({
                             title: "Order success",
@@ -421,7 +421,7 @@
                                 "key": "rzp_test_1oqNRL0pVprL3m",
                                 "amount": orderAmount,
                                 "currency": "INR",
-                                "name": "LikeIt TryIt",
+                                "name": "E Trends Fashions",
                                 "description": "Test Transaction",
                                 "image": "https://example.com/your_logo",
                                 "order_id": response.razorPayOrder.id,
@@ -432,7 +432,7 @@
                                 "prefill": {
                                     "name": "Customer Name",
                                     "email": "customer@example.com",
-                                    "contact": "9000090000"
+                                    "contact": "9961618585"
                                 },
 
                                 "theme": {
@@ -455,8 +455,6 @@
             }
         }
         function verifyPayment(order, payment,orderId) {
-            console.log(order,"order - order")
-            console.log(payment,"payment -payment");
             $.ajax({
                 url: '/verifyPayment',
                 method: 'post',
@@ -464,10 +462,7 @@
                     order,
                     payment
                 }, success: (response) => {
-                    console.log(response,"kkkkk");
                     if (response.status) {
-                        console.log("Enygghjggjgjhj");
-
                         $.ajax({
                             url:'/paymentConfirm',
                             method:'post',
@@ -479,10 +474,6 @@
                                 // alert('hello')
                             }
                         })
-
-
-                        console.log("newStatussssss");
-
                         Swal.fire({
                             title: "Order success",
                             text: "order placed successfully",
@@ -495,7 +486,6 @@
                             if (result.value) {
                                 console.log("I am success");
                                 var orderDetailsUrl = `/orderDetails?id=${orderId}`;
-            // Redirect to the orderDetails page
             location.href = orderDetailsUrl;
                                 // result.dismiss can be "cancel", "overlay",
                                 // "close", and "timer"
@@ -511,18 +501,18 @@
         }
         
 
-        // function showCouponDetails(couponName) {
-        //     Swal.fire({
-        //         title: 'Coupon Details',
-        //         text: `${couponName}`,
-        //         icon: 'info',
-        //         confirmButtonText: 'OK'
-        //     }).then((result) => {
-        //         if (result.isConfirmed) {
-        //             copyToClipboard(couponName);
-        //         }
-        //     });
-        // }
+        function showCouponDetails(couponName) {
+            Swal.fire({
+                title: 'Coupon Details',
+                text: `${couponName}`,
+                icon: 'info',
+                confirmButtonText: 'OK'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    copyToClipboard(couponName);
+                }
+            });
+        }
 
         function copyToClipboard(text) {
             var tempInput = document.createElement('input');

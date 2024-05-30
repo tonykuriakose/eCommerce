@@ -427,8 +427,8 @@ const verify = (req, res) => {
     `${req.body.payment.razorpay_order_id}|${req.body.payment.razorpay_payment_id}`
   );
   hmac = hmac.digest("hex");
-  // console.log(hmac,"HMAC");
-  // console.log(req.body.payment.razorpay_signature,"signature");
+  console.log(hmac,"HMAC");
+  console.log(req.body.payment.razorpay_signature,"signature");
   if (hmac === req.body.payment.razorpay_signature) {
     console.log("true");
     res.json({ status: true });

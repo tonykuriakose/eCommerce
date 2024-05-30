@@ -5,6 +5,7 @@ const userProfileController= require("../controllers/user/userProfileController"
 const productController = require("../controllers/user/productController");
 const cartController = require("../controllers/user/cartController");
 const orderController = require("../controllers/user/orderController");
+const walletController = require("../controllers/user/walletController");
 const userAuth = require("../middlewares/userAuth");
 
 // Error Management
@@ -72,6 +73,10 @@ router.get("/returnrequestOrder",userAuth,orderController.returnorder)
 router.post("/verifyPayment", userAuth, orderController.verify)
 router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus)
 router.post('/paymentConfirm',userAuth,orderController.paymentConfirm)
+
+// Wallet
+router.post("/addMoney", userAuth, walletController.addMoneyToWallet)
+router.post("/verify-payment", userAuth, walletController.verify_payment)
 
 
 module.exports = router;

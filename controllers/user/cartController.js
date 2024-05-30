@@ -56,46 +56,47 @@ const addToCart = async (req, res) => {
     const userId = req.session.user;
     const findUser = await User.findById(userId);
     const product = await Product.findById({ _id: id }).lean();
+    
     if (!product) {
       return res.json({ status: "Product not found" });
     }
     
-        if (product.quantity > 0) {
-            const cartIndex = findUser.cart.findIndex((item) => item.productId == id);
-            if (cartIndex == -1) {
-              let quantity = 1;
-              await User.findByIdAndUpdate(userId, {
-                $addToSet: {
-                  cart: {
-                    productId: id,
-                    quantity: quantity,
-                  },
-                },
-              }).then((data) =>
-                res.json({ status: true, cartLength: findUser.cart.length,user:userId })
-              );
-            } else {
-              const productInCart = findUser.cart[cartIndex];
-              if (productInCart.quantity <= product.quantity) {
-                const newQuantity = parseInt(productInCart.quantity) + 1;
-                await User.updateOne(
-                  { _id: userId, "cart.productId": id },
-                  { $set: { "cart.$.quantity": newQuantity } }
-                );
-                res.json({ status: true, cartLength: findUser.cart.length,user:userId });
-              } else {
-                res.json({ status: "Out of of stock" });
-              }
-              console.log(productInCart, "product", newQuantity);
-            }
-          } else {
-            res.json({ status: "Out of stock" });
-          }
-   
+    if (product.quantity <= 0) {
+      return res.json({ status: "Out of stock" });
+    }
+
+    const cartIndex = findUser.cart.findIndex((item) => item.productId == id);
+
+    if (cartIndex === -1) {
+      const quantity = 1;
+      await User.findByIdAndUpdate(userId, {
+        $addToSet: {
+          cart: {
+            productId: id,
+            quantity: quantity,
+          },
+        },
+      });
+      return res.json({ status: true, cartLength: findUser.cart.length + 1, user: userId });
+    } else {
+      const productInCart = findUser.cart[cartIndex];
+      if (productInCart.quantity < product.quantity) {
+        const newQuantity = productInCart.quantity + 1;
+        await User.updateOne(
+          { _id: userId, "cart.productId": id },
+          { $set: { "cart.$.quantity": newQuantity } }
+        );
+        return res.json({ status: true, cartLength: findUser.cart.length, user: userId });
+      } else {
+        return res.json({ status: "Out of stock" });
+      }
+    }
   } catch (error) {
-    res.redirect("/pageNotFound");
+    console.error(error);
+    return res.redirect("/pageNotFound");
   }
 };
+
 
 const changeQuantity = async (req, res) => {
   try {
