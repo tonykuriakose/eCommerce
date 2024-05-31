@@ -34,17 +34,20 @@ const addCategory = async (req, res) => {
       return res.status(400).json({ error: 'Category already exists' });
     }
     const newCategory = new Category({
-      name: name,
-      description: description,
+      name,
+      description,
     });
     const savedCategory = await newCategory.save();
     console.log(savedCategory, "savedCategory");
-    res.redirect("/admin/category");
+    return res.redirect("/admin/category");
   } catch (error) {
     console.error("Error adding category:", error);
-    res.status(500).json({ error: 'Internal server error' });
+    if (!res.headersSent) {
+      return res.status(500).json({ error: 'Internal server error' });
+    }
   }
 };
+
 
 
 //category list

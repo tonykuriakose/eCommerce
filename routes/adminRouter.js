@@ -86,6 +86,6 @@ router.get("/salesYearly", adminAuth, adminController.salesYearly)
 router.post("/generatePdf", adminAuth, adminController.generatePdf)
 router.post("/downloadExcel", adminAuth, adminController.downloadExcel)
 router.get("/monthly-report", adminAuth,adminController.monthlyreport)
-router.get("/dateWiseFilter", adminAuth, adminController.dateWiseFilter)
+router.get("/dateWiseFilter", adminAuth, adminController.datewiseFilter);
 
 module.exports = router;
