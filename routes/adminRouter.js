@@ -60,8 +60,9 @@ router.post("/removeProductOffer",adminAuth,productController.removeProductOffer
 router.get("/coupon", adminAuth, adminController.loadCoupon);
 router.post("/createCoupon", adminAuth, adminController.createCoupon);
 router.get("/editCoupon",adminAuth,adminController.editCoupon);
-router.get("/deleteCoupon",adminAuth,adminController.deleteCoupon);
 router.post("/updatecoupon",adminAuth,adminController.updateCoupon);
+router.get("/deleteCoupon",adminAuth,adminController.deleteCoupon);
+
 
 // Banner Management
 router.get("/banner", adminAuth, bannerController.bannerManagement);
