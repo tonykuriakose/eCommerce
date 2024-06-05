@@ -109,137 +109,123 @@ const deleteProduct = async (req, res) => {
   }
 };
 
+
+
 const orderPlaced = async (req, res) => {
   try {
     const { totalPrice, addressId, payment } = req.body;
     const userId = req.session.user;
+
+    // Find user and their cart
     const findUser = await User.findOne({ _id: userId });
+    if (!findUser) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    // Extract product IDs from the user's cart
     const productIds = findUser.cart.map((item) => item.productId);
 
-     const addres= await Address.find({userId:userId})
+    // Find the desired address
+    const findAddress = await Address.findOne({ userId: userId, "address._id": addressId });
+    if (!findAddress) {
+      return res.status(404).json({ error: "Address not found" });
+    }
 
-    const findAddress = await Address.findOne({ "address._id": addressId });
+    const desiredAddress = findAddress.address.find((item) => item._id.toString() === addressId.toString());
+    if (!desiredAddress) {
+      return res.status(404).json({ error: "Specific address not found" });
+    }
 
-    if (findAddress) {
-      const desiredAddress = findAddress.address.find(
-        (item) => item._id.toString() === addressId.toString()
-      );
-      const findProducts = await Product.find({ _id: { $in: productIds } });
-      const cartItemQuantities = findUser.cart.map((item) => ({
-        productId: item.productId,
-        quantity: item.quantity,
-      }));
+    // Find products in the cart
+    const findProducts = await Product.find({ _id: { $in: productIds } });
+    if (findProducts.length !== productIds.length) {
+      return res.status(404).json({ error: "Some products not found" });
+    }
 
-      const orderedProducts = findProducts.map((item) => ({
-        _id: item._id,
-        price: item.salePrice,
-        name: item.productName,
-        image: item.productImage[0],
-        productStatus: "Confirmed",
-        quantity: cartItemQuantities.find(
-          (cartItem) => cartItem.productId.toString() === item._id.toString()
-        ).quantity,
-      }));
-      let newOrder;
-      if (payment == "razorpay") {
-        newOrder = new Order({
-          product: orderedProducts,
-          totalPrice: totalPrice,
-          address: desiredAddress,
-          payment: payment,
-          userId: userId,
-          status: "Failed",
-          createdOn: Date.now(),
-        });
-      } else {
-        newOrder = new Order({
-          product: orderedProducts,
-          totalPrice: totalPrice,
-          address: desiredAddress,
-          payment: payment,
-          userId: userId,
-          status: "Confirmed",
-          createdOn: Date.now(),
-        });
+    // Map cart items with product details
+    const cartItemQuantities = findUser.cart.map((item) => ({
+      productId: item.productId,
+      quantity: item.quantity,
+    }));
+
+    const orderedProducts = findProducts.map((item) => ({
+      _id: item._id,
+      price: item.salePrice,
+      name: item.productName,
+      image: item.productImage[0],
+      productStatus: "Confirmed",
+      quantity: cartItemQuantities.find((cartItem) => cartItem.productId.toString() === item._id.toString()).quantity,
+    }));
+
+    // Create new order based on payment method
+    let newOrder = new Order({
+      product: orderedProducts,
+      totalPrice: totalPrice,
+      address: desiredAddress,
+      payment: payment,
+      userId: userId,
+      status: payment === "razorpay" ? "Failed" : "Confirmed",
+      createdOn: Date.now(),
+    });
+
+    // Save the new order
+    let orderDone = await newOrder.save();
+
+    // Clear the user's cart
+    await User.updateOne({ _id: userId }, { $set: { cart: [] } });
+
+    // Update product quantities
+    for (let orderedProduct of orderedProducts) {
+      const product = await Product.findOne({ _id: orderedProduct._id });
+      if (product) {
+        product.quantity = Math.max(product.quantity - orderedProduct.quantity, 0);
+        await product.save();
       }
+    }
 
-      let orderDone = await newOrder.save();
-      await User.updateOne({ _id: userId }, { $set: { cart: [] } });
-      for (let i = 0; i < orderedProducts.length; i++) {
-        const product = await Product.findOne({ _id: orderedProducts[i]._id });
-
-        if (product) {
-          const newQuantity = product.quantity - orderedProducts[i].quantity;
-          product.quantity = Math.max(newQuantity, 0);
-          await product.save();
-        }
-      }
-
-      if (newOrder.payment == "cod") {
-        console.log("order placed by cod");
+    // Handle different payment methods
+    if (newOrder.payment === "cod") {
+      res.json({
+        payment: true,
+        method: "cod",
+        order: orderDone,
+        quantity: cartItemQuantities,
+        orderId: orderDone._id,
+      });
+    } else if (newOrder.payment === "wallet") {
+      if (newOrder.totalPrice <= findUser.wallet) {
+        findUser.wallet -= newOrder.totalPrice;
+        findUser.history.push({ amount: newOrder.totalPrice, status: "debit", date: Date.now() });
+        await findUser.save();
         res.json({
           payment: true,
-          method: "cod",
+          method: "wallet",
           order: orderDone,
+          orderId: orderDone._id,
           quantity: cartItemQuantities,
-          orderId: findUser,
+          success: true,
         });
-      } else if (newOrder.payment == "wallet") {
-        console.log("order placed by wallet");
-        if (newOrder.totalPrice <= findUser.wallet) {
-          console.log("order placed with Wallet");
-          const data = (findUser.wallet -= newOrder.totalPrice);
-          const newHistory = {
-            amount: data,
-            status: "debit",
-            date: Date.now(),
-          };
-          findUser.history.push(newHistory);
-          await findUser.save();
-
-          orderDone = await newOrder.save();
-          console.log(orderDone, "orderdone");
-          res.json({
-            payment: true,
-            method: "wallet",
-            order: orderDone,
-            orderId: orderDone._id,
-            quantity: cartItemQuantities,
-            success: true,
-          });
-          return;
-        } else {
-          console.log("wallet amount is lesser than total amount");
-          await Order.updateOne(
-            { _id: orderDone._id },
-            { $set: { status: "Failed" } }
-          );
-          return res.json({ payment: false, method: "wallet", success: false });
-        }
-      } else if (newOrder.payment == "razorpay") {
-        console.log("order placed by razorpay");
-        orderDone = await newOrder.save();
-        console.log(orderDone, "ok");
-        let razorPaygenaratedOrder = await generateOrderRazorpay(
-          orderDone._id,
-          orderDone.totalPrice
-        );
-        console.log(razorPaygenaratedOrder, "ordr bgen");
-        res.json({
-          payment: false,
-          method: "razorpay",
-          razorPayOrder: razorPaygenaratedOrder,
-          order: orderDone,
-          quantity: cartItemQuantities,
-        });
+      } else {
+        await Order.updateOne({ _id: orderDone._id }, { $set: { status: "Failed" } });
+        res.json({ payment: false, method: "wallet", success: false });
       }
-    } else {
-      console.log("Address not found");
+    } else if (newOrder.payment === "razorpay") {
+      const razorPayGeneratedOrder = await generateOrderRazorpay(orderDone._id, orderDone.totalPrice);
+      res.json({
+        payment: false,
+        method: "razorpay",
+        razorPayOrder: razorPayGeneratedOrder,
+        order: orderDone,
+        quantity: cartItemQuantities,
+      });
     }
   } catch (error) {
+    console.error("Error processing order:", error);
     res.redirect("/pageNotFound");
   }
 };
+
+
 
 const getOrderDetailsPage = async (req, res) => {
   try {

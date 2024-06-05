@@ -57,7 +57,7 @@
                                                                 / per item </small>
 
                                                     </td>
-                                                    <% console.log(data[i].productDetails[0].salePrice * data[i].quantity,"qqqq"); %>
+                                                   
 
                                                         <% x +=data[i].productDetails[0].salePrice * data[i].quantity%>
 
@@ -92,7 +92,7 @@
                                                             </td>
 
                                                             <% } %>
-                                                            <% console.log(x,"xxx"); %>
+                                                           
                                                                 <% } else { %>
                                                 <tr>
 
@@ -149,8 +149,8 @@
         function changeQuantity(productId, cartQuantity, count, productPrice, i, productQuantity) {
             
           
-            // const abc = document.getElementById("totalabc").value
-            // console.log(abc, "hi");
+            const abc = document.getElementById("totalabc").value
+            
             
             const cartProductQuantityElement = document.querySelector(`#cartProductQuantity${i}`)
             const subtotalElement = document.querySelector(`#subTotal${i}`);

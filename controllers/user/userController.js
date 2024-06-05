@@ -231,7 +231,6 @@ const loadHomepage = async (req, res) => {
     
     // Limit the number of products to 4
     productData = productData.slice(0, 4);
-    console.log(productData);
 
     if (user) {
       res.render("home", {
