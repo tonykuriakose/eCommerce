@@ -163,7 +163,7 @@ const createCoupon = async (req, res) => {
     });
 
     await newCoupon.save();
-    res.redirect("/coupon");
+    return res.redirect("/admin/coupon");
 
   } catch (error) {
     res.redirect("/pageerror");
@@ -186,7 +186,7 @@ const deleteCoupon = async (req, res) => {
   try {
     const id = req.query.id;
     await Coupon.deleteOne({ _id: id });
-    res.redirect("/coupon");
+    res.redirect("/admin/coupon");
   } catch (error) {
     res.redirect("/pageerror");
   }
