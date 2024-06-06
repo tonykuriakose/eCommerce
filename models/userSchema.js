@@ -34,6 +34,9 @@ const userSchema = Mongoose.Schema({
         type : Number,
         default : 0
     },
+    wishlist : {
+        type : Array
+    },
     history : {
         type : Array
     },
