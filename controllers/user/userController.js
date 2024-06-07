@@ -447,6 +447,34 @@ const getSortProducts = async (req, res) => {
   }
 };
 
+const applyCoupon = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const selectedCoupon = await Coupon.findOne({ name: req.body.coupon });
+
+    if (!selectedCoupon) {
+      console.log("no coupon");
+      res.json({ noCoupon: true });
+    } else if (selectedCoupon.userId.includes(userId)) {
+      console.log("already used");
+      res.json({ used: true });
+    } else {
+      console.log("coupon exists");
+      await Coupon.updateOne(
+        { name: req.body.coupon },
+        { $addToSet: { userId: userId } }
+      );
+      const gt = parseInt(req.body.total) - parseInt(selectedCoupon.offerPrice);
+      console.log(gt, "----");
+      res.json({ gt: gt, offerPrice: parseInt(selectedCoupon.offerPrice) });
+    }
+  } catch (error) {
+    res.redirect("/pageNotFound");
+  }
+};
+
+
+
 
 module.exports = {
   pageNotFound,
@@ -465,5 +493,6 @@ module.exports = {
   filterByPrice,
   filterProduct,
   getSortProducts,
+  applyCoupon,
 };
 

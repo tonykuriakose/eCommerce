@@ -185,12 +185,15 @@
                     <div class="col-6 mt-50 ">
                         
                             
-                            <div class="input-group mb-3 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 60px;">
-                                <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name" >
-                                <div class="input-group-append">
-                                    <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('<%=grandTotal%>')">Apply</button>
-                                </div>
+                        <div class="input-group mb-3 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 60px;">
+                            <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name">
+                            <div class="input-group-append">
+                                <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('<%=grandTotal%>')">Apply</button>
+
                             </div>
+                        </div>
+                        
+
                             </div>
                             
                         
@@ -533,43 +536,41 @@
         }
 
 
+        function applyCoupon() {
+    const coupon = $('#couponInput').val();
+    const total = $('#totalValue').text().replace('₹', ''); // Extract the total value
 
-        function applyCoupon(total){
-        const coupon = document.getElementById('inputCoupon').value
-        $.ajax({
-            url:'/applyCoupon',
-            method:'post',
-            data:{
-                coupon,
-                total,
-            },
-            success:(response)=>{
-                console.log(response,"okok");
-                if(response.used == true){
-                    Swal.fire("Already used");
-                }else if(response.noCoupon == true){
-                    Swal.fire("No coupon found");
-                }else{
-                    
-                    document.getElementById('inputCoupon').readOnly = true;
-                    document.getElementById('applyButton').disabled  =true;
+    $.ajax({
+      url: '/applyCoupon',
+      method: 'POST',
+      data: {
+        coupon: coupon,
+        total: total
+      },
+      success: function(response) {
+        if (response.noCoupon) {
+          alert('Coupon not found!');
+        } else if (response.used) {
+          alert('Coupon already used!');
+        } else {
+          const discount = response.offerPrice;
+          const newTotal = response.gt;
 
-                    const gt =parseInt(document.getElementById('totalValue').innerHTML);
-                    // console.log(typeof(gt));
-                    // alert(gt)
-                    const discount = parseInt(document.getElementById('discount').innerHTML);
-                    // alert(discount)
-                    document.getElementById('totalValue').innerHTML = response.gt;
-                    document.getElementById('discount').innerHTML = response.offerPrice;
-                }
-            }
-        })
-    }
-
+          $('#discount').text(`₹${discount}`);
+          $('#totalValue').text(`₹${newTotal}`);
+        }
+      },
+      error: function() {
+        alert('An error occurred while applying the coupon.');
+      }
+    });
+  }
+        
 
     var usedCoupon = null;
 
     function useCoupon(couponName) {
+        console.log(couponName);
         // Disable all other coupons
         disableOtherCoupons(couponName);
 

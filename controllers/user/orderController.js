@@ -77,6 +77,7 @@ const getCheckoutPage = async (req, res) => {
       expireOn: { $gt: new Date(today) },
       minimumPrice: { $lt: grandTotal[0].totalPrice },
     });
+    console.log(findCoupons);
 
     if (findUser.cart.length > 0) {
       res.render("checkoutcart", {
@@ -231,10 +232,6 @@ const getOrderDetailsPage = async (req, res) => {
   try {
     const userId = req.session.user;
     const orderId = req.query.id;
-
-    console.log(req.query.id);
-    console.log(userId);
-    console.log(orderId, "orderid");
     const findOrder = await Order.findOne({ _id: orderId });
     const findUser = await User.findOne({ _id: userId });
     let totalGrant = 0;
@@ -307,6 +304,8 @@ const changeSingleProductStatus = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
+
 const cancelorder = async (req, res) => {
   console.log("canceled");
   try {

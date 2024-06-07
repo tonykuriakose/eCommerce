@@ -42,7 +42,6 @@
     background-color: #0056b3;
     border-color: #0056b3;
   }
-  
 </style>
 
 <section class="content-main">
@@ -55,11 +54,11 @@
     <div class="card-body">
       <div class="row">
         <div class="col-md-3">
-          <form method="post" action="/admin/updatecoupon">
+          <form id="coupon-form" method="post" action="/admin/updatecoupon">
             <body onload="setDefaultStartDate(),setDefaultendDate()"></body>
             <input type="hidden" id="coupon-id" value="<%= findCoupon._id %>" />
             <div class="mb-4">
-              <label for="coupon-name" class="form-label">CouponName</label>
+              <label for="coupon-name" class="form-label">Coupon Name</label>
               <input
                 type="text"
                 id="coupon-name"
@@ -72,7 +71,7 @@
             </div>
 
             <div>
-              <label for="startingDate" class="form-label">StartDate</label>
+              <label for="startingDate" class="form-label">Start Date</label>
               <input
                 type="date"
                 name="startDate"
@@ -104,7 +103,6 @@
                 placeholder="Type here"
                 class="form-control"
                 value="<%=findCoupon.offerPrice%>"
-                
               />
               <div id="error-offer-price" class="error-message"></div>
             </div>
@@ -122,7 +120,7 @@
               <div id="error-minimum-price" class="error-message"></div>
             </div>
             <div class="d-grid">
-              <button onclick="updateCoupon()" class="btn btn-primary mt-20">Update Coupon</button>
+              <button type="submit" class="btn btn-primary mt-20">Update Coupon</button>
             </div>
             <div id="err-msg" class="error-message"></div>
           </form>
@@ -131,30 +129,30 @@
     </div>
   </div>
 </section>
+
 <script>
-function updateCoupon() {
-  $.ajax({
-    url: "/admin/updatecoupon",
-    method: "post",
-    data: {
-      couponId: document.getElementById("coupon-id").value,
-      couponName:  document.getElementById("coupon-name").value,
-     startDate:  document.getElementById("startingDate").value,
-     endDate:  document.getElementById("expiringDate").value,
-     offerPrice: document.getElementById("offer-price").value,
-     minimumPrice:  document.getElementById("minimum-price").value
-    },
-    success: function(response) {
-      console.log("Coupon updated successfully");
-      window.location.href = "/admin/coupon";
-    },
-    error: function(xhr, status, error) {
-      console.error("Error updating coupon:", error);
-    }
-  });
-}
-</script>
-<script>
+  function updateCoupon() {
+    $.ajax({
+      url: "/admin/updatecoupon",
+      method: "post",
+      data: {
+        couponId: document.getElementById("coupon-id").value,
+        couponName: document.getElementById("coupon-name").value,
+        startDate: document.getElementById("startingDate").value,
+        endDate: document.getElementById("expiringDate").value,
+        offerPrice: document.getElementById("offer-price").value,
+        minimumPrice: document.getElementById("minimum-price").value
+      },
+      success: function(response) {
+        console.log("Coupon updated successfully");
+        window.location.href = "/admin/coupon";
+      },
+      error: function(xhr, status, error) {
+        console.error("Error updating coupon:", error);
+      }
+    });
+  }
+
   function setDefaultStartDate() {
     const today = new Date();
     const year = today.getFullYear();
@@ -162,6 +160,7 @@ function updateCoupon() {
     let day = today.getDate().toString().padStart(2, "0");
     document.getElementById("startingDate").value = `${year}-${month}-${day}`;
   }
+
   function setDefaultendDate() {
     const today = new Date();
     const tomorrow = new Date(today);
@@ -171,12 +170,10 @@ function updateCoupon() {
     let month = (tomorrow.getMonth() + 1).toString().padStart(2, "0");
     let day = tomorrow.getDate().toString().padStart(2, "0");
     document.getElementById("expiringDate").value = `${year}-${month}-${day}`;
-}
+  }
 
   function validateForm() {
-    document
-      .querySelectorAll(".error-message")
-      .forEach((element) => (element.innerHTML = ""));
+    document.querySelectorAll(".error-message").forEach((element) => (element.innerHTML = ""));
 
     const sDate = document.getElementsByName("startDate")[0].value;
     const eDate = document.getElementsByName("endDate")[0].value;
@@ -202,7 +199,7 @@ function updateCoupon() {
 
     if (!nameRegex.test(name)) {
       document.getElementById("error-coupon-name").innerHTML =
-        "Coupon Name error";
+        "Coupon Name should only contain alphanumeric characters and be between 1 to 50 characters.";
       return false;
     }
 
@@ -218,22 +215,44 @@ function updateCoupon() {
         ? parseInt(minimumPriceInput.value)
         : NaN;
 
-    if (
-      isNaN(offerPrice) ||
-      isNaN(minimumPrice) ||
-      offerPrice >= minimumPrice
-    ) {
+    if (isNaN(offerPrice)) {
       document.getElementById("error-offer-price").innerHTML =
-        "Offer Price must be greater than Minimum Price";
+        "Please enter a valid numeric value for Offer Price";
       return false;
     }
 
-    if (isNaN(offerPrice) || isNaN(minimumPrice)) {
-      document.getElementById("error-offer-price").innerHTML =
-        "Please enter numeric values for Offer Price and Minimum Price";
+    if (isNaN(minimumPrice)) {
+      document.getElementById("error-minimum-price").innerHTML =
+        "Please enter a valid numeric value for Minimum Price";
       return false;
     }
+
+    if (offerPrice < 0) {
+      document.getElementById("error-offer-price").innerHTML =
+        "Offer Price must be a positive number";
+      return false;
+    }
+
+    if (minimumPrice < 0) {
+      document.getElementById("error-minimum-price").innerHTML =
+        "Minimum Price must be a positive number";
+      return false;
+    }
+
+    if (offerPrice >= minimumPrice) {
+      document.getElementById("error-offer-price").innerHTML =
+        "Offer Price must be less than Minimum Price";
+      return false;
+    }
+
     return true;
   }
+
+  document.getElementById("coupon-form").addEventListener("submit", function(event) {
+    event.preventDefault(); 
+    if (validateForm()) {
+      updateCoupon();
+    }
+  });
 </script>
 <%- include("../../views/partials/admin/footer") %>
