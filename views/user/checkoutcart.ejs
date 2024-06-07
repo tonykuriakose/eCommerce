@@ -33,24 +33,12 @@
     <section class="mt-50 mb-50">
         <div class="container">
             <div class="row">
-
-
-                <!-- Add your form tag with the appropriate action attribute -->
-
-
-
-               
-
-                <!-- Order Summary and Payment Column (Right Side) -->
                 <div class="row">
                     <div class="col-md-12">
                         <div class="order_review">
                             <div class="mb-20">
                                 <h4>Your Orders</h4>
                             </div>
-
-
-
                             <div class="table-responsive order_table text-center">
                                 <table class="table mt-40">
                                     <thead>
@@ -101,16 +89,6 @@
                             </div>
                         </div>
                     </div>
-                    
-
-
-
-
-
-                   
-                    
-
-
                     <div class="col-8">
                         <div class="row align-items-start mt-30 ml-150">
                             <!-- Use align-items-start to vertically align content at the top -->
@@ -157,8 +135,6 @@
                                                 </div>
                                             </div>
                                         </div>
-
-
                                     </div>
                                     <% }) %>
                                         <% } else { %>
@@ -192,11 +168,7 @@
 
                             </div>
                         </div>
-                        
-
                             </div>
-                            
-                        
                             <div class="mb-25 ml-150 pt-40">
                                 <h5>Available Coupons</h5>
                             </div>
@@ -224,10 +196,6 @@
 
                                                 <% } %>
                             </ul>
-
-
-
-
                         </div>
                         <div class="payment_method">
                             <div class="mb-25 ml-150">
@@ -304,12 +272,6 @@
                            
                         </div>
                     </div>
-
-
-
-
-
-
                 </div>
             </div>
     </section>
@@ -410,10 +372,7 @@
     });
 }
 
-                        }
-
-                            
-                     
+                        }                 
                             else if (response.method === "razorpay") {
                                
                                console.log("response.method");
@@ -503,7 +462,6 @@
             })
         }
         
-
         function showCouponDetails(couponName) {
             Swal.fire({
                 title: 'Coupon Details',
@@ -516,7 +474,6 @@
                 }
             });
         }
-
         function copyToClipboard(text) {
             var tempInput = document.createElement('input');
             document.body.appendChild(tempInput);
@@ -534,8 +491,6 @@
                 confirmButtonText: 'OK'
             });
         }
-
-
         function applyCoupon() {
     const coupon = $('#couponInput').val();
     const total = $('#totalValue').text().replace('₹', ''); // Extract the total value
@@ -566,7 +521,6 @@
     });
   }
         
-
     var usedCoupon = null;
 
     function useCoupon(couponName) {
@@ -612,11 +566,6 @@
             button.disabled = false;
         });
     }
-
-   
-
-
     </script>
-
 
 <%- include("../../views/partials/user/footer") %>
