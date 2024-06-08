@@ -39,6 +39,9 @@ router.post("/sortProducts", userController.getSortProducts)
 // Products Routes
 router.get("/productDetails", userAuth, productController.productDetails);
 
+// Wishlist Management
+router.get("/wishlist", userAuth,cartController.loadWishlist);
+
 // Cart Management
 router.get("/cart", userAuth, cartController.getCartPage)
 router.post("/addToCart",userAuth, cartController.addToCart)

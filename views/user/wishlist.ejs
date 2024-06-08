@@ -1,83 +1,73 @@
-
-        <%- include('../../views/partials/user/header.ejs') %>
-
-        <!-- Breadcrumb Begin -->
-        <div class="breadcrumb-option">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="breadcrumb__links">
-                            <a href="/"><i class="fa fa-home"></i> Home</a>
-                            <span>Wishlist</span>
-                        </div>
+<%- include("../../views/partials/user/header") %>
+<main class="main">
+    <div class="page-header breadcrumb-wrap">
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="index.html" rel="nofollow">Home</a>
+                <span></span> Shop
+                <span></span> Your Wishlist
+            </div>
+        </div>
+    </div>
+    <section class="mt-50 mb-50">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table shopping-summery text-center clean">
+                            <thead>
+                                <tr class="main-heading">
+                                    <th scope="col">Image</th>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Price</th>
+                                    <th scope="col">Add to Cart</th>
+                                    <th scope="col">Remove</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <% if (wishlist.length > 0) { %>
+                                    <% for (let product of wishlist) { %>
+                                        <tr>
+                                            <td class="image product-thumbnail">
+                                                <img src="/uploads/re-image/<%= product.productImage[0] %>" alt="#" />
+                                            </td>
+                                            <td class="product-des product-name">
+                                                <h5 class="product-name">
+                                                    <a href="/product/<%= product._id %>">
+                                                        <%= product.productName %>
+                                                    </a>
+                                                </h5>
+                                                <p class="font-xs">
+                                                    <%= product.category %><br />
+                                                    <%= product.brand %>.
+                                                </p>
+                                            </td>
+                                            <td class="price" data-title="Price">₹<span>
+                                                <%= product.salePrice %>
+                                            </span></td>
+                                            <td class="text-center" data-title="Add to Cart">
+                                                <a href="/addToCart?productId=<%= product._id %>" class="btn btn-sm">Add to Cart</a>
+                                            </td>
+                                            <td class="action" data-title="Remove" onclick="return confirm('Are you sure you want to remove this product from your wishlist?')">
+                                                <a class="btn btn-sm" href="/removeFromWishlist?productId=<%= product._id %>">
+                                                    <i class="fi-rs-trash"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    <% } %>
+                                <% } else { %>
+                                    <tr>
+                                        <td colspan="5" class="text-center">
+                                            <p class="lead mb-4">No items found in Wishlist</p>
+                                        </td>
+                                    </tr>
+                                <% } %>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        <!-- Breadcrumb End -->
-
-        <!-- Shop Cart Section Begin -->
-        <section class="shop-cart spad">
-            <div class="container">
-                <div class="row">
-                    <div class="col-lg-12">
-                        <div class="shop__cart__table" id="reloadDiv">
-                            <table>
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Price</th>
-                                        <th>Stock Status</th>
-                                        <th>Action</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
-                                        <% wishlist.products.forEach(item => { %>
-                                            <tr>
-                                                <td class="cart__product__item">
-                                                    <% if (item.productImages && item.productImages.length > 0) { %>
-                                                        <img style="height: 100px; width: 100px;" src="/uploads/re-image/<%= item.productImages[0] %>" alt="">
-                                                    <% } else { %>
-                                                        <img src="/path/to/placeholder-image.jpg" alt="Placeholder Image">
-                                                    <% } %>
-                                                    <div class="cart__product__item__title">
-                                                        <h6><%= item.productName %></h6>
-                                                    </div>
-                                                </td>
-                                                <td class="cart__price">₹<%= item.price.toLocaleString('en-IN') %></td>
-                                                <td class="cart__price"><%= item.quantity %> no's left!</td>
-                                                <td>
-                                                    <% if (isInCart(item)) { %>
-                                                        <span class="bg-light p-3 text-dark"><a href="/cart">Go to Cart</a></span>
-                                                    <% } else { %>
-                                                        <a href="/addToCart/<%= item._id %>" class="cart p-5"><span class="icon_bag_alt"></span></a>
-                                                    <% } %>
-                                                </td>
-                                                <td class="cart__close">
-                                                    <a href="/removeWishlist/<%= item._id %>">
-                                                        <span class="icon_close"></span>
-                                                    </a>
-                                                </td>
-                                            </tr>
-                                        <% }); %>
-                                    <% } else { %>
-                                        <tr>
-                                            <td>Your Wishlist is empty! <br>Visit our shop page to favorite some products!</td>
-                                        </tr>
-                                    <% } %>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-lg-6 col-md-6 col-sm-6">
-                        <div class="cart__btn">
-                            <a href="/shop">Continue Shopping</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-       
+    </section>
+</main>
+<%- include("../../views/partials/user/footer") %>

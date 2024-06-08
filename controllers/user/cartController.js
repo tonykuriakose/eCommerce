@@ -2,6 +2,31 @@ const User = require("../../models/userSchema");
 const Product = require("../../models/productSchema");
 const mongodb = require("mongodb");
 
+
+
+const loadWishlist = async (req, res) => {
+  try {
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.redirect("/pageNotFound");
+    }
+
+    const productIds = user.wishlist;
+    const products = await Product.find({ _id: { $in: productIds } });
+
+    res.render("wishlist", {
+      user,
+      wishlist: products
+    });
+  } catch (error) {
+    console.error(error);
+    return res.redirect("/pageNotFound");
+  }
+};
+
+
 const getCartPage = async (req, res) => {
   try {
     const id = req.session.user;
@@ -221,4 +246,5 @@ module.exports = {
   addToCart,
   changeQuantity,
   deleteProduct,
+  loadWishlist,
 };
