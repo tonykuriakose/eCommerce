@@ -41,6 +41,8 @@ router.get("/productDetails", userAuth, productController.productDetails);
 
 // Wishlist Management
 router.get("/wishlist", userAuth,cartController.loadWishlist);
+router.post("/addToWishlist",userAuth, cartController.addToWishlist);
+router.get("/removeFromWishlist",userAuth, cartController.removeProduct);
 
 // Cart Management
 router.get("/cart", userAuth, cartController.getCartPage)
