@@ -1,4 +1,4 @@
-<%- include("../partials/adminHeader") %>
+<%- include("../../views/partials/admin/header") %>
 
 <style>
   .pagination {
@@ -7,7 +7,6 @@
   }
 
   .btn {
-    /* Add your button styling here */
     margin: 0 5px;
     padding: 5px 10px;
     background-color: #f0f0f0;
@@ -17,22 +16,18 @@
   }
 
   .active {
-    /* Add styles for the active page */
-
     color: #fff;
   }
 
   .btn:hover {
-    /* Add styles for button hover state */
     background-color: #ddd;
   }
 
   .table-spacing th,
   .table-spacing td {
-    padding-left: 80px; /* Adjust the value as needed for the desired spacing */
+    padding-left: 80px;
   }
 </style>
-
 <div class="content-header row">
   <div class="d-flex justify-content-between align-items-center">
     <h2 class="content-title card-title">Sales Report</h2>
@@ -43,56 +38,46 @@
   <header class="card-header">
     <div class="row gx-3">
       <div class="col-lg-2 col-6 col-md-3">
-        <select
-          class="form-select"
-          onchange="location.href='/admin/salesReport?day=' + this.value"
-        >
+        <select class="form-select" onchange="location.href='/admin/salesReport?day=' + this.value">
           <% if (locals.salesToday) { %>
-          <option value="salesToday" selected>salesToday</option>
-          <option value="salesWeekly">salesWeekly</option>
-          <option value="salesMonthly">salesMonthly</option>
-          <option value="salesYearly">salesYearly</option>
+            <option value="salesToday" selected>Sales Today</option>
+            <option value="salesWeekly">Sales Weekly</option>
+            <option value="salesMonthly">Sales Monthly</option>
+            <option value="salesYearly">Sales Yearly</option>
           <% } else if (locals.salesWeekly) { %>
-          <option value="salesWeekly" selected>salesWeekly</option>
-          <option value="salesToday">salesToday</option>
-          <option value="salesMonthly">salesMonthly</option>
-          <option value="salesYearly">salesYearly</option>
+            <option value="salesWeekly" selected>Sales Weekly</option>
+            <option value="salesToday">Sales Today</option>
+            <option value="salesMonthly">Sales Monthly</option>
+            <option value="salesYearly">Sales Yearly</option>
           <% } else if (locals.salesMonthly) { %>
-          <option value="salesMonthly" selected>salesMonthly</option>
-          <option value="salesToday">salesToday</option>
-          <option value="salesWeekly">salesWeekly</option>
-          <option value="salesYearly">salesYearly</option>
+            <option value="salesMonthly" selected>Sales Monthly</option>
+            <option value="salesToday">Sales Today</option>
+            <option value="salesWeekly">Sales Weekly</option>
+            <option value="salesYearly">Sales Yearly</option>
           <% } else if (locals.salesYearly) { %>
-          <option value="salesYearly" selected>salesYearly</option>
-          <option value="salesToday">salesToday</option>
-          <option value="salesWeekly">salesWeekly</option>
-          <option value="salesMonthly">salesMonthly</option>
+            <option value="salesYearly" selected>Sales Yearly</option>
+            <option value="salesToday">Sales Today</option>
+            <option value="salesWeekly">Sales Weekly</option>
+            <option value="salesMonthly">Sales Monthly</option>
           <% } %>
         </select>
       </div>
       <div class="col-md-2 col-6">
-        <input
-          type="date"
-          id="selectedDate"
-          class="form-control"
-          value="<%= locals.date ? date : '' %>"
-          onchange="dateWiseFilter()"
-        />
+        <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? locals.date : '' %>" onchange="dateWiseFilter()" />
       </div>
       <div class="col-lg-6 col-md-6 ms-auto text-md-end">
-        <a href="" id="createSalesReport" class="btn btn-primary mb-2"
-          >Generate PDF</a
-        >
-        <a href="" id="downloadExcelReport" class="btn btn-primary mb-2"
-          >Download Excel</a
-        >
+        <a href="#" id="createSalesReport" class="btn btn-primary mb-2">Generate PDF</a>
+        <a href="#" id="downloadExcelReport" class="btn btn-primary mb-2">Download Excel</a>
       </div>
     </div>
   </header>
 </div>
 
+
+
+
 <div class="right mt-5 container">
-  <!-- <input type="date" id="calendar" name="calendar" class="form-control mb-3" /> -->
+  <input type="date" id="calendar" name="calendar" class="form-control mb-3" />
   <table id="salesTable" class="table table-hover">
     <thead>
       <tr>
@@ -157,7 +142,7 @@
         const tableBody = salesTable.querySelector("tbody");
 
         const salesData = [];
-        let grandTotal = 0; // Initialize grand total
+        let grandTotal = 0; 
 
         for (const row of tableBody.rows) {
           const dataId = row.cells[1].textContent.trim();
@@ -165,7 +150,7 @@
           const date = row.cells[4].textContent;
           let totalAmount = row.cells[7].textContent.trim();
           totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
-          grandTotal += totalAmount; // Accumulate totalAmount for grand total
+          grandTotal += totalAmount; 
 
           const dataData = {
             dataId: dataId,
@@ -176,8 +161,6 @@
 
           salesData.push(dataData);
         }
-
-        // Include grand total in sales data
         const grandTotalData = {
           dataId: "Grand Total",
           name: "",
@@ -220,7 +203,7 @@
         const tableBody = salesTable.querySelector("tbody");
 
         const salesData = [];
-        let grandTotal = 0; // Initialize grand total
+        let grandTotal = 0; 
 
         for (const row of tableBody.rows) {
           const orderId = row.cells[1].textContent;
@@ -229,7 +212,7 @@
           const payment = row.cells[5].textContent;
           let totalAmount = row.cells[7].textContent.trim();
           totalAmount = parseFloat(totalAmount.replace(/[^0-9]/g, ""), 10);
-          grandTotal += totalAmount; // Accumulate totalAmount for grand total
+          grandTotal += totalAmount; 
 
           const dataData = {
             orderId: orderId,
@@ -241,8 +224,6 @@
 
           salesData.push(dataData);
         }
-
-        // Include grand total in sales data
         const grandTotalData = {
           orderId: "Grand Total",
           name: "",
@@ -291,12 +272,9 @@
         },
         success: (response) => {
           if (response.status === true) {
-            // alert("done");
           }
         },
       });
     }
   </script>
-
-  <%- include("../partials/adminFooter") %>
-</div>
+  <%- include("../../views/partials/admin/footer") %>

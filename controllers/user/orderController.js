@@ -236,10 +236,8 @@ const getOrderDetailsPage = async (req, res) => {
     const findUser = await User.findOne({ _id: userId });
     let totalGrant = 0;
     findOrder.product.map((val) => {
-      console.log(val.price, "price");
       totalGrant += val.price;
     });
-    console.log(totalGrant, "TOTALPR");
 
     res.render("orderDetails", {
       orders: findOrder,

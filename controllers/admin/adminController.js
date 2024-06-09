@@ -6,8 +6,8 @@ const Coupon = require("../../models/couponSchema.js");
 const Category = require("../../models/categorySchema");
 const Product = require("../../models/productSchema");
 const moment = require("moment");
-const ExcelJS = require("exceljs"); // Assuming you have this or similar package installed for Excel generation
-const PDFDocument = require("pdfkit"); // Assuming you have this or similar package installed for PDF generation
+const ExcelJS = require("exceljs"); 
+const PDFDocument = require("pdfkit"); 
 
 // Admin Error Page
 const pageNotFound1 = async (req, res) => {
@@ -234,23 +234,17 @@ const getSalesReportPage = async (req, res) => {
     let totalPages = Math.ceil(orders.length / itemsPerPage);
     const currentOrder = orders.slice(startIndex, endIndex);
 
+    // Render the sales report page
     res.render("salesReport", {
       data: currentOrder,
       totalPages,
       currentPage,
     });
-
-    console.log(req.query.day);
-    let filterBy = req.query.day;
-    if (filterBy) {
-      res.redirect(`/${filterBy}`);
-    } else {
-      res.redirect(`/salesMonthly`);
-    }
   } catch (error) {
     res.redirect("/pageerror");
   }
 };
+
 
 const salesToday = async (req, res) => {
   try {
@@ -378,6 +372,7 @@ const salesMonthly = async (req, res) => {
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(orders.length / itemsPerPage);
     const currentOrder = orders.slice(startIndex, endIndex);
+    console.log(currentOrder);
 
     res.render("salesReport", {
       data: currentOrder,
@@ -521,27 +516,40 @@ const monthlyreport = async (req, res) => {
   }
 };
 
-// Datewise Filter
-const datewiseFilter = async (req, res) => {
+const dateWiseFilter = async (req, res)=>{
   try {
-    const { startDate, endDate } = req.query;
+      console.log(req.query);
+      const date = moment(req.query.date).startOf('day').toDate();
 
-    const start = new Date(startDate);
-    const end = new Date(new Date(endDate).setHours(23, 59, 59, 999));
+      const orders = await Order.aggregate([
+          {
+              $match: {
+                  createdOn: {
+                      $gte: moment(date).startOf('day').toDate(),
+                      $lt: moment(date).endOf('day').toDate(),
+                  },
+                  status: "Delivered"
+              }
+          }
+      ]);
 
-    const orders = await Order.find({
-      createdOn: { $gte: start, $lt: end },
-      status: "Delivered",
-    }).sort({ createdOn: -1 });
+      console.log(orders);
 
-    res.render("salesReport", {
-      data: orders,
-      salesDatewise: true,
-    });
+      let itemsPerPage = 5
+      let currentPage = parseInt(req.query.page) || 1
+      let startIndex = (currentPage - 1) * itemsPerPage
+      let endIndex = startIndex + itemsPerPage
+      let totalPages = Math.ceil(orders.length / 3)
+      const currentOrder = orders.slice(startIndex, endIndex)
+
+      res.render("salesReport", { data: currentOrder, totalPages, currentPage, salesMonthly: true , date})
+     
+
   } catch (error) {
-    res.redirect("/pageerror");
+       res.redirect("/pageerror");;
   }
-};
+}
+
 
 module.exports = {
   pageNotFound1,
@@ -562,5 +570,5 @@ module.exports = {
   downloadExcel,
   generatePdf,
   monthlyreport,
-  datewiseFilter,
+  dateWiseFilter,
 };
