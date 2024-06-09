@@ -69,17 +69,17 @@ const verifyLogin = async (req, res) => {
       const passwordMatch = await bcrypt.compare(password, findAdmin.password);
       if (passwordMatch) {
         req.session.admin = true;
-        return res.redirect("/admin"); // Use return to ensure only one response is sent
+        return res.redirect("/admin");
       } else {
-        return res.redirect("/login"); // Use return to ensure only one response is sent
+        return res.redirect("/login");
       }
     } else {
       console.log("He's not an admin");
-      return res.redirect("/login"); // Ensure a response is always sent for non-admins
+      return res.redirect("/login");
     }
   } catch (error) {
     console.error(error);
-    return res.redirect("/pageerror"); // Ensure a response is always sent on error
+    return res.redirect("/pageerror");
   }
 };
 
@@ -225,16 +225,8 @@ const updateCoupon = async (req, res) => {
 
 // Sales Reports Management
 const getSalesReportPage = async (req, res) => {
-  console.log("calling api");
-  try {
-    // const orders = await Order.find({ status: "Delivered" }).sort({ createdOn: -1 })
-    // // console.log(orders);
-
-    // res.render("salesReport", { data: currentOrder, totalPages, currentPage })
-
-    // console.log(req.query.day);
+  try {;
     let filterBy = req.query.day;
-    console.log(filterBy, "okoo");
     if (filterBy) {
       res.redirect(`/admin/${filterBy}`);
     } else {
@@ -279,7 +271,6 @@ const salesToday = async (req, res) => {
         },
       },
     ]).sort({ createdOn: -1 });
-    console.log(orders, "sales today");
     let itemsPerPage = 5;
     let currentPage = parseInt(req.query.page) || 1;
     let startIndex = (currentPage - 1) * itemsPerPage;
@@ -301,13 +292,11 @@ const salesToday = async (req, res) => {
 const salesWeekly = async (req, res) => {
   try {
     let currentDate = new Date();
-    console.log(currentDate, "currrent date");
     const startOfTheWeek = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
       currentDate.getDate() - currentDate.getDay()
     );
-    console.log(startOfTheWeek, "start of week");
     const endOfTheWeek = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth(),
@@ -317,7 +306,6 @@ const salesWeekly = async (req, res) => {
       59,
       999
     );
-    console.log(endOfTheWeek, "end of the week");
     const orders = await Order.aggregate([
       {
         $match: {
@@ -360,7 +348,6 @@ const salesMonthly = async (req, res) => {
       0,
       0
     );
-    console.log(currentMonth, "month");
     const endOfTheMonth = new Date(
       new Date().getFullYear(),
       currentMonth,
@@ -370,7 +357,6 @@ const salesMonthly = async (req, res) => {
       59,
       999
     );
-    console.log(endOfTheMonth, "month");
 
     const orders = await Order.aggregate([
       {
@@ -385,14 +371,12 @@ const salesMonthly = async (req, res) => {
     ]).sort({ createdOn: -1 });
     // .then(data=>console.log(data))
     // console.log("ethi");
-    console.log(orders, "orders");
     let itemsPerPage = 5;
     let currentPage = parseInt(req.query.page) || 1;
     let startIndex = (currentPage - 1) * itemsPerPage;
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(orders.length / 3);
     const currentOrder = orders.slice(startIndex, endIndex);
-    console.log(currentOrder, "current order");
     res.render("salesReport", {
       data: currentOrder,
       totalPages,
@@ -409,7 +393,6 @@ const salesYearly = async (req, res) => {
     const currentYear = new Date().getFullYear();
     const startofYear = new Date(currentYear, 0, 1, 0, 0, 0, 0);
     const endofYear = new Date(currentYear, 11, 31, 23, 59, 59, 999);
-
     const orders = await Order.aggregate([
       {
         $match: {
@@ -428,7 +411,6 @@ const salesYearly = async (req, res) => {
     let endIndex = startIndex + itemsPerPage;
     let totalPages = Math.ceil(orders.length / 3);
     const currentOrder = orders.slice(startIndex, endIndex);
-    console.log(currentOrder, "current order");
     res.render("salesReport", {
       data: currentOrder,
       totalPages,
@@ -476,9 +458,7 @@ const generatePdf = async (req, res) => {
       doc.text(header, headerX, headerY);
       headerX += 130;
     });
-
     let dataY = headerY + 25;
-
     orders.forEach((order) => {
       doc.text(order.dataId, 20, dataY);
       doc.text(order.name, 210, dataY);
@@ -494,10 +474,8 @@ const generatePdf = async (req, res) => {
 };
 const downloadExcel = async (req, res) => {
   try {
-
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Sales Report');
-
       worksheet.columns = [
           { header: 'Order ID', key: 'orderId', width: 50 },
           { header: 'Customer', key: 'customer', width: 30 },
@@ -505,9 +483,7 @@ const downloadExcel = async (req, res) => {
           { header: 'Total', key: 'totalAmount', width: 15 },
           { header: 'Payment', key: 'payment', width: 15 },
       ];
-
       const orders = req.body;
-
       orders.forEach(order => {
           worksheet.addRow({
               orderId: order.orderId,
@@ -518,10 +494,8 @@ const downloadExcel = async (req, res) => {
               products: order.products,
           });
       });
-
       res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
       res.setHeader('Content-Disposition', `attachment; filename=salesReport.xlsx`);
-
       await workbook.xlsx.write(res);
       res.end();
 
@@ -534,18 +508,14 @@ const downloadExcel = async (req, res) => {
 
 const monthlyreport=async(req,res)=>{
   try {
-      console.log("Function calleddd")
     const start = moment().subtract(30, 'days').startOf('day'); 
-    console.log("startdate",start)
     const end = moment().endOf('day');
-    console.log(end)
     const orderSuccessDetails = await Order.find({
       createdOn: { $gte: start, $lte: end },
       status: 'Delivered' 
     });
     
     const monthlySales = {};
-
     orderSuccessDetails.forEach(order => {
       const monthName = moment(order.order_date).format('MMMM');
       if (!monthlySales[monthName]) {
@@ -557,7 +527,6 @@ const monthlyreport=async(req,res)=>{
           razorpayCount: 0,
         };
       }
-      console.log("ORder: ",order)
       monthlySales[monthName].revenue += order.totalPrice;
       monthlySales[monthName].productCount += order.product.length;
       monthlySales[monthName].orderCount++;
@@ -588,7 +557,6 @@ const monthlyreport=async(req,res)=>{
         monthlyData.razorpayCountData.push(monthlySales[monthName].razorpayCount);
       }
     }
-    console.log("<=====>hi",monthlyData);
     return res.json(monthlyData);
   } catch (error) {
     res.redirect("/pageerror");
@@ -600,9 +568,7 @@ const monthlyreport=async(req,res)=>{
 
 const dateWiseFilter = async (req, res)=>{
   try {
-      console.log(req.query);
       const date = moment(req.query.date).startOf('day').toDate();
-
       const orders = await Order.aggregate([
           {
               $match: {
@@ -614,18 +580,13 @@ const dateWiseFilter = async (req, res)=>{
               }
           }
       ]);
-
-      console.log(orders);
-
       let itemsPerPage = 5
       let currentPage = parseInt(req.query.page) || 1
       let startIndex = (currentPage - 1) * itemsPerPage
       let endIndex = startIndex + itemsPerPage
       let totalPages = Math.ceil(orders.length / 3)
       const currentOrder = orders.slice(startIndex, endIndex)
-
       res.render("salesReport", { data: currentOrder, totalPages, currentPage, salesMonthly: true , date})
-     
 
   } catch (error) {
        res.redirect("/pageerror");;
