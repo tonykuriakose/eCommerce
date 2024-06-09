@@ -1,4 +1,5 @@
 const Mongoose = require("mongoose");
+const { Schema } = Mongoose;
 
 const userSchema = Mongoose.Schema({
     name : {
@@ -42,7 +43,23 @@ const userSchema = Mongoose.Schema({
     },
     createdOn : {
         type : String
-    }
+    },
+    referalCode: {
+        type: String,
+        required: true,
+    },
+    redeemed: {
+        type: Boolean,
+        default: false,
+    },
+    redeemedUsers: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: "User",
+            required: true,
+        }
+    ],
+
 })
 
 const User = Mongoose.model('User',userSchema);

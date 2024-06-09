@@ -62,9 +62,9 @@ const changeOrderStatus = async (req, res) => {
       
       }
      
-    res.redirect("/admin/orderList");
+    return res.redirect("/admin/orderList");
   } catch (error) {
-    res.redirect("/pageerror");
+    return res.redirect("/pageerror");
   }
 };
 

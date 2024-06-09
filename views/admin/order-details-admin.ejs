@@ -227,10 +227,7 @@ function tracking() {
 
 <script>
 function handleDropdownChange(selectElement, userId, orderId) {
-  console.log(selectElement.value);
-  console.log(orderId, "hiiiiiiiiiiiiiiiiiiiii");
   var selectedValue = selectElement.value;
-  console.log(selectedValue);
   if (selectedValue == "cancel") {
     window.location.href = `http://localhost:3000/admin/changeStatus?orderId=${orderId}&status=${selectedValue}`;
   } else if (selectedValue == "Shipped") {
@@ -238,7 +235,6 @@ function handleDropdownChange(selectElement, userId, orderId) {
   } else if (selectedValue == "Delivered") {
     window.location.href = `http://localhost:3000/admin/changeStatus?orderId=${orderId}&status=${selectedValue}`;
   } else if (selectedValue == "Returned") {
-    console.log("hello boss");
     window.location.href = `http://localhost:3000/admin/changeStatus?orderId=${orderId}&status=${selectedValue}&userId=${userId}`;
   } else if (selectedValue == "Cancelled") {
     window.location.href = `http://localhost:3000/admin/changeStatus?orderId=${orderId}&status=${selectedValue}`;

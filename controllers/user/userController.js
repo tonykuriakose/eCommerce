@@ -6,6 +6,8 @@ const Banner = require("../../models/bannerSchema");
 const nodemailer = require("nodemailer");
 const env = require('dotenv').config();
 const bcrypt = require("bcrypt");
+const { verifyReferalCode } = require("./userProfileController");
+const {v4:uuidv4} = require('uuid');
 
 // Error management
 const pageNotFound = async (req, res) => {
@@ -121,11 +123,13 @@ const verifyOtp = async (req, res) => {
     if (otp === req.session.userOtp) {
       const user = req.session.userData;
       const passwordHash = await securePassword(user.password);
+      const referalCode = uuidv4()
       const saveUserData = new User({
         name: user.name,
         email: user.email,
         phone: user.phone,
         password: passwordHash,
+        referalCode : referalCode
       });
       await saveUserData.save();
       req.session.user = saveUserData._id;
