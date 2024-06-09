@@ -66,6 +66,7 @@ router.post("/addAddress",userProfileController.postAddress);
 router.get("/editAddress",userProfileController.getEditAddress);
 router.post("/editAddress",userProfileController.postEditAddress);
 router.get("/deleteAddress",userProfileController.getDeleteAddress);
+router.post("/verifyReferalCode", userAuth, userProfileController.verifyReferalCode);
 
 
 // Order Management
