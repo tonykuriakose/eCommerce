@@ -59,7 +59,6 @@ router.get("/changeEmail",userProfileController.getChangeEmail);
 router.post("/changeEmail",userProfileController.changeEmailValid);
 router.post('/verifyEmailOtp',userProfileController.verifyEmailOtp);
 router.post('/updateEmail',userProfileController.updateEmail);
-
 router.post("/editUserDetails",userProfileController.editUserDetails);
 router.get("/addAddress",userProfileController.getAddressAddPage);
 router.post("/addAddress",userProfileController.postAddress);

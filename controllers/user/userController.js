@@ -2,6 +2,7 @@ const User = require("../../models/userSchema");
 const Brand = require("../../models/brandSchema");
 const Product = require("../../models/productSchema");
 const Category = require("../../models/categorySchema");
+const Coupon = require("../../models/couponSchema");
 const Banner = require("../../models/bannerSchema");
 const nodemailer = require("nodemailer");
 const env = require('dotenv').config();
