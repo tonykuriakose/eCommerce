@@ -186,6 +186,7 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   
   <script>
+
     function tracking() {
       Swal.fire({
         title: '<strong><u>ORDER DETAILS</u></strong>',
@@ -215,40 +216,37 @@
       </div>
     </div>
   </div>
-<script>
-    alert(x);
-    function singleProductStatus(singleProductId,orderId,status){  
-      $.ajax({
-                url: '/singleProductId',
-                method: 'POST',
-                data: {
-                  orderId:orderId,
-                  singleProductId:singleProductId,
-                  status:status
-                },
-                success: (response) => {
-                  console.log(response,"response");
-                  if(response.result.modifiedCount===1){
- window.location.reload()
-                  }
-               
-                },
-                error: (error) => {
-                    alert(error)    
-                }
-            })  
 
+<script>
+ function singleProductStatus(singleProductId, orderId, status) {  
+        $.ajax({
+            url: '/singleProductId',
+            method: 'POST',
+            data: {
+                orderId: orderId,
+                singleProductId: singleProductId,
+                status: status
+            },
+            success: (response) => {
+                console.log(response, "response");
+                if (response.result.modifiedCount === 1) {
+                    window.location.reload();
+                }
+            },
+            error: (error) => {
+                alert(error);    
+            }
+        });
     }
 
     function handleDropdownChange(selectElement) {
         var selectedValue = selectElement.value;
-        if(selectedValue == "cancel"){
+        if (selectedValue == "cancel") {
             window.location.href = `http://localhost:3000/cancelOrder?orderId=${orderId.value}`;
-        }else if (selectedValue == "returnrequest"){
+        } else if (selectedValue == "returnrequest") {
             window.location.href = `http://localhost:3000/returnrequestOrder?orderId=${orderId.value}`;
         }
     }
-
 
     function confirmCancelOrder(singleProductId, orderId) {
         Swal.fire({
@@ -258,7 +256,7 @@
             showCancelButton: true,
             confirmButtonColor: '#3085d6',
             cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, cancel it!',
+            confirmButtonText: 'Yes, cancel it!'
         }).then((result) => {
             if (result.isConfirmed) {
                 cancelOrder(singleProductId, orderId);
@@ -277,7 +275,7 @@
             },
             success: (response) => {
                 if (response.result.modifiedCount === 1) {
-                    window.location.reload();
+                    window.location.href = `http://localhost:3000/cancelOrder?orderId=${orderId}`;
                 }
             },
             error: (error) => {
@@ -285,6 +283,5 @@
             }
         });
     }
-
 </script>
 <%- include("../../views/partials/user/footer") %>
