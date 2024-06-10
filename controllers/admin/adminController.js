@@ -61,7 +61,6 @@ const getLoginPage = async (req, res) => {
 };
 
 const verifyLogin = async (req, res) => {
-  console.log("is route calling");
   try {
     const { email, password } = req.body;
     const findAdmin = await User.findOne({ email, isAdmin: true });
@@ -74,11 +73,9 @@ const verifyLogin = async (req, res) => {
         return res.redirect("/login");
       }
     } else {
-      console.log("He's not an admin");
       return res.redirect("/login");
     }
   } catch (error) {
-    console.error(error);
     return res.redirect("/pageerror");
   }
 };
@@ -233,6 +230,58 @@ const getSalesReportPage = async (req, res) => {
       res.redirect(`/admin/salesMonthly`);
     }
   } catch (error) {
+     res.redirect("/pageerror");
+  }
+};
+
+
+const salesMonthly = async (req, res) => {
+  try {
+    let currentMonth = new Date().getMonth() + 1;
+    const startOfTheMonth = new Date(
+      new Date().getFullYear(),
+      currentMonth - 1,
+      1,
+      0,
+      0,
+      0,
+      0
+    );
+    const endOfTheMonth = new Date(
+      new Date().getFullYear(),
+      currentMonth,
+      0,
+      23,
+      59,
+      59,
+      999
+    );
+
+    const orders = await Order.aggregate([
+      {
+        $match: {
+          createdOn: {
+            $gte: startOfTheMonth,
+            $lt: endOfTheMonth,
+          },
+          status: "Delivered",
+        },
+      },
+    ]).sort({ createdOn: -1 });
+    // .then(data=>console.log(data))
+    let itemsPerPage = 5;
+    let currentPage = parseInt(req.query.page) || 1;
+    let startIndex = (currentPage - 1) * itemsPerPage;
+    let endIndex = startIndex + itemsPerPage;
+    let totalPages = Math.ceil(orders.length / 3);
+    const currentOrder = orders.slice(startIndex, endIndex);
+    res.render("salesReport", {
+      data: currentOrder,
+      totalPages,
+      currentPage,
+      salesMonthly: true,
+    });
+  } catch (error) {
      res.redirect("/pageerror");;
   }
 };
@@ -336,57 +385,7 @@ const salesWeekly = async (req, res) => {
   }
 };
 
-const salesMonthly = async (req, res) => {
-  try {
-    let currentMonth = new Date().getMonth() + 1;
-    const startOfTheMonth = new Date(
-      new Date().getFullYear(),
-      currentMonth - 1,
-      1,
-      0,
-      0,
-      0,
-      0
-    );
-    const endOfTheMonth = new Date(
-      new Date().getFullYear(),
-      currentMonth,
-      0,
-      23,
-      59,
-      59,
-      999
-    );
 
-    const orders = await Order.aggregate([
-      {
-        $match: {
-          createdOn: {
-            $gte: startOfTheMonth,
-            $lt: endOfTheMonth,
-          },
-          status: "Delivered",
-        },
-      },
-    ]).sort({ createdOn: -1 });
-    // .then(data=>console.log(data))
-    // console.log("ethi");
-    let itemsPerPage = 5;
-    let currentPage = parseInt(req.query.page) || 1;
-    let startIndex = (currentPage - 1) * itemsPerPage;
-    let endIndex = startIndex + itemsPerPage;
-    let totalPages = Math.ceil(orders.length / 3);
-    const currentOrder = orders.slice(startIndex, endIndex);
-    res.render("salesReport", {
-      data: currentOrder,
-      totalPages,
-      currentPage,
-      salesMonthly: true,
-    });
-  } catch (error) {
-     res.redirect("/pageerror");;
-  }
-};
 
 const salesYearly = async (req, res) => {
   try {
@@ -421,88 +420,6 @@ const salesYearly = async (req, res) => {
      res.redirect("/pageerror");;
   }
 };
-
-const generatePdf = async (req, res) => {
-  try {
-    const doc = new PDFDocument();
-    const filename = "sales-report.pdf";
-    const orders = req.body;
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
-    doc.pipe(res);
-    doc.fontSize(12);
-    doc.text("Sales Report", { align: "center", fontSize: 16 });
-    const margin = 5;
-    doc
-      .moveTo(margin, margin)
-      .lineTo(600 - margin, margin)
-      .lineTo(600 - margin, 842 - margin)
-      .lineTo(margin, 842 - margin)
-      .lineTo(margin, margin)
-      .lineTo(600 - margin, margin)
-      .lineWidth(3)
-      .strokeColor("#000000")
-      .stroke();
-
-    doc.moveDown();
-
-    const headers = ["Order ID", "Name", "Date", "Total"];
-
-    let headerX = 20;
-    const headerY = doc.y + 10;
-
-    doc.text(headers[0], headerX, headerY);
-    headerX += 200;
-
-    headers.slice(1).forEach((header) => {
-      doc.text(header, headerX, headerY);
-      headerX += 130;
-    });
-    let dataY = headerY + 25;
-    orders.forEach((order) => {
-      doc.text(order.dataId, 20, dataY);
-      doc.text(order.name, 210, dataY);
-      doc.text(order.date, 350, dataY);
-      doc.text(order.totalAmount, 480, dataY);
-      dataY += 30;
-    });
-
-    doc.end();
-  } catch (error) {
-     res.redirect("/pageerror");;
-  }
-};
-const downloadExcel = async (req, res) => {
-  try {
-      const workbook = new ExcelJS.Workbook();
-      const worksheet = workbook.addWorksheet('Sales Report');
-      worksheet.columns = [
-          { header: 'Order ID', key: 'orderId', width: 50 },
-          { header: 'Customer', key: 'customer', width: 30 },
-          { header: 'Date', key: 'date', width: 30 },
-          { header: 'Total', key: 'totalAmount', width: 15 },
-          { header: 'Payment', key: 'payment', width: 15 },
-      ];
-      const orders = req.body;
-      orders.forEach(order => {
-          worksheet.addRow({
-              orderId: order.orderId,
-              customer: order.name,
-              date: order.date,
-              totalAmount: order.totalAmount,
-              payment: order.payment,
-              products: order.products,
-          });
-      });
-      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-      res.setHeader('Content-Disposition', `attachment; filename=salesReport.xlsx`);
-      await workbook.xlsx.write(res);
-      res.end();
-
-  } catch (error) {
-       res.redirect("/pageerror");;
-  }
-}
 
 
 
@@ -594,6 +511,91 @@ const dateWiseFilter = async (req, res)=>{
 }
 
 
+const generatePdf = async (req, res) => {
+  try {
+    const doc = new PDFDocument();
+    const filename = "sales-report.pdf";
+    const orders = req.body;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename=${filename}`);
+    doc.pipe(res);
+    doc.fontSize(12);
+    doc.text("Sales Report", { align: "center", fontSize: 16 });
+    const margin = 5;
+    doc
+      .moveTo(margin, margin)
+      .lineTo(600 - margin, margin)
+      .lineTo(600 - margin, 842 - margin)
+      .lineTo(margin, 842 - margin)
+      .lineTo(margin, margin)
+      .lineTo(600 - margin, margin)
+      .lineWidth(3)
+      .strokeColor("#000000")
+      .stroke();
+
+    doc.moveDown();
+
+    const headers = ["Order ID", "Name", "Date", "Total"];
+
+    let headerX = 20;
+    const headerY = doc.y + 10;
+
+    doc.text(headers[0], headerX, headerY);
+    headerX += 200;
+
+    headers.slice(1).forEach((header) => {
+      doc.text(header, headerX, headerY);
+      headerX += 130;
+    });
+    let dataY = headerY + 25;
+    orders.forEach((order) => {
+      doc.text(order.dataId, 20, dataY);
+      doc.text(order.name, 210, dataY);
+      doc.text(order.date, 350, dataY);
+      doc.text(order.totalAmount, 480, dataY);
+      dataY += 30;
+    });
+
+    doc.end();
+  } catch (error) {
+     res.redirect("/pageerror");;
+  }
+};
+
+
+const downloadExcel = async (req, res) => {
+  try {
+      const workbook = new ExcelJS.Workbook();
+      const worksheet = workbook.addWorksheet('Sales Report');
+      worksheet.columns = [
+          { header: 'Order ID', key: 'orderId', width: 50 },
+          { header: 'Customer', key: 'customer', width: 30 },
+          { header: 'Date', key: 'date', width: 30 },
+          { header: 'Total', key: 'totalAmount', width: 15 },
+          { header: 'Payment', key: 'payment', width: 15 },
+      ];
+      const orders = req.body;
+      orders.forEach(order => {
+          worksheet.addRow({
+              orderId: order.orderId,
+              customer: order.name,
+              date: order.date,
+              totalAmount: order.totalAmount,
+              payment: order.payment,
+              products: order.products,
+          });
+      });
+      res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+      res.setHeader('Content-Disposition', `attachment; filename=salesReport.xlsx`);
+      await workbook.xlsx.write(res);
+      res.end();
+
+  } catch (error) {
+       res.redirect("/pageerror");;
+  }
+}
+
+
 module.exports = {
   pageNotFound1,
   getLoginPage,
@@ -610,8 +612,8 @@ module.exports = {
   salesWeekly,
   salesMonthly,
   salesYearly,
-  downloadExcel,
-  generatePdf,
   monthlyreport,
   dateWiseFilter,
+  downloadExcel,
+  generatePdf,
 };

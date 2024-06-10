@@ -155,7 +155,7 @@ const orderPlaced = async (req, res) => {
       createdOn: Date.now(),
     });
     let orderDone = await newOrder.save();
-    
+
     await User.updateOne({ _id: userId }, { $set: { cart: [] } });
     for (let orderedProduct of orderedProducts) {
       const product = await Product.findOne({ _id: orderedProduct._id });
@@ -235,7 +235,6 @@ const paymentConfirm = async (req, res) => {
       { _id: req.body.orderId },
       { $set: { status: "Confirmed" } }
     ).then((data) => {
-      console.log(data, "data hain");
       res.json({ status: true });
     });
   } catch (error) {
@@ -252,11 +251,9 @@ const getCartCheckoutPage = async (req, res) => {
 };
 
 const changeSingleProductStatus = async (req, res) => {
-  console.log("cal>>>>>ing");
   const { orderId, singleProductId, status } = req.body;
   const oid = new mongodb.ObjectId(singleProductId);
   const order = await Order.findOne({ _id: orderId });
-  console.log(order, "order");
   const productIndex = order.product.findIndex(
     (product) => product._id.toString() === singleProductId
   );
@@ -286,7 +283,6 @@ const changeSingleProductStatus = async (req, res) => {
 
 
 const cancelorder = async (req, res) => {
-  console.log("canceled");
   try {
     const userId = req.session.user;
     const findUser = await User.findOne({ _id: userId });
@@ -337,6 +333,7 @@ const cancelorder = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 const returnorder = async (req, res) => {
   try {
     const userId = req.session.user;
@@ -373,11 +370,8 @@ const generateOrderRazorpay = (orderId, total) => {
     };
     instance.orders.create(options, function (err, order) {
       if (err) {
-        console.log("failed");
-        console.log(err, "");
         reject(err);
       } else {
-        console.log("Order Generated RazorPAY: " + JSON.stringify(order));
         resolve(order);
       }
     });
@@ -385,7 +379,6 @@ const generateOrderRazorpay = (orderId, total) => {
 };
 
 const verify = (req, res) => {
-  console.log(req.body, "verify req-body");
   let hmac = crypto.createHmac("sha256", process.env.RAZORPAY_KEY_SECRET);
   hmac.update(
     `${req.body.payment.razorpay_order_id}|${req.body.payment.razorpay_payment_id}`

@@ -78,14 +78,14 @@ router.get("/orderDetailsAdmin", adminAuth, orderController.getOrderDetailsPageA
 router.get("/changeStatus", adminAuth, orderController.changeOrderStatus);
 
 // Sales Management
-router.get("/salesReport", adminAuth, adminController.getSalesReportPage)
-router.get("/salesToday", adminAuth, adminController.salesToday)
-router.get("/salesWeekly", adminAuth, adminController.salesWeekly)
-router.get("/salesMonthly", adminAuth, adminController.salesMonthly)
-router.get("/salesYearly", adminAuth, adminController.salesYearly)
-router.post("/generatePdf", adminAuth, adminController.generatePdf)
-router.post("/downloadExcel", adminAuth, adminController.downloadExcel)
-router.get("/monthly-report", adminAuth,adminController.monthlyreport)
+router.get("/salesReport", adminAuth, adminController.getSalesReportPage);
+router.get("/salesMonthly", adminAuth, adminController.salesMonthly);
+router.get("/salesToday", adminAuth, adminController.salesToday);
+router.get("/salesWeekly", adminAuth, adminController.salesWeekly);
+router.get("/salesYearly", adminAuth, adminController.salesYearly);
+router.get("/monthly-report", adminAuth,adminController.monthlyreport);
 router.get("/dateWiseFilter", adminAuth, adminController.dateWiseFilter);
+router.post("/generatePdf", adminAuth, adminController.generatePdf);
+router.post("/downloadExcel", adminAuth, adminController.downloadExcel);
 
 module.exports = router;

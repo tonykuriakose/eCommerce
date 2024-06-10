@@ -16,9 +16,6 @@
                     <div class="text">
                         <h6 class="mb-1 card-title">Revenue</h6>
                         <span><%=order[0].totalPrice%></span>
-                        <span class="text-sm">
-                            Shipping fees are not included
-                        </span>
                     </div>
                 </article>
             </div>
@@ -28,10 +25,7 @@
                 <article class="icontext">
                     <span class="icon icon-sm rounded-circle bg-success-light"><i class="text-success material-icons md-local_shipping"></i></span>
                     <div class="text">
-                        <h6 class="mb-1 card-title">Orders</h6> <span><%=order[0].totalOrders%></span>
-                        <span class="text-sm">
-                            Excluding orders in transit
-                        </span>
+                        <h6 class="mb-1 card-title">Orders</h6> <span><%=order[0].totalOrders%></span
                     </div>
                 </article>
             </div>
@@ -42,14 +36,10 @@
                     <span class="icon icon-sm rounded-circle bg-warning-light"><i class="text-warning material-icons md-qr_code"></i></span>
                     <div class="text">
                         <h6 class="mb-1 card-title">Products</h6> <span><%=product[0].count%></span>
-                        <span class="text-sm">
-                            Categories
-                        </span>
                     </div>
                 </article>
             </div>
-        </div>
-       
+        </div> 
     </div>
     <div class="row">
         <div class="col-xl-8 col-lg-12">
@@ -72,6 +62,7 @@
     </div>
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
 var ctxL = document.getElementById("lineChart").getContext('2d');
 var myLineChart;
@@ -121,6 +112,8 @@ async function fetchMonthlyData() {
 }
 fetchMonthlyData();
 </script>
+
+
 <script>
   new Chart("myChart1", {
       type: "line",
@@ -141,7 +134,7 @@ fetchMonthlyData();
                   fill: true,
                   backgroundColor: 'rgba(4, 209, 130, 0.2)',
                   borderColor: 'rgb(4, 209, 130)',
-                  data: [300,700,2000,5000,6000,4000,2000,1000,200,100,200,300] , // Use the array directly
+                  data: [300,700,2000,5000,6000,4000,2000,1000,200,100,200,300] ,
               },
           ]
       },
