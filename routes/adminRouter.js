@@ -63,7 +63,6 @@ router.get("/editCoupon",adminAuth,adminController.editCoupon);
 router.post("/updatecoupon",adminAuth,adminController.updateCoupon);
 router.get("/deleteCoupon",adminAuth,adminController.deleteCoupon);
 
-
 // Banner Management
 router.get("/banner", adminAuth, bannerController.bannerManagement);
 router.get("/addBanner", adminAuth, bannerController.getAddBannerPage);

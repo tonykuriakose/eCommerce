@@ -71,12 +71,12 @@ async function sendVerificationEmail(email, otp) {
 const loadSignup = async (req, res) => {
   try {
     if (!req.session.user) {
-      res.render("signup");
+      return res.render("signup");
     } else {
-      res.redirect("/");
+      return res.redirect("/");
     }
   } catch (error) {
-    res.redirect("/pageNotFound");
+    return res.redirect("/pageNotFound");
   }
 };
 
@@ -92,8 +92,7 @@ const signup = async (req, res) => {
           req.session.userOtp = otp;
           req.session.userData = req.body;
           res.render("verify-otp");
-          console.log("Email sent:", info.messageId);
-          console.log(otp);
+          console.log('OTP Sent: ',otp);
         } else {
           res.json("email-error");
         }
@@ -223,20 +222,13 @@ const loadHomepage = async (req, res) => {
     });
     const brandData = await Brand.find({ isBlocked: false });
     const categories = await Category.find({ isListed: true });
-    
-    // Fetch products that are not blocked and have non-zero quantity
     let productData = await Product.find({ 
       isBlocked: false,
       category: { $in: categories.map(category => category._id) },
-      quantity: { $gt: 0 }  // Filter to exclude out-of-stock items
+      quantity: { $gt: 0 }
     });
-
-    // Sort products by creation date in descending order
     productData.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
-    
-    // Limit the number of products to 4
     productData = productData.slice(0, 4);
-
     if (user) {
       res.render("home", {
         user: userData,
@@ -255,7 +247,6 @@ const loadHomepage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
-
 
 
 const loadShoppingpage = async (req, res) => {
@@ -291,8 +282,8 @@ const searchProducts = async (req, res) => {
   try {
     const user = req.session.user;
     let search = req.body.query;
-    const brands = await Brand.find({});
-    const categories = await Category.find({ isListed: true });
+    const brands = await Brand.find({}).lean();
+    const categories = await Category.find({ isListed: true }).lean();
     const categoryIds = categories.map(category => category._id.toString());
     let searchResult = await Product.find({
       $or: [
@@ -333,12 +324,12 @@ const filterProduct = async (req, res) => {
     const user = req.session.user;
     const category = req.query.category;
     const brand = req.query.brand;
-    const brands = await Brand.find({});
+    const brands = await Brand.find({}).lean();
     const findCategory = category ? await Category.findOne({ _id: category }) : null;
     const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
     const query = {
       isBlocked: false,
-      quantity: { $gt: 0 }, // Only include products that are in stock
+      quantity: { $gt: 0 },
     };
 
     if (findCategory) {
@@ -348,8 +339,6 @@ const filterProduct = async (req, res) => {
     if (findBrand) {
       query.brand = findBrand.brandName;
     }
-
-    // Find and sort products by creation date in descending order
     let findProducts = await Product.find(query).lean();
     findProducts.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
@@ -458,19 +447,15 @@ const applyCoupon = async (req, res) => {
     const selectedCoupon = await Coupon.findOne({ name: req.body.coupon });
 
     if (!selectedCoupon) {
-      console.log("no coupon");
       res.json({ noCoupon: true });
     } else if (selectedCoupon.userId.includes(userId)) {
-      console.log("already used");
       res.json({ used: true });
     } else {
-      console.log("coupon exists");
       await Coupon.updateOne(
         { name: req.body.coupon },
         { $addToSet: { userId: userId } }
       );
       const gt = parseInt(req.body.total) - parseInt(selectedCoupon.offerPrice);
-      console.log(gt, "----");
       res.json({ gt: gt, offerPrice: parseInt(selectedCoupon.offerPrice) });
     }
   } catch (error) {

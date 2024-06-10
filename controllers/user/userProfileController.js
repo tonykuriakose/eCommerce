@@ -287,7 +287,6 @@ const updateEmail = async (req, res) => {
     await User.findByIdAndUpdate(userId, { email: newEmail });
     res.redirect("/userProfile");
   } catch (error) {
-    console.error(error);
     res.redirect("/pageNotFound");
   }
 };
@@ -326,9 +325,7 @@ const getAddressAddPage = async (req, res) => {
 };
 const postAddress = async (req, res) => {
   try {
-    console.log(req.session.user, "user");
     const user = req.session.user;
-    console.log(user, "user");
     const userData = await User.findOne({ _id: user });
     const {
       addressType,
@@ -341,10 +338,7 @@ const postAddress = async (req, res) => {
       altPhone,
     } = req.body;
     const userAddress = await address.findOne({ userId: userData._id });
-    console.log(userAddress);
     if (!userAddress) {
-      console.log("fst");
-      console.log(userData._id);
       const newAddress = new address({
         userId: userData._id,
         address: [
@@ -362,7 +356,6 @@ const postAddress = async (req, res) => {
       });
       await newAddress.save();
     } else {
-      console.log("scnd");
       userAddress.address.push({
         addressType,
         name,
@@ -401,12 +394,9 @@ const getEditAddress = async (req, res) => {
 };
 
 const postEditAddress = async (req, res) => {
-  console.log("magesh");
   try {
     const data = req.body;
     const addressId = req.query.id;
-
-    console.log(addressId, "address id");
     const user = req.session.user;
     const findAddress = await address.findOne({ "address._id": addressId });
     const matchedAddress = findAddress.address.find(
@@ -446,13 +436,9 @@ const getDeleteAddress = async (req, res) => {
   try {
     const addressId = req.query.id;
     const findAddress = await address.findOne({ "address._id": addressId });
-
     if (!findAddress) {
-      console.log("Address not found");
-
       return res.status(404).send("Address not found");
     }
-
     await address.updateOne(
       { "address._id": addressId },
       {
@@ -463,7 +449,6 @@ const getDeleteAddress = async (req, res) => {
         },
       }
     );
-
     res.redirect("/userprofile");
   } catch (error) {
      res.redirect("/pageNotFound");
@@ -476,30 +461,21 @@ const verifyReferalCode = async (req, res) => {
   try {
       const referalCode = req.body.referalCode
       const currentUser = await User.findOne({ _id: req.session.user })
-      // console.log("currentUser=>>>", currentUser hain);
       const codeOwner = await User.findOne({ referalCode: referalCode })
-      // console.log("codeOwner=>>>", codeOwner hain);
-
       if (currentUser.redeemed === true) {
-          console.log("You have already redeemed a referral code before!");
           res.json({ message: "You have already redeemed a referral code before!" })
           return
       }
 
       if (!codeOwner || codeOwner._id.equals(currentUser._id)) {
-          console.log("Invalid referral code!");
           res.json({ message: "Invalid referral code!" })
           return
       }
-
       const alreadyRedeemed = codeOwner.redeemedUsers.includes(currentUser._id)
-
       if (alreadyRedeemed) {
-          console.log("You have already used this referral code!");
           res.json({ message: "You have already used this referral code!" })
           return
       } else {
-
           await User.updateOne(
               { _id: req.session.user },
               {
@@ -514,8 +490,6 @@ const verifyReferalCode = async (req, res) => {
               }
           )
               .then(data => console.log("currentUser Wallet = > ", data))
-
-
 
           await User.updateOne(
               { _id: codeOwner._id },
@@ -546,9 +520,6 @@ const verifyReferalCode = async (req, res) => {
               { _id: codeOwner._id },
               { $push: { redeemedUsers: currentUser._id } }
           )
-
-          console.log("Referral code redeemed successfully!");
-
           res.json({ message: "Referral code verified successfully!" })
           return
 

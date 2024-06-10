@@ -23,16 +23,12 @@ const addProducts = async (req, res) => {
     const productExists = await Product.findOne({
       productName: products.productName,
     });
-    console.log(productExists, "product");
     if (!productExists) {
       const images = [];
       if (req.files && req.files.length > 0) {
         for (let i = 0; i < req.files.length; i++) {
           const originalImagePath = req.files[i].path;
           const originalImageMetadata = await sharp(originalImagePath).metadata();
-          console.log(
-            `Original Image Size: ${originalImageMetadata.width}x${originalImageMetadata.height} pixels`
-          );
           const resizedImagePath = path.join(
             "public",
             "uploads",
@@ -42,14 +38,10 @@ const addProducts = async (req, res) => {
           await sharp(originalImagePath)
             .resize({ width: 440, height: 440 })
             .toFile(resizedImagePath);
-
-          console.log(resizedImagePath, "resized image path");
           images.push(req.files[i].filename);
         }
       }
       const categoryId = await Category.findOne({ name: products.category });
-      console.log(categoryId._id, "categoryId hain");
-
       const newProduct = new Product({
         id: Date.now(),
         productName: products.productName,
@@ -98,7 +90,6 @@ const deleteSingleImage = async (req, res) => {
     const product = await Product.findByIdAndUpdate(productIdToServer, {
       $pull: { productImage: imageNameTOserver },
     });
-    console.log(imageNameTOserver);
     const imagePath = path.join(
       "public",
       "uploads",
@@ -164,8 +155,6 @@ const editProduct = async (req, res) => {
       updatedFields,
       { new: true }
     );
-
-    console.log("Product updated");
     res.redirect("/admin/products");
   } catch (error) {
     console.error(error);
@@ -239,6 +228,8 @@ const getUnblockProduct = async (req, res) => {
     res.redirect("/pageerror");
   }
 };
+
+
 const productDetails = async (req, res) => {
   try {
     const user = req.session.user;
@@ -275,12 +266,10 @@ const productDetails = async (req, res) => {
 
 const addProductOffer = async (req, res) => {
   try {
-      console.log(req.body, "req body of add");
       const { productId, percentage } = req.body;
       const findProduct = await Product.findOne({ _id: productId });
       const findCategory = await Category.findOne({ _id: findProduct.category });
       if (findCategory.categoryOffer > percentage) {
-          console.log("This product's category already has a category offer. Product offer not added.");
           return res.json({ status: false, message: "This product's category already has a category offer." });
       }
       findProduct.salePrice = findProduct.salePrice - Math.floor(findProduct.regularPrice * (percentage / 100));

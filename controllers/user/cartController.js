@@ -48,6 +48,29 @@ const addToWishlist = async (req, res) => {
 };
 
 
+const removeProduct = async (req, res) => {
+  try {
+    const productId = req.query.productId;
+    const userId = req.session.user;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ status: false, message: 'User not found' });
+    }
+    const index = user.wishlist.indexOf(productId);
+    if (index === -1) {
+      return res.status(404).json({ status: false, message: 'Product not found in wishlist' });
+    }
+    user.wishlist.splice(index, 1);
+    await user.save();
+    console.log("Product removed from wishlist");
+    return res.redirect('/wishlist'); 
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ status: false, message: 'Server error' });
+  }
+};
+
+
 
 const getCartPage = async (req, res) => {
   try {
@@ -147,29 +170,19 @@ const addToCart = async (req, res) => {
 
 const changeQuantity = async (req, res) => {
   try {
-    // console.log('here--');
     const id = req.body.productId;
     const user = req.session.user;
-    console.log(user, "user id1");
     const count = req.body.count;
     // count(-1,+1)
-
-    // console.log(user);
-    // console.log(id, "productId");
-
     const findUser = await User.findOne({ _id: user });
-    console.log(findUser);
     const findProduct = await Product.findOne({ _id: id });
     const oid = new mongodb.ObjectId(user);
-
     if (findUser) {
       const productExistinCart = findUser.cart.find(
         (item) => item.productId === id
       );
-      // console.log(productExistinCart, 'this is product in cart');
       let newQuantity;
       if (productExistinCart) {
-        console.log(count);
         if (count == 1) {
           newQuantity = productExistinCart.quantity + 1;
         } else if (count == -1) {
@@ -181,7 +194,6 @@ const changeQuantity = async (req, res) => {
         }
       } else {
       }
-      console.log(newQuantity, "this id new Quantity");
       if (newQuantity > 0 && newQuantity <= findProduct.quantity) {
         let quantityUpdated = await User.updateOne(
           { _id: user, "cart.productId": id },
@@ -216,17 +228,14 @@ const changeQuantity = async (req, res) => {
           {
             $group: {
               _id: null,
-              totalQuantity: { $sum: "$quantity" }, // Sum of quantities from the Cart collection
+              totalQuantity: { $sum: "$quantity" },
               totalPrice: {
                 $sum: { $multiply: ["$quantity", "$productDetails.salePrice"] },
-              }, // Sum of (quantity * price) from the joined collections
+              }, 
             },
           },
         ]);
-        console.log(grandTotal, "grand total");
         if (quantityUpdated) {
-          // console.log('iam here inside the cart', quantityUpdated, 'ok');
-
           res.json({
             status: true,
             quantityInput: newQuantity,
@@ -250,13 +259,11 @@ const changeQuantity = async (req, res) => {
 const deleteProduct = async (req, res) => {
   try {
     const id = req.query.id;
-    console.log(id, "id");
     const userId = req.session.user;
     const user = await User.findById(userId);
     const cartIndex = user.cart.findIndex((item) => item.productId == id);
     user.cart.splice(cartIndex, 1);
     await user.save();
-    console.log("item deleted from cart");
     res.redirect("/cart");
   } catch (error) {
     res.redirect("/pageNotFound");
@@ -264,30 +271,7 @@ const deleteProduct = async (req, res) => {
 };
 
 
-const removeProduct = async (req, res) => {
-  try {
-    const productId = req.query.productId;
-    const userId = req.session.user;
-    const user = await User.findById(userId);
 
-    if (!user) {
-      return res.status(404).json({ status: false, message: 'User not found' });
-    }
-
-    const index = user.wishlist.indexOf(productId);
-    if (index === -1) {
-      return res.status(404).json({ status: false, message: 'Product not found in wishlist' });
-    }
-
-    user.wishlist.splice(index, 1);
-    await user.save();
-    console.log("Product removed from wishlist");
-    return res.redirect('/wishlist'); 
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ status: false, message: 'Server error' });
-  }
-};
 
 
 module.exports = {

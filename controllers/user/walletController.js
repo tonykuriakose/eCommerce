@@ -46,7 +46,6 @@ const verify_payment = async (req, res)=>{
     try {
         let details = req.body
         let amount = parseInt(details.order.order.amount) / 100
-        // console.log(amount);
         await User.updateOne(
             {_id : req.session.user},
             {$inc : {wallet : amount}}
@@ -56,10 +55,6 @@ const verify_payment = async (req, res)=>{
         res.redirect("/pageNotFound");
     }
 }
-
-
-
-
 
 
 

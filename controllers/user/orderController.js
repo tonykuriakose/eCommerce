@@ -77,8 +77,6 @@ const getCheckoutPage = async (req, res) => {
       expireOn: { $gt: new Date(today) },
       minimumPrice: { $lt: grandTotal[0].totalPrice },
     });
-    console.log(findCoupons);
-
     if (findUser.cart.length > 0) {
       res.render("checkoutcart", {
         product: data,
@@ -116,17 +114,11 @@ const orderPlaced = async (req, res) => {
   try {
     const { totalPrice, addressId, payment } = req.body;
     const userId = req.session.user;
-
-    // Find user and their cart
     const findUser = await User.findOne({ _id: userId });
     if (!findUser) {
       return res.status(404).json({ error: "User not found" });
     }
-
-    // Extract product IDs from the user's cart
     const productIds = findUser.cart.map((item) => item.productId);
-
-    // Find the desired address
     const findAddress = await Address.findOne({ userId: userId, "address._id": addressId });
     if (!findAddress) {
       return res.status(404).json({ error: "Address not found" });
@@ -136,14 +128,10 @@ const orderPlaced = async (req, res) => {
     if (!desiredAddress) {
       return res.status(404).json({ error: "Specific address not found" });
     }
-
-    // Find products in the cart
     const findProducts = await Product.find({ _id: { $in: productIds } });
     if (findProducts.length !== productIds.length) {
       return res.status(404).json({ error: "Some products not found" });
     }
-
-    // Map cart items with product details
     const cartItemQuantities = findUser.cart.map((item) => ({
       productId: item.productId,
       quantity: item.quantity,
@@ -157,8 +145,6 @@ const orderPlaced = async (req, res) => {
       productStatus: "Confirmed",
       quantity: cartItemQuantities.find((cartItem) => cartItem.productId.toString() === item._id.toString()).quantity,
     }));
-
-    // Create new order based on payment method
     let newOrder = new Order({
       product: orderedProducts,
       totalPrice: totalPrice,
@@ -168,14 +154,9 @@ const orderPlaced = async (req, res) => {
       status: payment === "razorpay" ? "Failed" : "Confirmed",
       createdOn: Date.now(),
     });
-
-    // Save the new order
     let orderDone = await newOrder.save();
-
-    // Clear the user's cart
+    
     await User.updateOne({ _id: userId }, { $set: { cart: [] } });
-
-    // Update product quantities
     for (let orderedProduct of orderedProducts) {
       const product = await Product.findOne({ _id: orderedProduct._id });
       if (product) {
