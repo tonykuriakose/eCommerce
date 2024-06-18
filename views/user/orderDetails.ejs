@@ -89,6 +89,9 @@
                                 <%= orders.address[0].state %>, <%= orders.address[0].addressType %> <br> 
                                 <%= orders.address[0].pincode %>
                             </p>
+                            <%if(orders.status==="Delivered"){%>
+                                <a href="/downloadInvoice/<%=orders._id%>" class="btn btn-sm">Download Invoice</a>
+                            <%}%>
                         </div>
                     </article>
                 </div> 
@@ -156,17 +159,6 @@
                                 <% } %>
                                 <input type="hidden" name="" id="orderId" value="<%= orders._id %>">
                             </tbody>
-                            
-                            
-
-                           
-                            
-
-
-                            
-
-
-
                         </table>
                     </div> 
                 </div> 
