@@ -450,8 +450,7 @@ const downloadInvoice = async (req, res) => {
       };
 
       const result = await easyinvoice.createInvoice(data);
-      const invoicePath = path.join(__dirname, '..', 'public', `invoice_${orderId}.pdf`);
-
+      const invoicePath = path.join(__dirname,"../../public/invoice/",`invoice_${orderId}.pdf`);
       fs.writeFileSync(invoicePath, result.pdf, 'base64');
       res.download(invoicePath, `invoice_${orderId}.pdf`, (err) => {
           if (err) {
