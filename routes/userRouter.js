@@ -69,16 +69,18 @@ router.post("/verifyReferalCode", userAuth, userProfileController.verifyReferalC
 
 
 // Order Management
-router.get("/checkout", userAuth,orderController.getCheckoutPage)
-router.get("/deleteItem", userAuth, orderController.deleteProduct)
+router.get("/checkout", userAuth,orderController.getCheckoutPage);
+router.get("/deleteItem", userAuth, orderController.deleteProduct);
 router.post("/applyCoupon",userAuth,userController.applyCoupon);
-router.post("/orderPlaced", userAuth,orderController.orderPlaced)
-router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage)
-router.get("/cancelOrder",userAuth,orderController.cancelorder)
-router.get("/returnrequestOrder",userAuth,orderController.returnorder)
-router.post("/verifyPayment", userAuth, orderController.verify)
-router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus)
-router.post('/paymentConfirm',userAuth,orderController.paymentConfirm)
+router.post("/orderPlaced", userAuth,orderController.orderPlaced);
+router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage);
+router.get("/cancelOrder",userAuth,orderController.cancelorder);
+router.get("/returnrequestOrder",userAuth,orderController.returnorder);
+router.post("/verifyPayment", userAuth, orderController.verify);
+router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus);
+router.post('/paymentConfirm',userAuth,orderController.paymentConfirm);
+router.get("/downloadInvoice/:orderId",userAuth,orderController.downloadInvoice);
+
 
 // Wallet
 router.post("/addMoney", userAuth, walletController.addMoneyToWallet)

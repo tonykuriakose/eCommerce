@@ -28,6 +28,15 @@ const orderSchema = new Schema({
         ref: 'User',
         required: true
     },
+    orderedItems:[{
+        product:{
+            type:Schema.Types.ObjectId,
+            ref:'Product'
+        }
+    }],
+    invoice : {
+        type : Date
+    },
     status: {
         type: String,
         required: true
@@ -38,6 +47,11 @@ const orderSchema = new Schema({
     },
     date: {
         type: String
+    },
+    couponApplied : {
+        type : Boolean,
+        // required :true,
+        // default : false
     }
 });
 

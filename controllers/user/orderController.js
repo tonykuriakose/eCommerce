@@ -7,6 +7,10 @@ const mongoose = require("mongoose");
 const razorpay = require("razorpay");
 const env = require("dotenv").config();
 const crypto = require("crypto");
+const moment = require("moment");
+const fs = require("fs");
+const path = require("path");
+const easyinvoice = require("easyinvoice");
 const Coupon = require("../../models/couponSchema");
 let instance = new razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -395,6 +399,76 @@ const verify = (req, res) => {
   }
 };
 
+
+const downloadInvoice = async (req, res) => {
+  try {
+      const orderId = req.params.orderId;
+      const order = await Order.findById(orderId).populate('userId'); // Adjust the query as per your database structure
+
+      if (!order) {
+          return res.status(404).send('Order not found');
+      }
+
+      const data = {
+          "documentTitle": "INVOICE", // Defaults to INVOICE
+          "currency": "INR",
+          "taxNotation": "gst", // Defaults to "vat"
+          "marginTop": 25,
+          "marginRight": 25,
+          "marginLeft": 25,
+          "marginBottom": 25,
+          "logo": "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad", // Or you can upload your own logo
+          "sender": {
+              "company": "Your Company Name",
+              "address": "Your Company Address",
+              "zip": "Your Company ZIP",
+              "city": "Your Company City",
+              "country": "Your Company Country"
+          },
+          "client": {
+              "company": order.address[0].name,
+              "address": order.address[0].landMark + ", " + order.address[0].city,
+              "zip": order.address[0].pincode,
+              "city": order.address[0].state,
+              "country": "India"
+          },
+          "invoiceNumber": order._id,
+          "invoiceDate": new Date().toLocaleDateString(),
+          "products": order.product.map(prod => ({
+              "quantity": prod.quantity,
+              "description": prod.name || prod.title,
+              "tax": 0,
+              "price": prod.price
+          })),
+          "bottomNotice": "Thank you for your business. Your Company Slogan/Notice."
+      };
+
+      const result = await easyinvoice.createInvoice(data);
+
+      // Specify the path where you want to save the invoice
+      const invoicePath = path.join(__dirname, '..', 'public', `invoice_${orderId}.pdf`);
+
+      fs.writeFileSync(invoicePath, result.pdf, 'base64');
+
+      // Send the invoice as a downloadable file
+      res.download(invoicePath, `invoice_${orderId}.pdf`, (err) => {
+          if (err) {
+              console.error("Error downloading the file", err);
+          }
+          // Optional: Delete the file after sending it
+          fs.unlinkSync(invoicePath);
+      });
+  } catch (error) {
+      console.error(error);
+      res.status(500).send('An error occurred while generating the invoice');
+  }
+};
+
+
+
+
+
+
 module.exports = {
   getCheckoutPage,
   deleteProduct,
@@ -406,4 +480,5 @@ module.exports = {
   changeSingleProductStatus,
   paymentConfirm,
   returnorder,
+  downloadInvoice
 };
