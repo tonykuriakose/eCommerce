@@ -300,7 +300,16 @@
                     icon: 'error',
                     timer: 3000,
                 });
-            } else {
+            } else if(payment === "cod" && numericValue > 1000){
+                Swal.fire({
+            title: 'COD Not Allowed!',
+            text: 'Orders above ₹1000 are not allowed for Cash on Delivery (COD).',
+            icon: 'error',
+            timer: 3000,
+        });
+
+
+            }else {
                 console.log("AJAX");
                 $.ajax({
                     url: '/orderPlaced',

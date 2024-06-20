@@ -102,12 +102,8 @@
                   </a>
                 </div>
                 <div class="product-action-1">
-  
                   <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addToWishlist('<%= product[i]._id %>')"><i class="fi-rs-heart"></i></a>
-
-              </div>
-
-             
+              </div>             
                 <div
                   class="product-badges product-badges-position product-badges-mrg"
                 >
@@ -294,9 +290,6 @@ function addToWishlist(productId) {
     }
   });
 }
-
-
-
 
   function fetchCartCount() {
     $.ajax({

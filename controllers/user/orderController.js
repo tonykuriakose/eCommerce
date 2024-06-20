@@ -149,6 +149,13 @@ const orderPlaced = async (req, res) => {
       productStatus: "Confirmed",
       quantity: cartItemQuantities.find((cartItem) => cartItem.productId.toString() === item._id.toString()).quantity,
     }));
+
+    //Check if totalPrice is above 1000 and payment method is COD
+    if (payment === "cod" && totalPrice > 1000) {
+      return res.status(400).json({ error: "Orders above ₹1000 are not allowed for Cash on Delivery (COD)" });
+    }
+
+
     let newOrder = new Order({
       product: orderedProducts,
       totalPrice: totalPrice,
