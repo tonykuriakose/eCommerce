@@ -293,37 +293,28 @@ const changeSingleProductStatus = async (req, res) => {
 };
 
 
-const cancelorder = async (req, res) => {
+const cancelOrder = async (req, res) => {
   try {
     const userId = req.session.user;
     const findUser = await User.findOne({ _id: userId });
-    console.log(findUser, "findUser1123456");
     if (!findUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    const orderId = req.query.orderId;
+    const {orderId} = req.body;
     const findOrder = await Order.findOne({ _id: orderId });
-    console.log(findOrder, "findOrder");
     if (!findOrder) {
-      console.log("order is not present");
       return res.status(404).json({ message: "Order not found" });
     }
     if (findOrder.status === "Cancelled") {
-      console.log(findOrder.status, "already canceled");
       return res.status(400).json({ message: "Order is already cancelled" });
     }
-    // Check if the payment method is "razorpay" or "wallet"
     if (
       (findOrder.payment === "razorpay" || findOrder.payment === "wallet") &&
       findOrder.status === "Confirmed"
     ) {
-      // Add the paid amount back to the user's wallet
-      console.log("if razorPay , wallet cancel");
       findUser.wallet += findOrder.totalPrice;
-      console.log(findUser, "user id");
       await findUser.save();
     }
-    // Update the order status to "Cancelled"
     await Order.updateOne({ _id: orderId }, { status: "Canceled" });
     for (const productData of findOrder.product) {
       const productId = productData._id;
@@ -331,10 +322,9 @@ const cancelorder = async (req, res) => {
       const product = await Product.findById(productId);
       if (product) {
         product.quantity += quantity;
-        console.log(product, "product");
         await product.save();
       } else if (!product) {
-        console.log("nah product");
+        console.log("No Product");
       }
     }
 
@@ -344,6 +334,8 @@ const cancelorder = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+
 
 const returnorder = async (req, res) => {
   try {
@@ -479,7 +471,7 @@ const downloadInvoice = async (req, res) => {
 module.exports = {
   getCheckoutPage,
   deleteProduct,
-  cancelorder,
+  cancelOrder,
   orderPlaced,
   getOrderDetailsPage,
   getCartCheckoutPage,

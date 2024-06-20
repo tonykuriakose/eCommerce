@@ -182,7 +182,7 @@ function handleDropdownChange(selectElement) {
     var selectedValue = selectElement.value;
     var orderId = document.getElementById("orderId").value;
 
-    if (selectedValue == "cancel") {
+    if (selectedValue === "cancel") {
         confirmCancelOrder(orderId);
     } else if (selectedValue == "returnrequest") {
         returnRequestOrder(orderId);
@@ -200,16 +200,19 @@ function confirmCancelOrder(orderId) {
         confirmButtonText: 'Yes, cancel it!'
     }).then((result) => {
         if (result.isConfirmed) {
+            console.log('working');
             cancelOrder(orderId);
         }
     });
 }
 
 function cancelOrder(orderId) {
+    console.log('working');
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
-        data: { orderId: orderId },
+        contentType:'application/json',
+        data: JSON.stringify({ orderId: orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
                 window.location.reload();
