@@ -75,7 +75,7 @@ router.post("/applyCoupon",userAuth,userController.applyCoupon);
 router.post("/orderPlaced", userAuth,orderController.orderPlaced);
 router.get("/orderDetails", userAuth,orderController.getOrderDetailsPage);
 router.post("/cancelOrder",userAuth,orderController.cancelOrder);
-router.get("/returnrequestOrder",userAuth,orderController.returnorder);
+router.post("/returnrequestOrder",userAuth,orderController.returnorder);
 router.post("/verifyPayment", userAuth, orderController.verify);
 router.post("/singleProductId",userAuth,orderController.changeSingleProductStatus);
 router.post('/paymentConfirm',userAuth,orderController.paymentConfirm);

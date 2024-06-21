@@ -1,28 +1,8 @@
 <%- include("../../views/partials/user/header") %>
-<style>
-    .custom-btn {
-        background-color: #4CAF50;
-        border: none;
-        color: white;
-        padding: 10px 20px;
-        text-align: center;
-        text-decoration: none;
-        display: inline-block;
-        font-size: 16px;
-        margin: 4px 2px;
-        cursor: pointer;
-        border-radius: 4px;
-    }
-    h3 {
-        text-align: center;
-        color: red;
-        font-size: 24px;
-    }
-</style>
 <main class="container">
     <section class="content-main">
         <div class="content-header">
-            <div class="mt-50">
+            <div class="mt-10">
                 <h2 class="content-title card-title">Order detail</h2>
                 <p>Details for Order ID: <%= orders.orderId %></p>
             </div>
@@ -146,7 +126,6 @@
                                                         <% if (orders.status === "Confirmed") { %>
                                                             <option value="cancel">Cancel Order</option>
                                                         <% } else if (orders.status === "Shipped" || orders.status === "Delivered") { %>
-                                                            <option value="cancel">Cancel Order</option>
                                                             <option value="returnrequest">Return Request</option>
                                                         <% } else if (orders.status === "Failed") { %>
                                                             <option value="" disabled>Can't cancel</option>
@@ -207,7 +186,6 @@ function confirmCancelOrder(orderId) {
 }
 
 function cancelOrder(orderId) {
-    console.log('working');
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
@@ -228,7 +206,8 @@ function returnRequestOrder(orderId) {
     $.ajax({
         url: '/returnrequestOrder',
         method: 'POST',
-        data: { orderId: orderId },
+        contentType:'application/json',
+        data: JSON.stringify({ orderId: orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
                 window.location.reload();

@@ -344,7 +344,7 @@ const returnorder = async (req, res) => {
     if (!findUser) {
       return res.status(404).json({ message: "User not found" });
     }
-    const orderId = req.query.orderId;
+    const {orderId} = req.body;
     const findOrder = await Order.findOne({ _id: orderId });
     console.log(findOrder, "findOrder");
     if (!findOrder) {
