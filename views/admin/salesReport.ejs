@@ -1,5 +1,4 @@
 <%- include("../../views/partials/admin/header") %>
-
 <style>
   .pagination {
     display: flex;
@@ -65,6 +64,9 @@
       <div class="col-md-2 col-6">
         <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? locals.date : '' %>" onchange="dateWiseFilter()" />
       </div>
+      <div class="col-md-2 col-6">
+        <input type="date" id="selectedDate" class="form-control" value="<%= locals.date ? locals.date : '' %>" onchange="dateWiseFilter()" />
+      </div>
       <div class="col-lg-6 col-md-6 ms-auto text-md-end">
         <a href="#" id="createSalesReport" class="btn btn-primary mb-2">Generate PDF</a>
         <a href="#" id="downloadExcelReport" class="btn btn-primary mb-2">Download Excel</a>
@@ -72,14 +74,10 @@
     </div>
   </header>
 </div>
-
-<div class="right mt-5 container">
-  <input type="date" id="calendar" name="calendar" class="form-control mb-3" />
   <table id="salesTable" class="table table-hover">
     <thead>
       <tr>
         <th>#</th>
-        <th>data ID</th>
         <th scope="col">Name</th>
         <th scope="col">Product</th>
         <th scope="col">Date</th>
@@ -92,9 +90,8 @@
       <% let grandTotal = 0; %> <% for (let i = 0; i < data.length; i++) { %>
       <tr>
         <td><%= i + 1 %></td>
-        <td><%= data[i]._id %></td>
         <td><b><%= data[i].address[0].name %></b></td>
-        <td><b><%= data[i].product[0]._id %></b></td>
+        <td><b><%= data[i].product[0].name %></b></td>
         <td><%= data[i].createdOn.toLocaleString('en-IN') %></td>
         <td><%= data[i].payment %></td>
         <td><%= data[i].status %></td>
@@ -104,12 +101,11 @@
     </tbody>
     <tfoot>
       <tr>
-        <td colspan="7" class="text-end"><b>Grand Total:</b></td>
-        <td class="text-end"><b><%= grandTotal %></b></td>
+        <td colspan="7" class="text-center"><b>Grand Total:</b></td>
+        <td class="text-center"><b><%= grandTotal %></b></td>
       </tr>
     </tfoot>
   </table>
-
   <% if (totalPages) { %>
   <div class="pagination">
     <% if (currentPage> 1) { %>
@@ -127,7 +123,6 @@
     <% } %>
   </div>
   <% } %>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
   <script>
     document
