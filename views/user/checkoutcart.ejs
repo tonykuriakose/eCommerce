@@ -29,18 +29,17 @@
         background-color: #45a049;
     }
 </style>
-
-    <section class="mt-50 mb-50">
+    <section>
         <div class="container">
             <div class="row">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="order_review">
                             <div class="mb-20">
-                                <h4>Your Orders</h4>
+                                <h4>Products</h4>
                             </div>
                             <div class="table-responsive order_table text-center">
-                                <table class="table mt-40">
+                                <table>
                                     <thead>
                                         <tr>
                                             <th>Image</th>
@@ -82,19 +81,19 @@
                                                             <td colspan="4">No products found</td>
                                                         </tr>
                                                         <% } %>
-
                                     </tbody>
                                     <% let totalAmount=0; %>
                                 </table>
                             </div>
                         </div>
                     </div>
+
+
                     <div class="col-8">
-                        <div class="row align-items-start mt-30 ml-150">
-                            <!-- Use align-items-start to vertically align content at the top -->
+                        <div class="row align-items-start mt-10 ml-190">
                             <% if (locals.userAddress) { %>
                                 <% userAddress.address.forEach((address)=> { %>
-                                    <div class="col-lg-6 mb-3">
+                                    <div class="col-lg-6">
                                         <div class="card">
                                             <div class="form-check">
                                                 <input class="form-check-input" type="radio"
@@ -110,8 +109,6 @@
                                                 </h5>
                                             </div>
                                             <div class="card-body">
-                                                <!-- Add a radio button with a unique id for each address -->
-
                                                 <address>
                                                     <%= address.name %><br />
                                                         <%= address.city %>,<br />
@@ -158,10 +155,9 @@
                                                 </div>
                         </div>
                     </div>
-                    <div class="col-6 mt-50 ">
-                        
-                            
-                        <div class="input-group mb-3 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 60px;">
+
+                    <div class="col-6">  
+                        <div class="input-group mb-1 col-2" style="border: 1px solid #ced4da; border-radius: 5px; width: 300px; margin-left: 200px; margin-top: 10px;">
                             <input type="text" class="form-control" id="inputCoupon" placeholder="Paste Coupon Name">
                             <div class="input-group-append">
                                 <button class="btn btn-primary" id="applyButton" type="button" onclick="applyCoupon('<%=grandTotal%>')">Apply</button>
@@ -169,7 +165,9 @@
                             </div>
                         </div>
                             </div>
-                            <div class="mb-25 ml-150 pt-40">
+
+
+                            <div class="mb-25 ml-150 pt-10">
                                 <h5>Available Coupons</h5>
                             </div>
 
@@ -177,12 +175,11 @@
                                 <% if (locals.Coupon) { %>
                                     <% for (let i=0; i < Coupon.length; i++) { %>
                                         <li>
-                                            <div class="coupon-card col-4" style="margin-left: 150px; margin-top: 20px;">
+                                            <div class="coupon-card col-4" style="margin-left: 150px;">
                                                 <div class="coupon-details">
                                                     <span class="coupon-name">
                                                         <%= Coupon[i].name %>
                                                     </span><br>
-                                                    <!-- Add other coupon details if needed -->
                                                 </div>
                                                 <button onclick="useCoupon('<%= Coupon[i].name %>')" id="useButton_<%= Coupon[i].name %>" class="use-button">Use</button>
                                                 <button onclick="cancelCoupon('<%= Coupon[i].name %>')" id="cancelButton_<%= Coupon[i].name %>" class="cancel-button btn-danger" style="display: none;">Cancel</button>
@@ -501,6 +498,7 @@
             });
         }
         function applyCoupon() {
+            console.log('ajax calling');
     const coupon = $('#couponInput').val();
     const total = $('#totalValue').text().replace('₹', ''); // Extract the total value
 

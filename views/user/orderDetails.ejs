@@ -128,7 +128,7 @@
                                                         <% } else if (orders.status === "Shipped" || orders.status === "Delivered") { %>
                                                             <option value="returnrequest">Return Request</option>
                                                         <% } else if (orders.status === "Failed") { %>
-                                                            <option value="" disabled>Can't cancel</option>
+                                                            <option value="retry" disabled>Retry Payment</option>
                                                         <% } %>
                                                     </select>
                                                 <% } %>
