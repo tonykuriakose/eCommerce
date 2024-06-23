@@ -322,11 +322,20 @@ const searchProducts = async (req, res) => {
 const filterProduct = async (req, res) => {
   try {
     const user = req.session.user;
+    console.log('User:', user);
+
     const category = req.query.category;
     const brand = req.query.brand;
+    console.log('Category ID:', category);
+    console.log('Brand ID:', brand);
+
     const brands = await Brand.find({}).lean();
     const findCategory = category ? await Category.findOne({ _id: category }) : null;
+    console.log('Found Category:', findCategory);
+
     const findBrand = brand ? await Brand.findOne({ _id: brand }) : null;
+    console.log('Found Brand:', findBrand);
+
     const query = {
       isBlocked: false,
       quantity: { $gt: 0 },
@@ -339,6 +348,7 @@ const filterProduct = async (req, res) => {
     if (findBrand) {
       query.brand = findBrand.brandName;
     }
+
     let findProducts = await Product.find(query).lean();
     findProducts.sort((a, b) => new Date(b.createdOn) - new Date(a.createdOn));
 
@@ -351,6 +361,24 @@ const filterProduct = async (req, res) => {
     let totalPages = Math.ceil(findProducts.length / itemsPerPage);
     const currentProduct = findProducts.slice(startIndex, endIndex);
 
+    if (user) {
+      console.log('If user:', user);
+      const userData = await User.findOne({ _id: user });
+      console.log('User Data:', userData);
+
+      if (userData) {
+        const searchEntry = {
+          category: findCategory ? findCategory._id : null,
+          brand: findBrand ? findBrand.brandName : null,
+          searchedOn: new Date()
+        };
+        console.log('Search Entry:', searchEntry);
+
+        userData.searchHistory.push(searchEntry);
+        await userData.save();
+      }
+    }
+
     res.render("shop", {
       user: user,
       product: currentProduct,
@@ -362,11 +390,16 @@ const filterProduct = async (req, res) => {
       selectedBrand: brand || null,
     });
   } catch (error) {
-    console.log(error);
-    res.redirect("/pageNotFound");
-    res.status(500).send("Internal Server Error");
+    console.log('Error:', error);
+    if (!res.headersSent) {
+      res.redirect("/pageNotFound");
+      res.status(500).send("Internal Server Error");
+    }
   }
 };
+
+
+
 
 // Filter by price
 const filterByPrice = async (req, res) => {

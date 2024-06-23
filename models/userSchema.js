@@ -59,6 +59,21 @@ const userSchema = Mongoose.Schema({
             required: true,
         }
     ],
+    searchHistory : [
+        {
+            category : {
+                type : Schema.Types.ObjectId,
+                ref:"Category"
+            },
+            brand : {
+                type: String
+            },
+            searchedOn: {
+                type:Date,
+                default : Date.now
+            }
+        }
+    ]
 
 })
 
