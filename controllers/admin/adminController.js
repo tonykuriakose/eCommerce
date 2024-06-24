@@ -596,6 +596,78 @@ const downloadExcel = async (req, res) => {
 }
 
 
+const bestSellingData = async (req, res) => {
+  try {
+    const totalRevenue = await Order.aggregate([
+      { $match: { status: 'Delivered' } },
+      { $group: { _id: null, total: { $sum: '$totalPrice' } } }
+    ]);
+    console.log(totalRevenue);
+    const totalOrders = await Order.countDocuments({ status: 'Delivered' });
+    const productCount = await Product.countDocuments();
+
+    const bestSellingProducts = await Order.aggregate([
+      { $unwind: '$orderedItems' },
+      { $group: { _id: '$orderedItems.product', totalQuantity: { $sum: 1 } } },
+      { $lookup: { from: 'products', localField: '_id', foreignField: '_id', as: 'product' } },
+      { $unwind: '$product' },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 5 },
+      { $project: { _id: 0, name: '$product.productName', totalQuantity: 1 } }
+    ]);
+
+    // Fetch best-selling categories
+    const bestSellingCategories = await Order.aggregate([
+      { $unwind: '$orderedItems' },
+      { $lookup: { from: 'products', localField: 'orderedItems.product', foreignField: '_id', as: 'product' } },
+      { $unwind: '$product' },
+      { $group: { _id: '$product.category', totalQuantity: { $sum: 1 } } },
+      { $lookup: { from: 'categories', localField: '_id', foreignField: '_id', as: 'category' } },
+      { $unwind: '$category' },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 5 },
+      { $project: { _id: 0, name: '$category.name', totalQuantity: 1 } }
+    ]);
+
+    // Fetch best-selling brands
+    const bestSellingBrands = await Order.aggregate([
+      { $unwind: '$orderedItems' },
+      { $lookup: { from: 'products', localField: 'orderedItems.product', foreignField: '_id', as: 'product' } },
+      { $unwind: '$product' },
+      { $group: { _id: '$product.brand', totalQuantity: { $sum: 1 } } },
+      { $lookup: { from: 'brands', localField: '_id', foreignField: '_id', as: 'brand' } },
+      { $unwind: '$brand' },
+      { $sort: { totalQuantity: -1 } },
+      { $limit: 5 },
+      { $project: { _id: 0, name: '$brand.brandName', totalQuantity: 1 } }
+    ]);
+
+    res.json({
+      totalRevenue: totalRevenue.length > 0 ? totalRevenue[0].total : 0,
+      totalOrders,
+      productCount,
+      bestSellingProducts: {
+        labels: bestSellingProducts.map(item => item.name),
+        data: bestSellingProducts.map(item => item.totalQuantity)
+      },
+      bestSellingCategories: {
+        labels: bestSellingCategories.map(item => item.name),
+        data: bestSellingCategories.map(item => item.totalQuantity)
+      },
+      bestSellingBrands: {
+        labels: bestSellingBrands.map(item => item.name),
+        data: bestSellingBrands.map(item => item.totalQuantity)
+      }
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
+};
+
+
+
 module.exports = {
   pageNotFound1,
   getLoginPage,
@@ -616,4 +688,5 @@ module.exports = {
   dateWiseFilter,
   downloadExcel,
   generatePdf,
+  bestSellingData,
 };
