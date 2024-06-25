@@ -596,75 +596,87 @@ const downloadExcel = async (req, res) => {
 }
 
 
+
+
 const bestSellingData = async (req, res) => {
   try {
-    const totalRevenue = await Order.aggregate([
-      { $match: { status: 'Delivered' } },
-      { $group: { _id: null, total: { $sum: '$totalPrice' } } }
-    ]);
-    console.log(totalRevenue);
-    const totalOrders = await Order.countDocuments({ status: 'Delivered' });
-    const productCount = await Product.countDocuments();
+      const products = await Order.aggregate([
+          { $match: { status: 'Delivered' } },
+          { $unwind: '$product' },
+          { $group: { _id: '$product', totalSales: { $sum: 1 } } },
+          { $sort: { totalSales: -1 } },
+          { $limit: 5 },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: '_id',
+                  foreignField: '_id',
+                  as: 'productDetails'
+              }
+          },
+          { $unwind: '$productDetails' },
+          { $project: { _id: 0, name: '$productDetails.productName', sales: '$totalSales' } }
+      ]);
+      console.log(products);
+      const categories = await Order.aggregate([
+          { $match: { status: 'Delivered' } },
+          { $unwind: '$orderedItems' },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: 'orderedItems.product',
+                  foreignField: '_id',
+                  as: 'productDetails'
+              }
+          },
+          { $unwind: '$productDetails' },
+          {
+              $lookup: {
+                  from: 'categories',
+                  localField: 'productDetails.category',
+                  foreignField: '_id',
+                  as: 'categoryDetails'
+              }
+          },
+          { $unwind: '$categoryDetails' },
+          { $group: { _id: '$categoryDetails.name', totalSales: { $sum: 1 } } },
+          { $sort: { totalSales: -1 } },
+          { $limit: 5 },
+          { $project: { _id: 0, name: '$_id', sales: '$totalSales' } }
+      ]);
+      const brands = await Order.aggregate([
+          { $match: { status: 'Delivered' } },
+          { $unwind: '$orderedItems' },
+          {
+              $lookup: {
+                  from: 'products',
+                  localField: 'orderedItems.product',
+                  foreignField: '_id',
+                  as: 'productDetails'
+              }
+          },
+          { $unwind: '$productDetails' },
+          {
+              $lookup: {
+                  from: 'brands',
+                  localField: 'productDetails.brand',
+                  foreignField: 'brandName',
+                  as: 'brandDetails'
+              }
+          },
+          { $unwind: '$brandDetails' },
+          { $group: { _id: '$brandDetails.brandName', totalSales: { $sum: 1 } } },
+          { $sort: { totalSales: -1 } },
+          { $limit: 5 },
+          { $project: { _id: 0, name: '$_id', sales: '$totalSales' } }
+      ]);
 
-    const bestSellingProducts = await Order.aggregate([
-      { $unwind: '$orderedItems' },
-      { $group: { _id: '$orderedItems.product', totalQuantity: { $sum: 1 } } },
-      { $lookup: { from: 'products', localField: '_id', foreignField: '_id', as: 'product' } },
-      { $unwind: '$product' },
-      { $sort: { totalQuantity: -1 } },
-      { $limit: 5 },
-      { $project: { _id: 0, name: '$product.productName', totalQuantity: 1 } }
-    ]);
-
-    // Fetch best-selling categories
-    const bestSellingCategories = await Order.aggregate([
-      { $unwind: '$orderedItems' },
-      { $lookup: { from: 'products', localField: 'orderedItems.product', foreignField: '_id', as: 'product' } },
-      { $unwind: '$product' },
-      { $group: { _id: '$product.category', totalQuantity: { $sum: 1 } } },
-      { $lookup: { from: 'categories', localField: '_id', foreignField: '_id', as: 'category' } },
-      { $unwind: '$category' },
-      { $sort: { totalQuantity: -1 } },
-      { $limit: 5 },
-      { $project: { _id: 0, name: '$category.name', totalQuantity: 1 } }
-    ]);
-
-    // Fetch best-selling brands
-    const bestSellingBrands = await Order.aggregate([
-      { $unwind: '$orderedItems' },
-      { $lookup: { from: 'products', localField: 'orderedItems.product', foreignField: '_id', as: 'product' } },
-      { $unwind: '$product' },
-      { $group: { _id: '$product.brand', totalQuantity: { $sum: 1 } } },
-      { $lookup: { from: 'brands', localField: '_id', foreignField: '_id', as: 'brand' } },
-      { $unwind: '$brand' },
-      { $sort: { totalQuantity: -1 } },
-      { $limit: 5 },
-      { $project: { _id: 0, name: '$brand.brandName', totalQuantity: 1 } }
-    ]);
-
-    res.json({
-      totalRevenue: totalRevenue.length > 0 ? totalRevenue[0].total : 0,
-      totalOrders,
-      productCount,
-      bestSellingProducts: {
-        labels: bestSellingProducts.map(item => item.name),
-        data: bestSellingProducts.map(item => item.totalQuantity)
-      },
-      bestSellingCategories: {
-        labels: bestSellingCategories.map(item => item.name),
-        data: bestSellingCategories.map(item => item.totalQuantity)
-      },
-      bestSellingBrands: {
-        labels: bestSellingBrands.map(item => item.name),
-        data: bestSellingBrands.map(item => item.totalQuantity)
-      }
-    });
-
+      res.json({ products, categories, brands });
   } catch (error) {
-    console.error(error);
-    res.status(500).send('Server Error');
+      res.status(500).send(error.message);
   }
 };
+
 
 
 

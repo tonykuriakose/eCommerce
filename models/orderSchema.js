@@ -5,8 +5,15 @@ const { v4: uuidv4 } = require('uuid');
 const orderSchema = new Schema({
     orderId: {
         type: String,
-        default: uuidv4 // Set default value to generate random unique order ID
+        default: uuidv4 
     },
+    orderedItems:[{
+        product:{
+            type:Schema.Types.ObjectId,
+            ref:'Product',
+            required:true
+        }
+    }],
     product: {
         type: Array,
         required: true
