@@ -167,6 +167,7 @@ const removerCategoryOffer = async (req, res)=>{
   }
 }
 
+
 module.exports = {
   getCategoryInfo,
   addCategory,

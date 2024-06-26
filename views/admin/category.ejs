@@ -229,37 +229,46 @@
       });
     }
 
+
     function validateForm() {
-      clearErrorMessages();
-      const name = document.getElementsByName("name")[0].value;
-      const description = document.getElementById("descriptionId").value;
-      let isValid = true;
-      if (name.trim() === "") {
-        displayErrorMessage("name-error", "Please enter a name");
-        isValid = false;
-      } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
-        displayErrorMessage("name-error", "Product name should contain only alphabetic characters.");
-        isValid = false;
-      }
-      if (description.trim() === "") {
-        displayErrorMessage("description-error", "Please enter description");
-        isValid = false;
-      }
-      return isValid;
-    }
+  clearErrorMessages();
+  const name = document.getElementsByName("name")[0].value;
+  const description = document.getElementById("descriptionId").value;
+  let isValid = true;
+  
+  if (name.trim() === "") {
+    displayErrorMessage("name-error", "Please enter a name");
+    isValid = false;
+  } else if (!/^[a-zA-Z\s]+$/.test(name.trim())) {
+    displayErrorMessage("name-error", "Product name should contain only alphabetic characters.");
+    isValid = false;
+  } else if (name === name.toUpperCase() || name === name.toLowerCase()) {
+    displayErrorMessage("name-error", "Category already exists");
+    isValid = false;
+  }
 
-    function displayErrorMessage(elementId, message) {
-      var errorElement = document.getElementById(elementId);
-      errorElement.innerText = message;
-      errorElement.style.display = "block";
-    }
+  if (description.trim() === "") {
+    displayErrorMessage("description-error", "Please enter description");
+    isValid = false;
+  }
+  
+  return isValid;
+}
 
-    function clearErrorMessages() {
-      const errorElements = document.getElementsByClassName("error-message");
-      Array.from(errorElements).forEach((element) => {
-        element.innerText = "";
-      });
-    }
+function displayErrorMessage(elementId, message) {
+  var errorElement = document.getElementById(elementId);
+  errorElement.innerText = message;
+  errorElement.style.display = "block";
+}
+
+function clearErrorMessages() {
+  const errorElements = document.getElementsByClassName("error-message");
+  Array.from(errorElements).forEach((element) => {
+    element.innerText = "";
+  });
+}
+
+
 
     async function addOffer(categoryId) {
       const { value: amount } = await Swal.fire({
