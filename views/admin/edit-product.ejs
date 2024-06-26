@@ -137,7 +137,7 @@
                                     <img src="" id="croppedImg1" alt="">
                                     <button type="button" id="saveButton1" class="btn-sm btn-primary">Save</button>
                                 </div>
-                                                            <!-- <div class="row">
+                                                            <div class="row">
                                                                 <div class="card-body align-items-center" style="margin-bottom: 20px;">
                                                                     <img src="assets/imgs/theme/upload.svg" alt="" id="imgView2">
                                                                     <input class="form-control" type="file" name="images" id="input2"
@@ -177,7 +177,7 @@
                                                                     <img src="" id="croppedImg4" alt="">
                                                                     <button type="button" id="saveButton4" class="btn-sm btn-primary">Save</button>
                                                                 </div>
-                                                            </div> -->
+                                                            </div>
                                 </div>
                             </div>
                             <div>
@@ -414,10 +414,6 @@ function validateForm() {
                 displayErrorMessage('salePrice-error', 'Please enter a valid non-negative price.');
                 isValid = false;
             }
-            if (parseFloat(price) <= parseFloat(saleprice)) {
-    displayErrorMessage('regularPrice-error', 'Regular price must be greater than sale price.');
-    isValid = false;
-}
             
             if (color.trim() === "") {
                 displayErrorMessage('color-error', 'Please enter a color.');
