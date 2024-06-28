@@ -488,49 +488,52 @@
             });
         }
 
-        function applyCoupon() {
-    const coupon = $('#couponInput').val();
-    const total = $('#totalValue').text().replace('₹', ''); // Extract the total value
-
-    $.ajax({
-      url: '/applyCoupon',
-      method: 'POST',
-      data: {
-        coupon: coupon,
-        total: total
-      },
-      success: function(response) {
-        if (response.noCoupon) {
-          alert('Coupon not found!');
-        } else if (response.used) {
-          alert('Coupon already used!');
-        } else {
-          const discount = response.offerPrice;
-          const newTotal = response.gt;
-
-          $('#discount').text(`₹${discount}`);
-          $('#totalValue').text(`₹${newTotal}`);
-        }
-      },
-      error: function() {
-        alert('An error occurred while applying the coupon.');
-      }
-    });
-  }
         
-    var usedCoupon = null;
 
+        const applyCoupon = async (totalAmount) => {
+  const couponName = document.getElementById("inputCoupon").value.trim();
+  if (!couponName) {
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter a coupon code.' });
+    return;
+  }
+
+  try {
+    const response = await fetch('/applyCoupon', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ coupon: couponName, total: totalAmount }),
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      Swal.fire({ icon: 'success', title: 'Success', text: `Coupon applied! Discount: ${data.offerPrice}. New Total: ${data.gt}` });
+      // Update the total amount in the UI
+      document.getElementById("totalAmount").innerText = data.gt;
+      document.getElementById("inputCoupon").value = "";
+    } else {
+      Swal.fire({ icon: 'error', title: 'Error', text: data.message });
+    }
+  } catch (error) {
+    console.error('Error applying coupon:', error);
+    Swal.fire({ icon: 'error', title: 'Error', text: 'Failed to apply coupon.' });
+  }
+};
+
+
+       
     
-    function useCoupon(couponName) {
-        console.log(couponName);
+        var usedCoupon = null;
+
+    const useCoupon = async (couponName) =>{
         disableOtherCoupons(couponName);
         copyToClipboard(couponName);
+        document.getElementById("inputCoupon").value = couponName;
         document.getElementById('useButton_' + couponName).style.display = 'none';
         document.getElementById('cancelButton_' + couponName).style.display = 'block';
         usedCoupon = couponName;
     }
 
-    function cancelCoupon(couponName) {
+   const cancelCoupon = async (couponName) =>{
         enableAllCoupons();
         document.getElementById('useButton_' + couponName).style.display = 'block';
         document.getElementById('cancelButton_' + couponName).style.display = 'none';

@@ -488,25 +488,34 @@ const getSortProducts = async (req, res) => {
   }
 };
 
+
+
 const applyCoupon = async (req, res) => {
   try {
     const userId = req.session.user;
     const selectedCoupon = await Coupon.findOne({ name: req.body.coupon });
 
     if (!selectedCoupon) {
-      res.json({ noCoupon: true });
-    } else if (selectedCoupon.userId.includes(userId)) {
-      res.json({ used: true });
-    } else {
-      await Coupon.updateOne(
-        { name: req.body.coupon },
-        { $addToSet: { userId: userId } }
-      );
-      const gt = parseInt(req.body.total) - parseInt(selectedCoupon.offerPrice);
-      res.json({ gt: gt, offerPrice: parseInt(selectedCoupon.offerPrice) });
+      console.log(`Coupon ${req.body.coupon} not found.`);
+      return res.json({ success: false, message: 'Coupon not found' });
+    } 
+
+    if (selectedCoupon.userId.includes(userId)) {
+      console.log(`User ${userId} has already used coupon ${req.body.coupon}.`);
+      return res.json({ success: false, message: 'Coupon already used' });
     }
+
+    await Coupon.updateOne(
+      { name: req.body.coupon },
+      { $addToSet: { userId: userId } }
+    );
+
+    const gt = parseInt(req.body.total) - parseInt(selectedCoupon.offerPrice);
+    console.log(`Coupon ${req.body.coupon} applied successfully. New total: ${gt}`);
+    return res.json({ success: true, gt: gt, offerPrice: parseInt(selectedCoupon.offerPrice) });
   } catch (error) {
-    res.redirect("/pageNotFound");
+    console.error('Error applying coupon:', error);
+    return res.json({ success: false, message: 'Error applying coupon' });
   }
 };
 
