@@ -488,9 +488,9 @@
             });
         }
 
-        
 
-        const applyCoupon = async (totalAmount) => {
+
+ const applyCoupon = async (totalAmount) => {
   const couponName = document.getElementById("inputCoupon").value.trim();
   if (!couponName) {
     Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter a coupon code.' });
@@ -506,9 +506,9 @@
 
     const data = await response.json();
     if (data.success) {
-      Swal.fire({ icon: 'success', title: 'Success', text: `Coupon applied! Discount: ${data.offerPrice}. New Total: ${data.gt}` });
-      // Update the total amount in the UI
-      document.getElementById("totalAmount").innerText = data.gt;
+      Swal.fire({ icon: 'success', title: 'Success', text: `Coupon Discount ${data.offerPrice} Applied` });
+      document.getElementById("totalValue").innerText = `₹${data.gt}`;
+      document.getElementById("discount").innerText = data.offerPrice;
       document.getElementById("inputCoupon").value = "";
     } else {
       Swal.fire({ icon: 'error', title: 'Error', text: data.message });
@@ -520,10 +520,9 @@
 };
 
 
-       
+ 
     
         var usedCoupon = null;
-
     const useCoupon = async (couponName) =>{
         disableOtherCoupons(couponName);
         copyToClipboard(couponName);

@@ -496,12 +496,10 @@ const applyCoupon = async (req, res) => {
     const selectedCoupon = await Coupon.findOne({ name: req.body.coupon });
 
     if (!selectedCoupon) {
-      console.log(`Coupon ${req.body.coupon} not found.`);
       return res.json({ success: false, message: 'Coupon not found' });
     } 
 
     if (selectedCoupon.userId.includes(userId)) {
-      console.log(`User ${userId} has already used coupon ${req.body.coupon}.`);
       return res.json({ success: false, message: 'Coupon already used' });
     }
 
@@ -511,14 +509,12 @@ const applyCoupon = async (req, res) => {
     );
 
     const gt = parseInt(req.body.total) - parseInt(selectedCoupon.offerPrice);
-    console.log(`Coupon ${req.body.coupon} applied successfully. New total: ${gt}`);
     return res.json({ success: true, gt: gt, offerPrice: parseInt(selectedCoupon.offerPrice) });
   } catch (error) {
     console.error('Error applying coupon:', error);
     return res.json({ success: false, message: 'Error applying coupon' });
   }
 };
-
 
 
 
