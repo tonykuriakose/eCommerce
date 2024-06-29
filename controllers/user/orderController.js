@@ -234,7 +234,7 @@ const getOrderDetailsPage = async (req, res) => {
 
     const totalPrice = findOrder.totalPrice;
     const discount = totalGrant - totalPrice;
-    const finalAmount = totalPrice; // Assuming finalAmount is the same as totalPrice
+    const finalAmount = totalPrice; 
 
     res.render("orderDetails", {
       orders: findOrder,
@@ -429,10 +429,10 @@ const downloadInvoice = async (req, res) => {
           "marginLeft": 25,
           "marginBottom": 25,
           apiKey: process.env.EASYINVOICE_API,
-           mode: "development",
-           images : {
-             logo: "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
-           },
+          mode: "development",
+          images: {
+              logo: "https://firebasestorage.googleapis.com/v0/b/ecommerce-397a7.appspot.com/o/logo.jpg?alt=media&token=07b6be19-1ce8-4797-a3a0-f0eaeaafedad",
+          },
           "sender": {
               "company": "Trend Setter",
               "address": "Thrikkakkara",
@@ -447,21 +447,22 @@ const downloadInvoice = async (req, res) => {
               "city": order.address[0].state,
               "country": "India"
           },
-         information : {
-          "number":order.orderId,
-          "date":moment(order.date).format("YYYY-MM-DD HH:mm:ss")
-         },
+          "information": {
+              "number": order.orderId,
+              "date": moment(order.date).format("YYYY-MM-DD HH:mm:ss")
+          },
           "products": order.product.map(prod => ({
               "quantity": prod.quantity,
               "description": prod.name || prod.title,
               "tax": 0,
-              "price": prod.price
+              "price": prod.price,
+
           })),
-          "bottomNotice": "Thank you for your business. Your Company Slogan/Notice."
+          "bottomNotice": "Thank you for your business",
       };
 
       const result = await easyinvoice.createInvoice(data);
-      const invoicePath = path.join(__dirname,"../../public/invoice/",`invoice_${orderId}.pdf`);
+      const invoicePath = path.join(__dirname, "../../public/invoice/", `invoice_${orderId}.pdf`);
       fs.writeFileSync(invoicePath, result.pdf, 'base64');
       res.download(invoicePath, `invoice_${orderId}.pdf`, (err) => {
           if (err) {
@@ -474,6 +475,7 @@ const downloadInvoice = async (req, res) => {
       res.status(500).send('An error occurred while generating the invoice');
   }
 };
+
 
 
 

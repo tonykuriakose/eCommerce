@@ -146,7 +146,7 @@
                                                 <%= orders.product[i].quantity %>
                                             </td>
                                             <td class="text-center">
-                                                ₹<%= finalAmount.toLocaleString() %>
+                                                ₹<%=(parseInt(orders.product[i].price) * parseInt(orders.product[i].quantity)).toLocaleString()%>
                                             </td>
                                         </tr>
                                     <% } %>

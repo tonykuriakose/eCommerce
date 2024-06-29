@@ -8,7 +8,7 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="row mb-50 mt-20 order-info-wrap background-info">
+            <div class="row mb-10 mt-10 order-info-wrap background-info">
                 <div class="col-md-4">
                     <article class="icontext align-items-start ml-130">
                         <span class="icon icon-sm rounded-circle bg-primary-light">
@@ -31,7 +31,8 @@
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
                                 <% if (locals.orders) { %>
-                                    Pay method: <%= orders.payment %> <br> Status:
+                                    Pay method: <%= orders.payment %> <br> 
+                                    Status:
                                     <% if (orders.status == "Failed") { %> 
                                         Failed
                                     <% } else if (orders.status == "Delivered") { %>
@@ -114,7 +115,7 @@
                                                 <%= orders.product[i].quantity %>
                                             </td>
                                             <td class="text-center"> 
-                                                ₹<%=finalAmount%>
+                                                ₹<%=(parseInt(orders.product[i].price) * parseInt(orders.product[i].quantity)).toLocaleString()%>
                                             </td>
                                             <td class="text-center"> 
                                                 <% if (orders.product[i].productStatus === "Cancel") { %>
