@@ -116,8 +116,17 @@ const deleteProduct = async (req, res) => {
 
 const orderPlaced = async (req, res) => {
   try {
-    const { totalPrice, addressId, payment } = req.body;
+    const { totalPrice, addressId, payment, discount } = req.body;
     const userId = req.session.user;
+
+    // Log the input values
+    console.log(`totalPrice: ${totalPrice}, discount: ${discount}`);
+
+    // Ensure totalPrice and discount are valid numbers
+    if (isNaN(totalPrice) || isNaN(discount)) {
+      return res.status(400).json({ error: "Invalid totalPrice or discount value" });
+    }
+
     const findUser = await User.findOne({ _id: userId });
     if (!findUser) {
       return res.status(404).json({ error: "User not found" });
@@ -150,15 +159,20 @@ const orderPlaced = async (req, res) => {
       quantity: cartItemQuantities.find((cartItem) => cartItem.productId.toString() === item._id.toString()).quantity,
     }));
 
-    //Check if totalPrice is above 1000 and payment method is COD
+    // Check if totalPrice is above 1000 and payment method is COD
     if (payment === "cod" && totalPrice > 1000) {
       return res.status(400).json({ error: "Orders above ₹1000 are not allowed for Cash on Delivery (COD)" });
     }
 
+    // Calculate final amount after applying discount
+    const finalAmount = totalPrice - discount;
+    console.log(`finalAmount: ${finalAmount}`);
 
     let newOrder = new Order({
       product: orderedProducts,
       totalPrice: totalPrice,
+      discount: discount,
+      finalAmount: finalAmount,
       address: desiredAddress,
       payment: payment,
       userId: userId,
@@ -186,9 +200,9 @@ const orderPlaced = async (req, res) => {
         orderId: orderDone._id,
       });
     } else if (newOrder.payment === "wallet") {
-      if (newOrder.totalPrice <= findUser.wallet) {
-        findUser.wallet -= newOrder.totalPrice;
-        findUser.history.push({ amount: newOrder.totalPrice, status: "debit", date: Date.now() });
+      if (newOrder.finalAmount <= findUser.wallet) {
+        findUser.wallet -= newOrder.finalAmount;
+        findUser.history.push({ amount: newOrder.finalAmount, status: "debit", date: Date.now() });
         await findUser.save();
         res.json({
           payment: true,
@@ -203,7 +217,7 @@ const orderPlaced = async (req, res) => {
         res.json({ payment: false, method: "wallet", success: false });
       }
     } else if (newOrder.payment === "razorpay") {
-      const razorPayGeneratedOrder = await generateOrderRazorpay(orderDone._id, orderDone.totalPrice);
+      const razorPayGeneratedOrder = await generateOrderRazorpay(orderDone._id, orderDone.finalAmount);
       res.json({
         payment: false,
         method: "razorpay",
@@ -217,6 +231,7 @@ const orderPlaced = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
 
 
 
@@ -240,6 +255,9 @@ const getOrderDetailsPage = async (req, res) => {
     res.redirect("/pageNotFound");
   }
 };
+
+
+
 const paymentConfirm = async (req, res) => {
   try {
     await Order.updateOne(

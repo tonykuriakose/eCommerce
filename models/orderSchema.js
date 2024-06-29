@@ -22,6 +22,14 @@ const orderSchema = new Schema({
         type: Number,
         required: true
     },
+    discount: {
+        type: Number,
+        default: 0
+    },
+    finalAmount: {
+        type: Number,
+        required: true
+    },
     address: {
         type: Array,
         required: true
@@ -35,12 +43,6 @@ const orderSchema = new Schema({
         ref: 'User',
         required: true
     },
-    orderedItems:[{
-        product:{
-            type:Schema.Types.ObjectId,
-            ref:'Product'
-        }
-    }],
     invoice : {
         type : Date
     },
@@ -52,13 +54,8 @@ const orderSchema = new Schema({
         type: Date,
         required: true
     },
-    date: {
-        type: String
-    },
     couponApplied : {
         type : Boolean,
-        // required :true,
-        // default : false
     }
 });
 
