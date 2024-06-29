@@ -118,15 +118,6 @@ const orderPlaced = async (req, res) => {
   try {
     const { totalPrice, addressId, payment, discount } = req.body;
     const userId = req.session.user;
-
-    // Log the input values
-    console.log(`totalPrice: ${totalPrice}, discount: ${discount}`);
-
-    // Ensure totalPrice and discount are valid numbers
-    if (isNaN(totalPrice) || isNaN(discount)) {
-      return res.status(400).json({ error: "Invalid totalPrice or discount value" });
-    }
-
     const findUser = await User.findOne({ _id: userId });
     if (!findUser) {
       return res.status(404).json({ error: "User not found" });
@@ -158,13 +149,9 @@ const orderPlaced = async (req, res) => {
       productStatus: "Confirmed",
       quantity: cartItemQuantities.find((cartItem) => cartItem.productId.toString() === item._id.toString()).quantity,
     }));
-
-    // Check if totalPrice is above 1000 and payment method is COD
     if (payment === "cod" && totalPrice > 1000) {
       return res.status(400).json({ error: "Orders above ₹1000 are not allowed for Cash on Delivery (COD)" });
     }
-
-    // Calculate final amount after applying discount
     const finalAmount = totalPrice - discount;
     console.log(`finalAmount: ${finalAmount}`);
 
@@ -233,28 +220,35 @@ const orderPlaced = async (req, res) => {
 };
 
 
-
-
 const getOrderDetailsPage = async (req, res) => {
   try {
     const userId = req.session.user;
     const orderId = req.query.id;
     const findOrder = await Order.findOne({ _id: orderId });
     const findUser = await User.findOne({ _id: userId });
+    
     let totalGrant = 0;
-    findOrder.product.map((val) => {
-      totalGrant += val.price;
+    findOrder.product.forEach((val) => {
+      totalGrant += val.price * val.quantity;
     });
+
+    const totalPrice = findOrder.totalPrice;
+    const discount = totalGrant - totalPrice;
+    const finalAmount = totalPrice; // Assuming finalAmount is the same as totalPrice
 
     res.render("orderDetails", {
       orders: findOrder,
       user: findUser,
       totalGrant: totalGrant,
+      totalPrice: totalPrice,
+      discount: discount,
+      finalAmount: finalAmount,
     });
   } catch (error) {
     res.redirect("/pageNotFound");
   }
 };
+
 
 
 

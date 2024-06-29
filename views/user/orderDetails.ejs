@@ -48,10 +48,10 @@
                                         Shipped
                                     <% } %>
                                     <br>
-                                    Grand Total: <%= totalGrant %> <br>
-                                    Paid Amount: <%= orders.totalPrice %> <br>
-                                    <% var Discount = totalGrant - orders.totalPrice; %>
-                                    Discount: <%= Discount %>
+                                    Grand Total: ₹<%= totalGrant.toLocaleString() %> <br>
+                                    Paid Amount: ₹<%= totalPrice.toLocaleString() %> <br>
+                                    Discount: ₹<%= discount.toLocaleString() %> <br>
+                                    Final Amount: ₹<%= finalAmount.toLocaleString() %>
                                 <% } %>
                             </p>
                         </div>
@@ -91,7 +91,6 @@
                                 </tr>
                             </thead>
 
-
                             <tbody>
                                 <% if (locals.orders) { %>
                                     <% for (let i = 0; i < orders.product.length; i++) { %>
@@ -115,7 +114,7 @@
                                                 <%= orders.product[i].quantity %>
                                             </td>
                                             <td class="text-center"> 
-                                                ₹<%= (parseInt(orders.product[i].price) * parseInt(orders.product[i].quantity)).toLocaleString() %>
+                                                ₹<%=finalAmount%>
                                             </td>
                                             <td class="text-center"> 
                                                 <% if (orders.product[i].productStatus === "Cancel") { %>

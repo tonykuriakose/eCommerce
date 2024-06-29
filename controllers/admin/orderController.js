@@ -75,11 +75,37 @@ const getOrderDetailsPageAdmin = async (req, res) => {
     const findOrder = await Order.findOne({ _id: orderId }).sort({
       createdOn: 1,
     });
-    res.render("order-details-admin", { orders: findOrder, orderId });
+
+    if (!findOrder) {
+      throw new Error('Order not found');
+    }
+
+    // Calculate total grant if needed
+    let totalGrant = 0;
+    findOrder.product.forEach((val) => {
+      totalGrant += val.price * val.quantity;
+    });
+
+    const totalPrice = findOrder.totalPrice;
+    const discount = totalGrant - totalPrice;
+    const finalAmount = totalPrice; // Assuming finalAmount is the same as totalPrice
+
+    // Add quantity to each product in findOrder
+    findOrder.product.forEach((product) => {
+      product.quantity = product.quantity || 1; // Set default quantity if not available
+    });
+
+    res.render("order-details-admin", {
+      orders: findOrder,
+      orderId: orderId,
+      finalAmount: finalAmount,
+    });
   } catch (error) {
+    console.error(error);
     res.redirect("/pageerror");
   }
 };
+
 
 
 module.exports = {
