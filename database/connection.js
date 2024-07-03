@@ -1,9 +1,13 @@
 const mongoose = require("mongoose");
-const env = require("dotenv").config();
 
 const db = async () => {
     try {
-        await mongoose.connect(process.env.MONGODB_URI);
+        const DBUSERNAME = 't4tonykuriakose';
+        const DBPASSWORD = 'g8IHPqZVVlw4iEZA';
+        const DBNAME = 'ecommerce';
+        const MONGODB_URI = `mongodb+srv://${DBUSERNAME}:${DBPASSWORD}@nodecluster.3kpa5zx.mongodb.net/${DBNAME}?retryWrites=true&w=majority&appName=nodecluster`;
+        
+        await mongoose.connect(MONGODB_URI);
         console.log('DB Connected');
     } catch (error) {
         console.error('DB connection failed:', error);
