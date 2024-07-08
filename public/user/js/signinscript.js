@@ -51,11 +51,14 @@ function passvalidateChecking(e){
 
 }
 function namevalidateChecking(){
-  // console.log("name validateChecking");
   const nameval=nameid.value
+  const namePattern = /^[A-Za-z\s]+$/;
 if(nameval.trim()===""){
   error1.style.display="block"
   error1.innerHTML="Please enter valid name"
+}else if(!namePattern.test(nameval)){
+  error1.style.display = "block";
+  error1.innerHTML = "Name can only contain alphabets and spaces";
 }else{
   error1.style.display="none"
     error1.innerHTML=""
