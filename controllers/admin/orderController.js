@@ -35,38 +35,43 @@ const changeOrderStatus = async (req, res) => {
   try {
     const orderId = req.query.orderId;
     const userId = req.query.userId;
-      await Order.updateOne({ _id: orderId }, { status: req.query.status }).then(
-        (data) => console.log(data)
-      );
-      const findOrder = await Order.findOne({ _id: orderId });
-      if (findOrder.status.trim() === "Returned"&&(findOrder.payment === "razorpay"||findOrder.payment === "wallet"||findOrder.payment === "cod")) {
-          const findUser = await User.findOne({ _id:userId});
-          if (findUser && findUser.wallet !== undefined) {
-            findUser.wallet += findOrder.totalPrice;
-            await findUser.save();
+    const status = req.query.status;
+    
+    await Order.updateOne({ _id: orderId }, { status }).then((data) => console.log(data));
+
+    const findOrder = await Order.findOne({ _id: orderId });
+
+    if (findOrder.status.trim() === "Returned" && 
+        ["razorpay", "wallet", "cod"].includes(findOrder.payment)) {
+      const findUser = await User.findOne({ _id: userId });
+      if (findUser && findUser.wallet !== undefined) {
+        findUser.wallet += findOrder.totalPrice;
+        await findUser.save();
+      } else {
+        console.log("User not found or wallet is undefined");
+      }
+      
+      await Order.updateOne({ _id: orderId }, { status: "Returned" });
+      for (const productData of findOrder.product) {
+        const productId = productData._id;
+        const quantity = productData.quantity;
+        const product = await Product.findById(productId);
+        if (product) {
+          product.quantity += quantity;
+          await product.save();
         } else {
-            console.log("User not found or wallet is undefined");
+          console.log("Product not found");
         }
-    await Order.updateOne({ _id: orderId }, { status: "Returned"});
-    for (const productData of findOrder.product) {
-      const productId = productData._id
-      const quantity = productData.quantity
-      const product = await Product.findById(productId);
-      if (product) {
-        product.quantity += quantity;
-        await product.save();
-      } else if (!product) {
-        console.log("no product");
       }
     }
-      
-      }
-     
+    
     return res.redirect("/admin/orderList");
   } catch (error) {
+    console.error(error);
     return res.redirect("/pageerror");
   }
 };
+
 
 
 const getOrderDetailsPageAdmin = async (req, res) => {
