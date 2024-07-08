@@ -85,7 +85,6 @@ router.get("/salesWeekly", adminAuth, adminController.salesWeekly);
 router.get("/salesYearly", adminAuth, adminController.salesYearly);
 router.get("/monthly-report", adminAuth,adminController.monthlyreport);
 router.get("/dateWiseFilter", adminAuth, adminController.dateWiseFilter);
-router.get("/bestSellingData",adminAuth,adminController.bestSellingData);
 router.post("/generatePdf", adminAuth, adminController.generatePdf);
 router.post("/downloadExcel", adminAuth, adminController.downloadExcel);
 

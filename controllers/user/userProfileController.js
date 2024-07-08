@@ -80,18 +80,21 @@ const forgotEmailValid = async (req, res) => {
   }
 };
 
+
 const verifyForgotPassOtp = async (req, res) => {
   try {
     const enteredOtp = req.body.otp;
     if (enteredOtp === req.session.userOtp) {
-      res.redirect("/resetPassword");
+      res.json({ success: true, redirectUrl: "/resetPassword" });
     } else {
-      res.render("forgotPass-otp", { message: "Otp not matching" });
+      res.json({ success: false, message: "OTP not matching" });
     }
   } catch (error) {
-     res.redirect("/pageNotFound");
+    res.status(500).json({ success: false, message: "An error occurred. Please try again." });
   }
 };
+
+
 
 
 const getResetPassPage = async (req, res) => {

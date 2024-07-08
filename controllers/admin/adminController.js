@@ -596,90 +596,6 @@ const downloadExcel = async (req, res) => {
 }
 
 
-
-
-const bestSellingData = async (req, res) => {
-  try {
-      const products = await Order.aggregate([
-          { $match: { status: 'Delivered' } },
-          { $unwind: '$product' },
-          { $group: { _id: '$product', totalSales: { $sum: 1 } } },
-          { $sort: { totalSales: -1 } },
-          { $limit: 5 },
-          {
-              $lookup: {
-                  from: 'products',
-                  localField: '_id',
-                  foreignField: '_id',
-                  as: 'productDetails'
-              }
-          },
-          { $unwind: '$productDetails' },
-          { $project: { _id: 0, name: '$productDetails.productName', sales: '$totalSales' } }
-      ]);
-      console.log(products);
-      const categories = await Order.aggregate([
-          { $match: { status: 'Delivered' } },
-          { $unwind: '$orderedItems' },
-          {
-              $lookup: {
-                  from: 'products',
-                  localField: 'orderedItems.product',
-                  foreignField: '_id',
-                  as: 'productDetails'
-              }
-          },
-          { $unwind: '$productDetails' },
-          {
-              $lookup: {
-                  from: 'categories',
-                  localField: 'productDetails.category',
-                  foreignField: '_id',
-                  as: 'categoryDetails'
-              }
-          },
-          { $unwind: '$categoryDetails' },
-          { $group: { _id: '$categoryDetails.name', totalSales: { $sum: 1 } } },
-          { $sort: { totalSales: -1 } },
-          { $limit: 5 },
-          { $project: { _id: 0, name: '$_id', sales: '$totalSales' } }
-      ]);
-      const brands = await Order.aggregate([
-          { $match: { status: 'Delivered' } },
-          { $unwind: '$orderedItems' },
-          {
-              $lookup: {
-                  from: 'products',
-                  localField: 'orderedItems.product',
-                  foreignField: '_id',
-                  as: 'productDetails'
-              }
-          },
-          { $unwind: '$productDetails' },
-          {
-              $lookup: {
-                  from: 'brands',
-                  localField: 'productDetails.brand',
-                  foreignField: 'brandName',
-                  as: 'brandDetails'
-              }
-          },
-          { $unwind: '$brandDetails' },
-          { $group: { _id: '$brandDetails.brandName', totalSales: { $sum: 1 } } },
-          { $sort: { totalSales: -1 } },
-          { $limit: 5 },
-          { $project: { _id: 0, name: '$_id', sales: '$totalSales' } }
-      ]);
-
-      res.json({ products, categories, brands });
-  } catch (error) {
-      res.status(500).send(error.message);
-  }
-};
-
-
-
-
 module.exports = {
   pageNotFound1,
   getLoginPage,
@@ -700,5 +616,4 @@ module.exports = {
   dateWiseFilter,
   downloadExcel,
   generatePdf,
-  bestSellingData,
 };
