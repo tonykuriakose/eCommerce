@@ -8,6 +8,7 @@
             </div>
         </div>
         <div class="card-body">
+            <!-- Customer Information -->
             <div class="row mb-10 mt-10 order-info-wrap background-info">
                 <div class="col-md-4">
                     <article class="icontext align-items-start ml-130">
@@ -21,7 +22,8 @@
                             </p>
                         </div>
                     </article>
-                </div> 
+                </div>
+                <!-- Order Information -->
                 <div class="col-md-4">
                     <article class="icontext align-items-start ml-130">
                         <span class="icon icon-sm rounded-circle bg-primary-light">
@@ -30,34 +32,17 @@
                         <div class="text">
                             <h6 class="mb-1">Order info</h6>
                             <p class="mb-1">
-                                <% if (locals.orders) { %>
-                                    Pay method: <%= orders.payment %> <br> 
-                                    Status:
-                                    <% if (orders.status == "Failed") { %> 
-                                        Failed
-                                    <% } else if (orders.status == "Delivered") { %>
-                                        Delivered
-                                    <% } else if (orders.status == "Return Request") { %>
-                                        Return Request
-                                    <% } else if (orders.status == "Confirmed") { %>
-                                        Confirmed
-                                    <% } else if (orders.status == "Returned") { %>
-                                        Returned
-                                    <% } else if (orders.status == "Canceled") { %>
-                                        Cancelled
-                                    <% } else if (orders.status == "Shipped") { %>
-                                        Shipped
-                                    <% } %>
-                                    <br>
-                                    Grand Total: ₹<%= totalGrant.toLocaleString() %> <br>
-                                    Paid Amount: ₹<%= totalPrice.toLocaleString() %> <br>
-                                    Discount: ₹<%= discount.toLocaleString() %> <br>
-                                    Final Amount: ₹<%= finalAmount.toLocaleString() %>
-                                <% } %>
+                                Pay method: <%= orders.payment %> <br>
+                                Status: <%= orders.status %><br>
+                                Grand Total: ₹<%= totalGrant.toLocaleString() %> <br>
+                                Paid Amount: ₹<%= totalPrice.toLocaleString() %> <br>
+                                Discount: ₹<%= discount.toLocaleString() %> <br>
+                                Final Amount: ₹<%= finalAmount.toLocaleString() %>
                             </p>
                         </div>
                     </article>
-                </div> 
+                </div>
+                <!-- Delivery Information -->
                 <div class="col-md-4">
                     <article class="icontext align-items-start ml-130">
                         <span class="icon icon-sm rounded-circle bg-primary-light">
@@ -66,8 +51,8 @@
                         <div class="text">
                             <h6 class="mb-1">Deliver to</h6>
                             <p class="mb-1">
-                                Address: <%= orders.address[0].landMark %>, <%= orders.address[0].city %> <br> 
-                                <%= orders.address[0].state %>, <%= orders.address[0].addressType %> <br> 
+                                Address: <%= orders.address[0].landMark %>, <%= orders.address[0].city %> <br>
+                                <%= orders.address[0].state %>, <%= orders.address[0].addressType %> <br>
                                 <%= orders.address[0].pincode %>
                             </p>
                             <%if(orders.status==="Delivered"){%>
@@ -75,8 +60,9 @@
                             <%}%>
                         </div>
                     </article>
-                </div> 
+                </div>
             </div>
+            <!-- Order Details Table -->
             <div class="row">
                 <div class="col-lg">
                     <div class="table-responsive">
@@ -91,35 +77,34 @@
                                     <th width="10%">Action</th>
                                 </tr>
                             </thead>
-
                             <tbody>
                                 <% if (locals.orders) { %>
                                     <% for (let i = 0; i < orders.product.length; i++) { %>
                                         <tr>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 <a class="itemside" href="#">
                                                     <div class="left">
                                                         <img src="/uploads/re-image/<%= orders.product[i].image %>" style="height: 7rem; width: 7rem;" class="img-xs" alt="Item">
                                                     </div>
                                                 </a>
                                             </td>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 <div class="info">
                                                     <%= orders.product[i].name || orders.product[i].title %>
                                                 </div>
                                             </td>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 ₹<%= orders.product[i].price.toLocaleString() %>
                                             </td>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 <%= orders.product[i].quantity %>
                                             </td>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 ₹<%=(parseInt(orders.product[i].price) * parseInt(orders.product[i].quantity)).toLocaleString()%>
                                             </td>
-                                            <td class="text-center"> 
+                                            <td class="text-center">
                                                 <% if (orders.product[i].productStatus === "Cancel") { %>
-                                                    <i>Cancelled</i>  
+                                                    <i>Cancelled</i>
                                                 <% } else { %>
                                                     <select onchange="handleDropdownChange(this)">
                                                         <option value="" disabled selected><%= orders.status %></option>
@@ -139,12 +124,12 @@
                                 <input type="hidden" name="" id="orderId" value="<%= orders._id %>">
                             </tbody>
                         </table>
-                    </div> 
-                </div> 
+                    </div>
+                </div>
                 <div class="col-lg-1"></div>
             </div>
-        </div> 
-    </section> 
+        </div>
+    </section>
 </main>
 
 <script src="assets/js/vendors/jquery-3.6.0.min.js"></script>
@@ -189,7 +174,7 @@ function cancelOrder(orderId) {
     $.ajax({
         url: '/cancelOrder',
         method: 'POST',
-        contentType:'application/json',
+        contentType: 'application/json',
         data: JSON.stringify({ orderId: orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {
@@ -206,7 +191,7 @@ function returnRequestOrder(orderId) {
     $.ajax({
         url: '/returnrequestOrder',
         method: 'POST',
-        contentType:'application/json',
+        contentType: 'application/json',
         data: JSON.stringify({ orderId: orderId }),
         success: (response) => {
             if (response.result.modifiedCount === 1) {

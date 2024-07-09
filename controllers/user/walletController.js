@@ -11,35 +11,39 @@ let instance = new razorpay({
 
 const addMoneyToWallet = async (req, res) => {
     try {
-        var options = {
-            amount: req.body.total * 100,
-            currency: "INR",
-            receipt: "" + Date.now(),
-        };
-        instance.orders.create(options, async function (err, order) {
-            if (err) {
-                console.log("Error while creating order : ", err);
-            } else {
-                var amount = order.amount / 100;
-                console.log(amount);
-                await User.updateOne(
-                    {
-                        _id: req.session.user
-                    },{
-                        $push : {
-                            history : {
-                                amount : amount, status : "credit", date : Date.now()
-                            }
-                        }
-                    }
-                )
+      var options = {
+        amount: req.body.total * 100,
+        currency: "INR",
+        receipt: "" + Date.now(),
+      };
+      instance.orders.create(options, async function (err, order) {
+        if (err) {
+          console.log("Error while creating order : ", err);
+        } else {
+          var amount = order.amount / 100;
+          console.log(amount);
+          await User.updateOne(
+            {
+              _id: req.session.user
+            },
+            {
+              $push: {
+                history: {
+                  amount: amount,
+                  status: "credit",
+                  date: Date.now()
+                }
+              }
             }
-            res.json({order : order, razorpay : true})
-        })
+          );
+        }
+        res.json({ order: order, razorpay: true });
+      });
     } catch (error) {
-        res.redirect("/pageNotFound");
+      res.redirect("/pageNotFound");
     }
-}
+  };
+  
 
 
 const verify_payment = async (req, res)=>{
