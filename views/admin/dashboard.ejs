@@ -16,6 +16,11 @@
                         <article class="card-body">
                             <h5 class="card-title">Sale statistics</h5>
                             <canvas id="myChart1" height="120px"></canvas>
+                            <div class="row mt-4">
+                                <div class="col-md-9">
+                                    <canvas id="lineChart" height="500px" width="600px"></canvas>
+                                </div>
+                            </div>
                         </article>
                     </div>
                 </div>
@@ -25,15 +30,12 @@
 </section>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctxL = document.getElementById("myChart1").getContext('2d');
-    var myLineChart;
-
     async function fetchMonthlyData() {
         try {
             const response = await fetch('/admin/monthly-report');
             const data = await response.json();
             const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-            console.log("This is data : ",data);
+            
             const allMonthsRevenue = Array.from({ length: 12 }, () => 0);
             const allMonthsOrderCount = Array.from({ length: 12 }, () => 0);
             data.labels.forEach((label, index) => {
@@ -44,7 +46,8 @@
                 }
             });
 
-            myLineChart = new Chart(ctxL, {
+            var ctxL = document.getElementById("myChart1").getContext('2d');
+            var myLineChart = new Chart(ctxL, {
                 type: 'line',
                 data: {
                     labels: months,
@@ -72,8 +75,41 @@
             console.error(error);
         }
     }
-    
+
     fetchMonthlyData();
-    
+
+    new Chart("lineChart", {
+        type: "line",
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                    label: 'Products',
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(44, 120, 220, 0.2)',
+                    borderColor: 'rgba(44, 120, 220)',
+                    data: [1600,1700,1700,1900,2000,2700,4000,5000,6000,7000,7000,8000]
+                },
+                {
+                    label: 'Sales',
+                    tension: 0.3,
+                    fill: true,
+                    backgroundColor: 'rgba(4, 209, 130, 0.2)',
+                    borderColor: 'rgb(4, 209, 130)',
+                    data: [300,700,2000,5000,6000,4000,2000,1000,200,100,200,300] , // Use the array directly
+                },
+            ]
+        },
+        options: {
+            plugins: {
+                legend: {
+                    labels: {
+                        usePointStyle: true,
+                    },
+                }
+            }
+        }
+    });
+
 </script>
 <%- include("../../views/partials/admin/footer") %>
