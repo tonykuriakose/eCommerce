@@ -11,6 +11,8 @@ const getBrandPage = async (req, res) => {
     const totalBrands = await Brand.countDocuments();
     const totalPages = Math.ceil(totalBrands/limit);
     const reverseBrand = brandData.reverse();
+    console.log(reverseBrand);
+    
     res.render("brands", {
        data: reverseBrand, 
        currentPage :page,

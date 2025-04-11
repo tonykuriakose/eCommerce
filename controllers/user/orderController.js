@@ -17,6 +17,7 @@ let instance = new razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+
 const getCheckoutPage = async (req, res) => {
   try {
     const user = req.query.userId;
@@ -60,7 +61,7 @@ const getCheckoutPage = async (req, res) => {
         },
       },
       {
-        $unwind: "$productDetails", // Unwind the array created by the $lookup stage
+        $unwind: "$productDetails", 
       },
 
       {
@@ -366,6 +367,7 @@ const cancelOrder = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 
 const returnorder = async (req, res) => {

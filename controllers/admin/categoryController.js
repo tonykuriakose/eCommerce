@@ -5,7 +5,7 @@ const Product=require("../../models/productSchema")
 const getCategoryInfo = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-    const limit = 2;
+    const limit = 5;
     const skip = (page - 1) * limit;
     const categoryData = await Category.find({})
       .sort({ createdAt: -1 })
@@ -141,7 +141,7 @@ const addCategoryOffer = async (req, res) => {
 }
 
 //remove category offer
-const removerCategoryOffer = async (req, res)=>{
+const removeCategoryOffer = async (req, res)=>{
   try {
       console.log(req.body,"canceling");
       const categoryId = req.body.categoryId
@@ -176,5 +176,5 @@ module.exports = {
   editCategory,
   getEditCategory,
   addCategoryOffer,
-  removerCategoryOffer
+  removeCategoryOffer
 };
